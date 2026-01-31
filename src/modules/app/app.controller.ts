@@ -221,9 +221,9 @@ body { min-height: 100vh; }
     <nav class="landing-nav responsive">
         <h6>TypeForge</h6>
         <div class="max"></div>
-        <a href="#connector" class="button transparent small-round">Connector</a>
-        <a href="#features" class="button transparent small-round">Funkce</a>
-        <a href="#how-it-works" class="button transparent small-round">Jak to funguje</a>
+        <a href="#connector" class="button transparent small-round">Lorem</a>
+        <a href="#features" class="button transparent small-round">Ipsum</a>
+        <a href="#how-it-works" class="button transparent small-round">Dolor sit</a>
     </nav>
 </header>
 
