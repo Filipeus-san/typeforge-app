@@ -1,5 +1,4 @@
-import { index } from "../routes";
-import { renderIndex } from "./app/app.controller";
+import { renderIndex, renderTest } from "./app/app.controller";
 import { RouterPaths } from "./types";
 
 // Router
@@ -12,7 +11,7 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
         },
          {
             path: "/test", 
-            route: renderIndex,
+            route: renderTest,
             type: "render"
         },
     ];

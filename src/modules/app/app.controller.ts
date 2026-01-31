@@ -1,4 +1,4 @@
-import { getHtmlTemplate } from "../../react.template";
+import { getHtmlTemplate } from "../../template";
 
 export function renderIndex(request: Request, response: Response): Response {
 
@@ -10,6 +10,13 @@ export function renderIndex(request: Request, response: Response): Response {
 export function renderTest(request: Request, response: Response): Response {
 
     response.content = getHtmlTemplate("Test Page");
+
+    return response;
+}
+
+export function renderNotFound(request: Request, response: Response): Response {
+
+    response.content = getHtmlTemplate("Not Found");
 
     return response;
 }

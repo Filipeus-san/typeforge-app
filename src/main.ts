@@ -1,7 +1,6 @@
 import { getAppConfig } from './config';
+import { renderNotFound } from './modules/app/app.controller';
 import { getRouter } from './modules/router';
-import { index, notFound } from './routes';
-import { sessionStart } from './utils';
 
 /** @noSelf */
 export function config() {
@@ -22,9 +21,5 @@ export function main(request: Request): Response {
         return find.route(request, response);
     }
 
-    if (request.headers["content-type"] !== "application/json") {
-         return index(request);
-    }
-
-    return notFound(request);
+    return renderNotFound(request, response);
 }
