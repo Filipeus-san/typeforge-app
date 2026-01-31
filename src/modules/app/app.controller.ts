@@ -233,22 +233,22 @@ body { min-height: 100vh; }
         <div>
             <div class="hero-label primary-container">
                 <i>auto_awesome</i>
-                AI-first hosting pro vibe coding
+                Lorem ipsum dolor sit amet
             </div>
-            <h1>Popište aplikaci.<br>AI ji naprogramuje<br>a nasadí.</h1>
+            <h1>Lorem ipsum<br>dolor sit amet<br>consectetur.</h1>
             <p class="subtitle">
-                TypeForge je AI hosting platforma navržená pro vibe coding.
-                Připojte connector do svého AI agenta, popište co chcete pár větami
-                a vaše aplikace běží na internetu.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation.
             </p>
             <div class="actions">
                 <button class="large-round extra">
                     <i>rocket_launch</i>
-                    <span>Začít zdarma</span>
+                    <span>Lorem ipsum</span>
                 </button>
                 <button class="large-round border extra">
                     <i>extension</i>
-                    <span>Připojit connector</span>
+                    <span>Dolor sit amet</span>
                 </button>
             </div>
 
@@ -257,8 +257,8 @@ body { min-height: 100vh; }
                     <i>smart_toy</i> AI Agent prompt
                 </div>
                 <div class="prompt-demo-body">
-                    Vytvoř e-shop na prodej zrnkové kávy. Potřebuji katalog produktů,
-                    košík a jednoduchou checkout stránku.<span class="prompt-cursor primary"></span>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua.<span class="prompt-cursor primary"></span>
                 </div>
             </div>
         </div>
@@ -269,11 +269,11 @@ body { min-height: 100vh; }
         <div class="connector-box surface-variant round">
             <i class="extra-large-text primary-text">extension</i>
             <div class="space"></div>
-            <h4>Jeden connector. Plná kontrola.</h4>
+            <h4>Lorem ipsum. Dolor sit amet.</h4>
             <p class="connector-sub">
-                Připojte TypeForge jako MCP connector do libovolného AI agenta.
-                Agent získá přístup k projektům, databázím, prostředím i deploymentu &mdash;
-                vše řízené přirozeným jazykem.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua &mdash;
+                ut enim ad minim veniam.
             </p>
             <div class="connector-code surface">
                 <span style="opacity:0.5">// MCP connector konfigurace</span><br>
@@ -285,7 +285,7 @@ body { min-height: 100vh; }
                 &nbsp;&nbsp;}<br>
                 }
             </div>
-            <p style="opacity: 0.6; font-size: 0.9rem;">Funguje s libovolným agentem podporujícím MCP protokol</p>
+            <p style="opacity: 0.6; font-size: 0.9rem;">Lorem ipsum dolor sit amet consectetur</p>
             <div class="connector-agents">
                 <span class="chip small-round">Claude Code</span>
                 <span class="chip small-round">Cursor</span>
@@ -298,61 +298,61 @@ body { min-height: 100vh; }
 
     <!-- Features -->
     <section id="features" class="landing-features">
-        <h3>Vytvořeno pro AI workflow</h3>
-        <p class="section-sub">Kompletní infrastruktura, kterou AI agent potřebuje k vytvoření a nasazení plnohodnotné aplikace.</p>
+        <h3>Lorem ipsum dolor sit amet</h3>
+        <p class="section-sub">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
         <div class="feature-grid">
             <article class="feature-card round surface-variant">
                 <i class="primary-text">smart_toy</i>
-                <h6>MCP Connector</h6>
-                <p>Připojte hosting jako nástroj do svého AI agenta. Jeden connector, plná kontrola nad projekty i infrastrukturou.</p>
+                <h6>Lorem Ipsum</h6>
+                <p>Dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
             </article>
             <article class="feature-card round surface-variant">
                 <i class="primary-text">code</i>
-                <h6>Vibe Coding</h6>
-                <p>Popište aplikaci v přirozeném jazyce. AI agent ji naprogramuje, vytvoří repozitář a nasadí na internet.</p>
+                <h6>Dolor Sit</h6>
+                <p>Amet consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation.</p>
             </article>
             <article class="feature-card round surface-variant">
                 <i class="primary-text">cloud_upload</i>
-                <h6>Auto Deploy</h6>
-                <p>Push do GitHub repozitáře automaticky spustí build a deploy. Nulová konfigurace CI/CD.</p>
+                <h6>Consectetur</h6>
+                <p>Adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna aliqua.</p>
             </article>
             <article class="feature-card round surface-variant">
                 <i class="primary-text">database</i>
-                <h6>PostgreSQL &amp; Redis</h6>
-                <p>Integrovaná Neon PostgreSQL databáze a Redis cache. Agent je vytvoří a propojí automaticky.</p>
+                <h6>Adipiscing &amp; Elit</h6>
+                <p>Sed do eiusmod tempor incididunt ut labore et dolore. Magna aliqua ut enim ad minim.</p>
             </article>
             <article class="feature-card round surface-variant">
                 <i class="primary-text">dns</i>
-                <h6>Vlastní domény</h6>
-                <p>Připojte vlastní domény s automatickým SSL. Stačí říct agentovi jakou doménu chcete.</p>
+                <h6>Sed Eiusmod</h6>
+                <p>Tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
             </article>
             <article class="feature-card round surface-variant">
                 <i class="primary-text">account_tree</i>
-                <h6>Prostředí</h6>
-                <p>Dev, staging, produkce. Každé prostředí s vlastní konfigurací, vše spravovatelné přes AI agenta.</p>
+                <h6>Tempor</h6>
+                <p>Incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud.</p>
             </article>
         </div>
     </section>
 
     <!-- How it works -->
     <section id="how-it-works" class="landing-section">
-        <h3>Tři kroky k hotové aplikaci</h3>
-        <p class="section-sub">Od nápadu k běžící aplikaci na internetu. Žádná manuální konfigurace.</p>
+        <h3>Lorem ipsum dolor sit</h3>
+        <p class="section-sub">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
         <div class="step-grid">
             <article class="step-card round surface-variant">
                 <div class="step-number primary primary-text inverse-primary">1</div>
-                <h6>Připojte connector</h6>
-                <p>Přidejte TypeForge MCP connector do svého AI agenta &mdash; Claude Code, Cursor nebo jiného.</p>
+                <h6>Lorem ipsum</h6>
+                <p>Dolor sit amet consectetur adipiscing elit &mdash; sed do eiusmod tempor incididunt.</p>
             </article>
             <article class="step-card round surface-variant">
                 <div class="step-number primary primary-text inverse-primary">2</div>
-                <h6>Popište co chcete</h6>
-                <p>Řekněte agentovi co má vytvořit. Pár vět stačí &mdash; agent se postará o kód, databázi i deployment.</p>
+                <h6>Dolor sit amet</h6>
+                <p>Consectetur adipiscing elit. Sed do eiusmod &mdash; tempor incididunt ut labore et dolore.</p>
             </article>
             <article class="step-card round surface-variant">
                 <div class="step-number primary primary-text inverse-primary">3</div>
-                <h6>Aplikace běží</h6>
-                <p>Vaše aplikace je online. Další změny? Prostě popište co chcete upravit a agent to nasadí.</p>
+                <h6>Consectetur</h6>
+                <p>Adipiscing elit sed do eiusmod. Tempor incididunt ut labore et dolore magna aliqua.</p>
             </article>
         </div>
     </section>
@@ -360,18 +360,18 @@ body { min-height: 100vh; }
     <!-- CTA -->
     <section class="landing-cta">
         <article class="round extra-large-padding primary-container">
-            <h3>Začněte vibe codovat</h3>
-            <p>Připojte connector, popište svůj nápad a nechte AI udělat zbytek.<br>Od promptu k běžící aplikaci.</p>
+            <h3>Lorem ipsum dolor</h3>
+            <p>Sit amet consectetur adipiscing elit, sed do eiusmod tempor.<br>Incididunt ut labore et dolore.</p>
             <button class="large-round inverse-primary">
                 <i>rocket_launch</i>
-                <span>Začít zdarma</span>
+                <span>Lorem ipsum</span>
             </button>
         </article>
     </section>
 </main>
 
 <footer class="landing-footer responsive">
-    <p>TypeForge &mdash; AI hosting pro vibe coding</p>
+    <p>TypeForge &mdash; Lorem ipsum dolor sit amet</p>
 </footer>`;
 }
 
