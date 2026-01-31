@@ -1,2 +1,2 @@
-export type WebRouterPaths = "/" | "/test";
+export type WebRouterPaths = "/" | "/login";
 export type ApiRouterPaths = "";

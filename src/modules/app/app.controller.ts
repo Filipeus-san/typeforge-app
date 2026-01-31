@@ -380,9 +380,66 @@ export function renderIndex(request: Request, response: Response): Response {
     return response;
 }
 
-export function renderTest(request: Request, response: Response): Response {
-    response.content = getHtmlTemplate("Test Page", "<main class='responsive'><h1>Test Page</h1></main>");
+export function renderLogin(request: Request, response: Response): Response {
+    response.content = getHtmlTemplate("Login — TypeForge", getLoginPageContent());
     return response;
+}
+
+function getLoginPageContent(): string {
+    return `
+<style>
+.login-container {
+    max-width: 420px;
+    margin: 10vh auto;
+}
+</style>
+
+<header>
+    <nav class="landing-nav responsive">
+        <a href="/"><h6 style="font-weight:700;">TypeForge</h6></a>
+        <div class="max"></div>
+    </nav>
+</header>
+
+<main class="responsive">
+    <div class="login-container">
+        <article class="round surface-variant">
+            <div class="padding">
+                <div style="text-align:center;margin-bottom:2rem;">
+                    <i style="font-size:3rem;" class="primary-text">lock</i>
+                    <h5>Lorem ipsum</h5>
+                    <p style="opacity:0.7;">Dolor sit amet consectetur</p>
+                </div>
+
+                <form>
+                    <div class="field label border round">
+                        <input type="email" id="email">
+                        <label for="email">Email</label>
+                    </div>
+                    <div class="field label border round">
+                        <input type="password" id="password">
+                        <label for="password">Lorem ipsum</label>
+                    </div>
+                    <div class="space"></div>
+                    <button type="submit" class="responsive large-round">
+                        <i>login</i>
+                        <span>Lorem ipsum</span>
+                    </button>
+                </form>
+
+                <div class="space"></div>
+                <div style="text-align:center;">
+                    <a href="#" style="opacity:0.7;font-size:0.9rem;">Dolor sit amet?</a>
+                </div>
+                <div class="small-space"></div>
+                <div style="text-align:center;">
+                    <span style="opacity:0.7;font-size:0.9rem;">Lorem ipsum dolor? </span>
+                    <a href="#" style="font-size:0.9rem;">Sit amet</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>`;
 }
 
 export function renderNotFound(request: Request, response: Response): Response {
