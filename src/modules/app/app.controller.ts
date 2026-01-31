@@ -13,58 +13,54 @@ function getLandingPageContent(): string {
     </nav>
 
     <main class="responsive">
-        <div class="grid center-align" style="min-height: 80vh;">
-            <div class="s12 m8 l6">
-                <div class="center-align">
-                    <i class="extra" style="font-size: 5rem;">rocket_launch</i>
-                    <h1>Hello World</h1>
-                    <h5 class="secondary-text">Welcome to TypeForge</h5>
-                    <p class="large-text">A serverless web framework that compiles TypeScript to Lua.</p>
-                    <div class="space"></div>
-                    <div class="row center-align">
-                        <button class="large">
-                            <i>play_arrow</i>
-                            <span>Get Started</span>
-                        </button>
-                        <button class="large border">
-                            <i>code</i>
-                            <span>Learn More</span>
-                        </button>
-                    </div>
-                </div>
+        <section style="display:flex;align-items:center;justify-content:center;min-height:85vh;text-align:center;">
+            <div>
+                <i style="font-size:6rem;">rocket_launch</i>
+                <h1 class="large">Hello World</h1>
+                <h5 class="secondary-text">Welcome to TypeForge</h5>
+                <p style="max-width:600px;margin:1rem auto;">A serverless web framework that compiles TypeScript to Lua.</p>
+                <div class="space"></div>
+                <nav>
+                    <button class="large">
+                        <i>play_arrow</i>
+                        <span>Get Started</span>
+                    </button>
+                    <button class="large border">
+                        <i>code</i>
+                        <span>Learn More</span>
+                    </button>
+                </nav>
             </div>
-        </div>
+        </section>
 
-        <div class="space"></div>
-        <div class="divider"></div>
-        <div class="space"></div>
+        <div class="large-divider"></div>
 
-        <h3 class="center-align">Features</h3>
+        <h3 style="text-align:center;">Features</h3>
         <div class="space"></div>
 
         <div class="grid">
             <div class="s12 m4">
-                <article class="border round">
+                <article class="border round" style="text-align:center;">
                     <div class="padding">
-                        <i class="large">bolt</i>
+                        <i style="font-size:3rem;">bolt</i>
                         <h5>Fast</h5>
                         <p>Powered by Lua JIT for blazing fast execution with minimal overhead.</p>
                     </div>
                 </article>
             </div>
             <div class="s12 m4">
-                <article class="border round">
+                <article class="border round" style="text-align:center;">
                     <div class="padding">
-                        <i class="large">code</i>
+                        <i style="font-size:3rem;">code</i>
                         <h5>TypeScript</h5>
                         <p>Write in TypeScript with full type safety, compile to optimized Lua.</p>
                     </div>
                 </article>
             </div>
             <div class="s12 m4">
-                <article class="border round">
+                <article class="border round" style="text-align:center;">
                     <div class="padding">
-                        <i class="large">cloud</i>
+                        <i style="font-size:3rem;">cloud</i>
                         <h5>Serverless</h5>
                         <p>Deploy anywhere with built-in APIs for HTTP, database, crypto, and more.</p>
                     </div>
@@ -76,7 +72,7 @@ function getLandingPageContent(): string {
         <div class="space"></div>
     </main>
 
-    <footer class="primary padding center-align">
+    <footer class="primary padding" style="text-align:center;">
         <p>Built with TypeForge</p>
     </footer>`;
 }
