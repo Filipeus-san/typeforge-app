@@ -3,7 +3,11 @@
 # Deploy Lua bundle to hosting API
 #
 # Usage:
-#   ./scripts/deploy.sh
+#   ./scripts/deploy.sh                          # Standard deploy with rollout
+#   ./scripts/deploy.sh --local                   # Local deploy (no commit info)
+#   ./scripts/deploy.sh --no-rollout              # Upload only, no Cloud Run rollout
+#   ./scripts/deploy.sh --local --no-rollout      # Local upload only
+#   ./scripts/deploy.sh --rollout=123             # Trigger rollout for deployment 123
 #
 # Environment variables:
 #   HOSTING_API_URL    - Base URL of the hosting API (default: http://localhost:3006/hosting)
@@ -11,6 +15,7 @@
 #   HOSTING_ENV        - Environment name (default: production)
 #   SKIP_BUILD         - Set to "1" to skip the build step
 #   LOCAL_DEPLOY       - Set to "1" to use local deploy (no commit, single request)
+#   NO_ROLLOUT         - Set to "1" to upload bundle without triggering Cloud Run rollout
 #
 
 set -e
@@ -53,13 +58,19 @@ if [ -z "$HOSTING_API_SECRET" ]; then
     log_error "HOSTING_API_SECRET environment variable is required"
     echo ""
     echo "Usage:"
-    echo "  HOSTING_API_SECRET=your_secret ./scripts/deploy.sh"
+    echo "  HOSTING_API_SECRET=your_secret ./scripts/deploy.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --local           Local deploy (no commit info, single request)"
+    echo "  --no-rollout      Upload bundle without triggering Cloud Run rollout"
+    echo "  --rollout=ID      Trigger rollout for a previously uploaded deployment"
     echo ""
     echo "Environment variables:"
     echo "  HOSTING_API_SECRET  - API secret for the project (required)"
     echo "  HOSTING_API_URL     - Base URL of the hosting API (default: http://localhost:3006/hosting)"
     echo "  HOSTING_ENV         - Environment name (default: production)"
     echo "  SKIP_BUILD          - Set to '1' to skip the build step"
+    echo "  NO_ROLLOUT          - Set to '1' to upload without rollout"
     exit 1
 fi
 
@@ -108,6 +119,11 @@ deploy_local() {
     if [ -f "$DIST_DIR/bundle.lua.map" ]; then
         CURL_ARGS+=(-F "bundle_map=@${DIST_DIR}/bundle.lua.map")
         log_info "Including source map"
+    fi
+
+    if [ "$NO_ROLLOUT" = "1" ]; then
+        CURL_ARGS+=(-F "rollout=false")
+        log_info "Rollout disabled (upload only)"
     fi
 
     RESPONSE=$(curl "${CURL_ARGS[@]}")
@@ -166,8 +182,15 @@ upload_bundle() {
         exit 1
     fi
 
+    # Build upload URL (with optional rollout=false query param)
+    UPLOAD_URL="${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/upload"
+    if [ "$NO_ROLLOUT" = "1" ]; then
+        UPLOAD_URL="${UPLOAD_URL}?rollout=false"
+        log_info "Rollout disabled (upload only)"
+    fi
+
     # Build curl command with optional source map
-    CURL_ARGS=(-s -X POST "${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/upload" \
+    CURL_ARGS=(-s -X POST "$UPLOAD_URL" \
         -H "X-API-Secret: ${HOSTING_API_SECRET}" \
         -F "bundle_lua=@${DIST_DIR}/bundle.lua")
 
@@ -211,6 +234,9 @@ check_status() {
 
     if [ "$STATUS" = "success" ]; then
         log_success "Deployment completed successfully!"
+    elif [ "$STATUS" = "uploaded" ]; then
+        log_success "Bundle uploaded (rollout pending). Trigger rollout manually or via:"
+        echo "  curl -X POST '${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/rollout' -H 'X-API-Secret: \${HOSTING_API_SECRET}'"
     elif [ "$STATUS" = "failed" ]; then
         ERROR_MSG=$(echo "$RESPONSE" | grep -o '"error_message":"[^"]*"' | cut -d'"' -f4)
         log_error "Deployment failed: $ERROR_MSG"
@@ -220,13 +246,42 @@ check_status() {
     fi
 }
 
+# Trigger rollout for a previously uploaded deployment
+trigger_rollout() {
+    if [ -z "$DEPLOYMENT_ID" ]; then
+        log_error "DEPLOYMENT_ID is required for rollout. Set it via --rollout=ID"
+        exit 1
+    fi
+
+    log_info "Triggering rollout for deployment $DEPLOYMENT_ID..."
+
+    RESPONSE=$(curl -s -X POST "${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/rollout" \
+        -H "X-API-Secret: ${HOSTING_API_SECRET}")
+
+    if echo "$RESPONSE" | grep -q '"error"'; then
+        ERROR_MSG=$(echo "$RESPONSE" | grep -o '"error":"[^"]*"' | cut -d'"' -f4)
+        log_error "Rollout failed: $ERROR_MSG"
+        exit 1
+    fi
+
+    log_success "Rollout triggered for deployment $DEPLOYMENT_ID"
+}
+
 # Parse arguments
 parse_args() {
     LOCAL_DEPLOY="${LOCAL_DEPLOY:-0}"
+    NO_ROLLOUT="${NO_ROLLOUT:-0}"
+    ROLLOUT_ID=""
     for arg in "$@"; do
         case "$arg" in
             --local)
                 LOCAL_DEPLOY="1"
+                ;;
+            --no-rollout)
+                NO_ROLLOUT="1"
+                ;;
+            --rollout=*)
+                ROLLOUT_ID="${arg#--rollout=}"
                 ;;
         esac
     done
@@ -244,8 +299,26 @@ main() {
     echo "  API URL:     $HOSTING_API_URL"
     echo "  Environment: $HOSTING_ENV"
 
+    # Rollout-only mode: trigger rollout for existing deployment
+    if [ -n "$ROLLOUT_ID" ]; then
+        echo "  Mode:        rollout only"
+        echo "  Deployment:  $ROLLOUT_ID"
+        echo ""
+        echo "=========================================="
+        echo ""
+
+        DEPLOYMENT_ID="$ROLLOUT_ID"
+        trigger_rollout
+
+        echo ""
+        log_success "Rollout completed!"
+        echo ""
+        return
+    fi
+
     if [ "$LOCAL_DEPLOY" = "1" ]; then
         echo "  Mode:        local (no commit)"
+        [ "$NO_ROLLOUT" = "1" ] && echo "  Rollout:     disabled (upload only)"
         echo ""
         echo "=========================================="
         echo ""
@@ -254,6 +327,7 @@ main() {
         deploy_local
     else
         echo "  Mode:        standard (with commit)"
+        [ "$NO_ROLLOUT" = "1" ] && echo "  Rollout:     disabled (upload only)"
         echo ""
 
         get_git_info
