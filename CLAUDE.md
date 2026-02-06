@@ -33,8 +33,9 @@ TypeScript source (`src/`) → TSTL compiler → single Lua bundle (`dist/bundle
 
 ### Request/Response Model
 
-The hosting runtime calls two exported functions from `main.ts`:
-- `config()` — returns app configuration (caching, DB connections, upload limits)
+The hosting runtime calls three exported functions from `main.ts`:
+- `config()` — returns app configuration (caching, DB connections, upload limits, migrations)
+- `init()` — (optional) called once at startup, runs database migrations if enabled
 - `main(request: Request): Response` — HTTP request handler entry point
 
 Every route handler receives `(request: Request, response: Response)` and returns a modified `Response`. The `Request` and `Response` interfaces are defined in `src/global.types.ts`.
@@ -55,7 +56,35 @@ All global declarations use `@noSelf` annotation — this is required by TSTL to
 
 ### Configuration
 
-`src/config.ts` returns the `Config` object controlling: MicroCache (in-memory TTL cache), PostgreSQL connection, Redis connection, upload temp directory, and max upload file size. DB and Redis are disabled by default; connection URLs come from `getConfig()`.
+`src/config.ts` returns the `Config` object controlling: MicroCache (in-memory TTL cache), PostgreSQL connection, Redis connection, upload temp directory, max upload file size, and database migrations. DB and Redis are disabled by default; connection URLs come from `getConfig()`.
+
+### Database Migrations
+
+`src/migrations.ts` provides automatic database migration support. Migrations are defined in `config.ts` and run automatically at application startup via the `init()` hook.
+
+**How it works:**
+1. Migrations are tracked in a `_migrations` table (created automatically)
+2. Each migration has a version number, name, and SQL statement
+3. Migrations run in order by version number
+4. Already-applied migrations are skipped
+
+**Example configuration:**
+```typescript
+export function getAppConfig(): Config {
+    return {
+        postgresql: { enable: true, url: getConfig("DATABASE_URL") ?? "" },
+        migrations: [
+            { version: 1, name: "create_users", up: "CREATE TABLE users (id SERIAL PRIMARY KEY, email VARCHAR(255) NOT NULL)" },
+            { version: 2, name: "add_name", up: "ALTER TABLE users ADD COLUMN name VARCHAR(255)" },
+        ],
+        // ... other config
+    }
+}
+```
+
+**Available functions:**
+- `runMigrations(migrations)` — runs all pending migrations (called automatically by `init()`)
+- `getMigrationStatus(migrations)` — returns `{ applied, pending }` for debugging
 
 ## Key Conventions
 

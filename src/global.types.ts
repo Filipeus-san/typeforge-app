@@ -63,6 +63,13 @@ interface Config {
     redis: RedisConfig
     uploadTempDir: string
     maxUploadFileSize: number // bytes
+    migrations?: Migration[]
+}
+
+interface Migration {
+    version: number
+    name: string
+    up: string  // SQL to run
 }
 
 interface PostgresqeConfig {
