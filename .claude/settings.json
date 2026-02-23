@@ -1,0 +1,7 @@
+{
+  "project": {
+    "name": "TypeForge App",
+    "description": "Serverless web framework compiling TypeScript to Lua (TSTL)",
+    "instructions": "Always read CLAUDE.md in the project root for full project conventions and TSTL/Lua gotchas before making changes."
+  }
+}
