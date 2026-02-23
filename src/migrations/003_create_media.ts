@@ -1,5 +1,5 @@
-export const migration_014_create_media: Migration = {
-    version: 14,
+export const migration_003_create_media: Migration = {
+    version: 3,
     name: "create_media",
     up: `CREATE TABLE IF NOT EXISTS media (
         id SERIAL PRIMARY KEY,

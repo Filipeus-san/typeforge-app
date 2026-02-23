@@ -1,5 +1,5 @@
-export const migration_013_create_settings: Migration = {
-    version: 13,
+export const migration_002_create_settings: Migration = {
+    version: 2,
     name: "create_settings",
     up: `CREATE TABLE IF NOT EXISTS settings (
         id SERIAL PRIMARY KEY,

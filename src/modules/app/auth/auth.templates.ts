@@ -218,8 +218,6 @@ export function getLandingPageContent(userName: string | null = null): string {
                 <li class="nav-item"><a class="nav-link" href="#connector">MCP Connector</a></li>
                 <li class="nav-item"><a class="nav-link" href="#features">${AUTH_T.nav.features}</a></li>
                 <li class="nav-item"><a class="nav-link" href="#how-it-works">${AUTH_T.nav.howItWorks}</a></li>
-                <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
-                <li class="nav-item"><a class="nav-link" href="/eshop">E-Shop</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
             </ul>
             <button class="btn-theme-toggle ms-lg-3 me-2" @click="$store.theme.toggle()" title="${AUTH_T.nav.toggleTheme}">
