@@ -1,6 +1,6 @@
-import { getHtmlTemplate } from "../../template";
+import { AUTH_T } from "./auth.translation";
 
-function getLandingPageContent(): string {
+export function getLandingPageContent(userName: string | null = null): string {
     return `
 <style>
 .hero-section {
@@ -216,12 +216,24 @@ function getLandingPageContent(): string {
         <div class="collapse navbar-collapse" id="navMain">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link" href="#connector">MCP Connector</a></li>
-                <li class="nav-item"><a class="nav-link" href="#features">Funkce</a></li>
-                <li class="nav-item"><a class="nav-link" href="#how-it-works">Jak to funguje</a></li>
+                <li class="nav-item"><a class="nav-link" href="#features">${AUTH_T.nav.features}</a></li>
+                <li class="nav-item"><a class="nav-link" href="#how-it-works">${AUTH_T.nav.howItWorks}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+                <li class="nav-item"><a class="nav-link" href="/eshop">E-Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
             </ul>
-            <a href="/login" class="btn btn-outline-tf btn-sm ms-lg-3">
-                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-            </a>
+            <button class="btn-theme-toggle ms-lg-3 me-2" @click="$store.theme.toggle()" title="${AUTH_T.nav.toggleTheme}">
+                <i class="bi bi-moon"></i>
+                <i class="bi bi-sun"></i>
+            </button>
+            ${userName
+                ? `<span class="text-light small me-2 d-none d-lg-inline"><i class="bi bi-person-circle me-1"></i>${userName}</span>
+                   <a href="/logout" class="btn btn-outline-tf btn-sm">
+                       <i class="bi bi-box-arrow-right me-1"></i>${AUTH_T.nav.logout}
+                   </a>`
+                : `<a href="/login" class="btn btn-outline-tf btn-sm">
+                       <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                   </a>`}
         </div>
     </div>
 </nav>
@@ -423,17 +435,13 @@ function getLandingPageContent(): string {
 </footer>`;
 }
 
-export function renderIndex(request: Request, response: Response): Response {
-    response.content = getHtmlTemplate("TypeForge — AI Hosting pro Vibe Coding", getLandingPageContent());
-    return response;
-}
+export function getLoginPageContent(errorMessage?: string, emailValue?: string): string {
+    const errorHtml = errorMessage
+        ? `<div class="alert alert-danger" style="background:rgba(220,53,69,0.1);border:1px solid rgba(220,53,69,0.3);color:#ff6b7a;border-radius:12px;padding:0.75rem 1rem;font-size:0.9rem;margin-bottom:1rem;">
+            <i class="bi bi-exclamation-circle me-2"></i>${errorMessage}
+           </div>`
+        : '';
 
-export function renderLogin(request: Request, response: Response): Response {
-    response.content = getHtmlTemplate("Login — TypeForge", getLoginPageContent());
-    return response;
-}
-
-function getLoginPageContent(): string {
     return `
 <style>
 .login-wrapper {
@@ -519,114 +527,245 @@ function getLoginPageContent(): string {
 
 <div class="login-wrapper">
     <div class="login-card">
-        <div class="text-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="/" class="text-decoration-none">
                 <span class="text-gradient fw-bold fs-4">
                     <i class="bi bi-braces-asterisk me-1"></i>TypeForge
                 </span>
             </a>
+            <button class="btn-theme-toggle" @click="$store.theme.toggle()" title="${AUTH_T.nav.toggleTheme}">
+                <i class="bi bi-moon"></i>
+                <i class="bi bi-sun"></i>
+            </button>
         </div>
         <div class="text-center mb-4">
             <div class="login-icon">
                 <i class="bi bi-shield-lock"></i>
             </div>
-            <h4 class="fw-bold mb-1">Lorem ipsum</h4>
-            <p class="text-muted-tf small">Dolor sit amet consectetur</p>
+            <h4 class="fw-bold mb-1">${AUTH_T.headings.login}</h4>
+            <p class="text-muted-tf small">${AUTH_T.headings.loginSubtitle}</p>
         </div>
 
-        <form>
+        ${errorHtml}
+
+        <form method="post" action="/login">
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="vas@email.cz">
+                <label for="email" class="form-label">${AUTH_T.form.email}</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="vas@email.cz" value="${emailValue ?? ''}" required>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Lorem ipsum</label>
-                <input type="password" class="form-control" id="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+                <label for="password" class="form-label">${AUTH_T.form.password}</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required>
             </div>
             <div class="d-grid mt-4">
                 <button type="submit" class="btn btn-primary-tf btn-lg">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Lorem ipsum
+                    <i class="bi bi-box-arrow-in-right me-2"></i>${AUTH_T.actions.login}
                 </button>
             </div>
         </form>
 
-        <div class="text-center mt-4">
-            <a href="#" class="text-muted-tf text-decoration-none small" style="transition:color 0.2s;">Dolor sit amet?</a>
-        </div>
-        <div class="login-divider">nebo</div>
+        <div class="login-divider">${AUTH_T.links.or}</div>
         <div class="text-center">
-            <span class="text-muted-tf small">Lorem ipsum dolor? </span>
-            <a href="#" class="small fw-semibold text-decoration-none" style="color:var(--tf-primary-light);">Sit amet</a>
+            <span class="text-muted-tf small">${AUTH_T.links.noAccount} </span>
+            <a href="/register" class="small fw-semibold text-decoration-none" style="color:var(--tf-primary-light);">${AUTH_T.links.registerLink}</a>
         </div>
     </div>
 </div>`;
 }
 
-export function renderNotFound(request: Request, response: Response): Response {
-    response.status = 404;
-    response.content = getHtmlTemplate("Str\u00e1nka nenalezena", `
+export function getRegisterPageContent(errorMessage?: string, values?: Record<string, string>): string {
+    const errorHtml = errorMessage
+        ? `<div class="alert alert-danger" style="background:rgba(220,53,69,0.1);border:1px solid rgba(220,53,69,0.3);color:#ff6b7a;border-radius:12px;padding:0.75rem 1rem;font-size:0.9rem;margin-bottom:1rem;">
+            <i class="bi bi-exclamation-circle me-2"></i>${errorMessage}
+           </div>`
+        : '';
+
+    return `
 <style>
-.notfound-wrapper {
+.register-wrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    padding: 2rem 1rem;
 }
-.notfound-wrapper::before {
+.register-wrapper::before {
     content: '';
     position: absolute;
-    top: 50%;
+    top: -20%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(124,92,252,0.08) 0%, transparent 70%);
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(124,92,252,0.1) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
 }
-.notfound-card {
-    text-align: center;
+.register-card {
+    max-width: 480px;
+    width: 100%;
+    background: var(--tf-surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
     position: relative;
     z-index: 2;
 }
-.notfound-code {
-    font-size: 8rem;
-    font-weight: 800;
-    line-height: 1;
-    background: var(--tf-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
+.register-card .form-control {
+    background: var(--tf-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    color: var(--tf-text);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
 }
-.notfound-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+.register-card .form-control:focus {
+    border-color: var(--tf-primary);
+    box-shadow: 0 0 0 3px rgba(124,92,252,0.15);
+    background: var(--tf-bg);
+    color: var(--tf-text);
+}
+.register-card .form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--tf-text-muted);
+    margin-bottom: 0.5rem;
+}
+.register-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     background: var(--tf-gradient-subtle);
     color: var(--tf-primary-light);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+.register-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--tf-text-muted);
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+}
+.register-divider::before,
+.register-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+}
+.password-strength {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+.password-strength-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+.form-check-input {
+    background-color: var(--tf-bg);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.form-check-input:checked {
+    background-color: var(--tf-primary);
+    border-color: var(--tf-primary);
+}
+.form-check-label {
+    font-size: 0.9rem;
+    color: var(--tf-text-muted);
+}
+.form-check-label a {
+    color: var(--tf-primary-light);
+    text-decoration: none;
+}
+.form-check-label a:hover {
+    text-decoration: underline;
 }
 </style>
 
-<div class="notfound-wrapper">
-    <div class="notfound-card">
-        <div class="notfound-icon">
-            <i class="bi bi-exclamation-triangle"></i>
+<div class="register-wrapper">
+    <div class="register-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="/" class="text-decoration-none">
+                <span class="text-gradient fw-bold fs-4">
+                    <i class="bi bi-braces-asterisk me-1"></i>TypeForge
+                </span>
+            </a>
+            <button class="btn-theme-toggle" @click="$store.theme.toggle()" title="${AUTH_T.nav.toggleTheme}">
+                <i class="bi bi-moon"></i>
+                <i class="bi bi-sun"></i>
+            </button>
         </div>
-        <div class="notfound-code">404</div>
-        <h4 class="fw-bold mb-2">Str\u00e1nka nenalezena</h4>
-        <p class="text-muted-tf mb-4">Omlouv\u00e1me se, ale hledan\u00e1 str\u00e1nka neexistuje.</p>
-        <a href="/" class="btn btn-primary-tf btn-lg">
-            <i class="bi bi-house me-2"></i>Zp\u011bt na \u00favod
-        </a>
+        <div class="text-center mb-4">
+            <div class="register-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+            <h4 class="fw-bold mb-1">${AUTH_T.headings.register}</h4>
+            <p class="text-muted-tf small">${AUTH_T.headings.registerSubtitle}</p>
+        </div>
+
+        ${errorHtml}
+
+        <form method="post" action="/register">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">${AUTH_T.form.firstName}</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Jan" value="${values?.firstName ?? ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">${AUTH_T.form.lastName}</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Novak" value="${values?.lastName ?? ''}" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">${AUTH_T.form.email}</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="vas@email.cz" value="${values?.email ?? ''}" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">${AUTH_T.form.password}</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required minlength="6">
+                <div class="password-strength">
+                    <div class="password-strength-bar"></div>
+                    <div class="password-strength-bar"></div>
+                    <div class="password-strength-bar"></div>
+                    <div class="password-strength-bar"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="passwordConfirm" class="form-label">${AUTH_T.form.confirmPassword}</label>
+                <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required minlength="6">
+            </div>
+            <div class="mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                    <label class="form-check-label" for="terms">
+                        Souhlasim s <a href="#">${AUTH_T.links.terms}</a> a <a href="#">${AUTH_T.links.privacy}</a>
+                    </label>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary-tf btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>${AUTH_T.actions.register}
+                </button>
+            </div>
+        </form>
+
+        <div class="register-divider">${AUTH_T.links.or}</div>
+        <div class="text-center">
+            <span class="text-muted-tf small">${AUTH_T.links.hasAccount} </span>
+            <a href="/login" class="small fw-semibold text-decoration-none" style="color:var(--tf-primary-light);">${AUTH_T.links.loginLink}</a>
+        </div>
     </div>
-</div>`);
-    return response;
+</div>`;
 }

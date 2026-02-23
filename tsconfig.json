@@ -13,7 +13,7 @@
     "sourceMap": true,
   },
   "tstl": {
-    "luaTarget": "JIT",
+    "luaTarget": "5.4",
     "luaLibImport": "require-minimal",
     "luaBundle": "./bundle.lua",
     "luaBundleEntry": "src/main.ts"

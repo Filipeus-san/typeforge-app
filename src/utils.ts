@@ -1,4 +1,5 @@
 import { RouterPaths } from "./modules/types";
+import { getAppConfig } from "./config";
 
 export function app<T>(t: new () => T): T {
     return new t();
@@ -10,7 +11,7 @@ export function getPayloudData<T>(request: Request): T | null {
     } else  if ( request.payload) {
         return jsonDecode<T>(request.payload);
     }
-  
+
     return request.payload as T || null;
 }
 
@@ -45,7 +46,7 @@ export function setCookie(cookieObject: Record<string, string>, response: Respon
     if (options.sameSite) {
         cookie += `; SameSite=${options.sameSite}`;
     }
-    
+
     response.headers["Set-Cookie"] = cookie;
     return response;
 }
@@ -53,7 +54,7 @@ export function setCookie(cookieObject: Record<string, string>, response: Respon
 export function getCookie(name: string, request: Request): string | null {
   const rawCookies = request.headers["cookie"];
   if (!rawCookies) return null;
-  
+
   const cookies = rawCookies.split(";");
   const cookie = cookies.find((cookie) => {
     const cookie_split  = cookie.split("=");
@@ -72,52 +73,186 @@ export function getCookie(name: string, request: Request): string | null {
   return null;
 }
 
-export function sessionStart(request: Request, response: Response): Response {
-    let sessionId = getCookie("sessionId", request);
+// =============================================================================
+// JWT-based Session Management
+// =============================================================================
 
-    if (!sessionId) {
-        const key = uniqueKey();
-        response = setCookie({ sessionId: key }, response, { httpOnly: true, maxAge: 3600, path: "/" });
+/**
+ * Get session config from app config
+ */
+function getSessionConfig(): SessionConfig {
+    return getAppConfig().session;
+}
+
+/**
+ * Creates a new session token with the given data
+ * @param data Session data to store in the token
+ * @returns JWT token string
+ */
+export function createSessionToken<T>(data: T): string {
+    const config = getSessionConfig();
+    const ttlSeconds = config.ttlMinutes * 60;
+    return jwtSign(jsonEncode(data), config.secret, ttlSeconds);
+}
+
+/**
+ * Verifies and decodes a session token
+ * @param token JWT token string
+ * @returns Decoded data or null if invalid/expired
+ */
+export function verifySessionToken<T>(token: string): { data: T; remainingSeconds: number } | null {
+    const config = getSessionConfig();
+    const result = jwtVerify(token, config.secret);
+
+    if (!result || !result.valid) {
+        return null;
+    }
+
+    return {
+        data: jsonDecode<T>(result.data),
+        remainingSeconds: result.remainingSeconds
+    };
+}
+
+/**
+ * Gets session data from request cookie
+ * @param request HTTP request
+ * @returns Session data or null if no valid session
+ */
+export function getSession<T>(request: Request): T | null {
+    const config = getSessionConfig();
+    const token = getCookie(config.cookieName, request);
+
+    if (!token) {
+        return null;
+    }
+
+    const result = verifySessionToken<T>(token);
+    return result?.data ?? null;
+}
+
+/**
+ * Gets session data with metadata (remaining time, etc.)
+ * @param request HTTP request
+ * @returns Session data with metadata or null
+ */
+export function getSessionWithMeta<T>(request: Request): { data: T; remainingSeconds: number } | null {
+    const config = getSessionConfig();
+    const token = getCookie(config.cookieName, request);
+
+    if (!token) {
+        return null;
+    }
+
+    return verifySessionToken<T>(token);
+}
+
+/**
+ * Sets session data by creating a new JWT token and setting it as a cookie
+ * @param data Session data to store
+ * @param response HTTP response to add cookie to
+ * @returns Modified response with session cookie
+ */
+export function setSession<T>(data: T, response: Response): Response {
+    const config = getSessionConfig();
+    const token = createSessionToken(data);
+    const maxAge = config.ttlMinutes * 60;
+
+    return setCookie(
+        { [config.cookieName]: token },
+        response,
+        { httpOnly: true, sameSite: "Lax", path: "/", maxAge }
+    );
+}
+
+/**
+ * Clears the session by setting an expired cookie
+ * @param response HTTP response
+ * @returns Modified response with cleared session cookie
+ */
+export function clearSession(response: Response): Response {
+    const config = getSessionConfig();
+
+    return setCookie(
+        { [config.cookieName]: "" },
+        response,
+        { httpOnly: true, sameSite: "Lax", path: "/", maxAge: 0 }
+    );
+}
+
+/**
+ * Refreshes session if it's close to expiring
+ * Returns new response with refreshed token if needed, otherwise returns original response
+ * @param request HTTP request
+ * @param response HTTP response
+ * @returns Response (potentially with refreshed session cookie)
+ */
+export function refreshSessionIfNeeded<T>(request: Request, response: Response): Response {
+    const config = getSessionConfig();
+    const sessionMeta = getSessionWithMeta<T>(request);
+
+    if (!sessionMeta) {
+        return response;
+    }
+
+    const refreshThresholdSeconds = config.refreshThresholdMinutes * 60;
+
+    // Refresh if remaining time is less than threshold
+    if (sessionMeta.remainingSeconds < refreshThresholdSeconds) {
+        return setSession(sessionMeta.data, response);
     }
 
     return response;
 }
 
-
-export function setSession<T>(request: Request, value: T) {
-    let sessionId = getCookie("sessionId", request);
-
-    if (!sessionId) return;
-
-    const sessions = jsonDecode<Record<string, T>>(appCacheGet("sessions") ?? "{}") || {};
-    sessions[sessionId] = value;
-
-    appCacheSet("sessions", jsonEncode(sessions), 3600 * 1000);
+/**
+ * Middleware-style function to handle session refresh automatically
+ * Use this in your route handlers to ensure sessions are refreshed
+ * @param request HTTP request
+ * @param response HTTP response
+ * @param handler Route handler function
+ * @returns Response from handler with potential session refresh
+ */
+export function withSessionRefresh<T>(
+    request: Request,
+    response: Response,
+    handler: (request: Request, response: Response) => Response
+): Response {
+    const result = handler(request, response);
+    return refreshSessionIfNeeded<T>(request, result);
 }
 
-export function getSession<T>(request: Request): T | null {
-     let sessionId = getCookie("sessionId", request);
-     if (!sessionId) return null;
-
-   const sessions = jsonDecode<Record<string, T>>(appCacheGet("sessions") ?? "{}") || {};
-   return sessions[sessionId] || null;
-}
-
+// =============================================================================
+// CSRF Protection
+// =============================================================================
 
 export function link(path: RouterPaths, queryParams: Record<string, string>, request: Request, type: "action"|"render" = "render"): string {
     if (type === "action") {
-        const csrfToken = getSession<{ user: { token: string } }>(request)?.user.token;
-        
+        const csrfToken = getSession<{ user: { token: string } }>(request)?.user?.token;
+
         if (csrfToken) {
             queryParams.token = csrfToken;
         }
     }
     const queryString = buildUrlQuery(queryParams);
-  
+
     return `${path}?${queryString}`;
 }
 
 export function checkCsrfToken(token: string, request: Request): boolean {
     const csrfToken = getSession<{ user: { token: string } }>(request)?.user?.token;
     return csrfToken === token;
+}
+
+// =============================================================================
+// Deprecated - kept for backward compatibility
+// =============================================================================
+
+/**
+ * @deprecated Use setSession() instead. This function is kept for backward compatibility.
+ */
+export function sessionStart(request: Request, response: Response): Response {
+    // With JWT-based sessions, we don't need to "start" a session
+    // The session is created when setSession() is called
+    return response;
 }

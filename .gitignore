@@ -2,3 +2,6 @@ node_modules
 lualib_bundle.lua
 psqt
 dist
+deploy-local.sh
+.playwright-mcp/
+.vscode/

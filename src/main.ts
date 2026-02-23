@@ -1,10 +1,25 @@
 import { getAppConfig } from './config';
-import { renderNotFound } from './modules/app/app.controller';
+import { runMigrations } from './migration-runner';
+import { renderNotFound } from './modules/app';
 import { getRouter } from './modules/router';
 
 /** @noSelf */
 export function config() {
     return getAppConfig();
+}
+
+/**
+ * Called once at application startup (before first request)
+ * Runs database migrations if PostgreSQL is enabled
+ * @noSelf
+ */
+export function init() {
+    const appConfig = getAppConfig();
+
+    // Run migrations if database is enabled
+    if (appConfig.postgresql.enable && appConfig.migrations) {
+        runMigrations(appConfig.migrations);
+    }
 }
 
 /** @noSelf */

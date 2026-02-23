@@ -4,6 +4,18 @@ declare function clearMicroCache(): void;
 /** @noSelf */
 declare function fileRead(path: string): string;
 
+/** Lua native file handle for binary file operations */
+interface LuaFileHandle {
+    read(format: string): string;
+    close(): void;
+}
+
+/** Lua native io module - use for binary file reads (fileRead validates UTF-8) */
+declare namespace io {
+    /** @noSelf */
+    function open(path: string, mode?: string): LuaFileHandle | null;
+}
+
 /** @noSelf */
 declare function fileWrite(path: string, content: string): void;
 
@@ -110,6 +122,54 @@ declare function base64Encode(data: string): string;
 
 /** @noSelf */
 declare function base64Decode(data: string): string;
+
+/** @noSelf */
+declare function base64UrlEncode(data: string): string;
+
+/** @noSelf */
+declare function base64UrlDecode(data: string): string;
+
+// --- JWT ---
+
+/**
+ * Creates a JWT token with HS256 algorithm
+ * @param payload JSON string with payload data
+ * @param secret Secret key for signing
+ * @param ttlSeconds Token TTL in seconds
+ * @returns Signed JWT token string
+ * @noSelf
+ */
+declare function jwtSign(payload: string, secret: string, ttlSeconds: number): string;
+
+/**
+ * Verifies JWT signature and returns payload info
+ * @param token JWT token string
+ * @param secret Secret key for verification
+ * @returns Object with payload and status, or null if signature invalid
+ * @noSelf
+ */
+declare function jwtVerify(token: string, secret: string): {
+    data: string;           // JSON string with payload data
+    exp: number;            // Expiration timestamp (Unix)
+    iat: number;            // Issued at timestamp (Unix)
+    valid: boolean;         // true if not expired
+    expired: boolean;       // true if expired
+    remainingSeconds: number; // seconds until expiration (0 if expired)
+} | null;
+
+/**
+ * Decodes JWT WITHOUT verifying signature (for debugging only)
+ * @param token JWT token string
+ * @returns Decoded payload or null if malformed
+ * @noSelf
+ */
+declare function jwtDecode(token: string): {
+    data: string;
+    exp: number;
+    iat: number;
+    expired: boolean;
+    remainingSeconds: number;
+} | null;
 
 // --- Email ---
 
@@ -424,3 +484,75 @@ declare function getConfig(key: string): string | null;
 
 /** Returns all configs and secrets as a key-value object @noSelf */
 declare function getConfig(): Record<string, string>;
+
+// --- Cloud Storage (GCS) ---
+
+/**
+ * Upload a file to cloud storage
+ * @param path - Path in storage (e.g., "images/photo.jpg")
+ * @param content - File content as string
+ * @param contentType - Optional MIME type (auto-detected from path if not provided)
+ * @returns Object path in GCS
+ * @noSelf
+ */
+declare function storageUpload(path: string, content: string, contentType?: string): string;
+
+/**
+ * Upload binary data to cloud storage
+ * @param path - Path in storage (e.g., "images/photo.jpg")
+ * @param bytes - Array of byte values (0-255)
+ * @param contentType - Optional MIME type (auto-detected from path if not provided)
+ * @returns Object path in GCS
+ * @noSelf
+ */
+declare function storageUploadBytes(path: string, bytes: number[], contentType?: string): string;
+
+/**
+ * Download a file from cloud storage
+ * @param path - Path in storage
+ * @returns File content as string
+ * @noSelf
+ */
+declare function storageDownload(path: string): string;
+
+/**
+ * Delete a file from cloud storage
+ * @param path - Path in storage
+ * @returns true if deleted
+ * @noSelf
+ */
+declare function storageDelete(path: string): boolean;
+
+/**
+ * Get public URL for a file in cloud storage
+ * Note: The bucket must have public access enabled for this URL to work
+ * @param path - Path in storage
+ * @returns Public HTTPS URL
+ * @noSelf
+ */
+declare function storageGetUrl(path: string): string;
+
+/**
+ * Get a signed URL for temporary access to a file
+ * @param path - Path in storage
+ * @param expiresInSeconds - URL validity duration (default: 3600 = 1 hour)
+ * @returns Signed HTTPS URL with authentication
+ * @noSelf
+ */
+declare function storageGetSignedUrl(path: string, expiresInSeconds?: number): string;
+
+/**
+ * List files in cloud storage
+ * @param prefix - Optional path prefix to filter results
+ * @returns Array of file paths (relative to files/ directory)
+ * @noSelf
+ */
+declare function storageList(prefix?: string): string[];
+
+/**
+ * Check if a file exists in cloud storage
+ * @param path - Path in storage
+ * @returns true if file exists
+ * @noSelf
+ */
+declare function storageExists(path: string): boolean;

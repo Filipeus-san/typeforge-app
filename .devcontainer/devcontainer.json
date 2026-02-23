@@ -1,0 +1,20 @@
+{
+  "name": "TypeForge Dev",
+  "image": "filipeus513/typeforge-codespace:latest",
+  "onCreateCommand": ".devcontainer/setup.sh",
+  "postStartCommand": ".devcontainer/post-start.sh",
+  "postAttachCommand": ".devcontainer/post-attach.sh",
+  "secrets": {
+    "CLAUDE_AUTH_JSON": {
+      "description": "Claude Code OAuth tokens (base64 encoded JSON with accessToken, refreshToken, expiresAt). Automatically managed by TypeForge hosting.",
+      "documentationUrl": "https://code.claude.com/docs/en/authentication"
+    },
+    "MCP_API_KEY": {
+      "description": "TypeForge MCP API key (format: tfk_...). Automatically managed by TypeForge hosting."
+    }
+  },
+  "forwardPorts": [3000, 3005, 5432, 8081],
+  "portsAttributes": {
+    "3005": { "label": "vibe-kanban", "visibility": "private", "onAutoForward": "notify" }
+  }
+}

@@ -57,12 +57,31 @@ interface ResponseData<T> {
     data: T
 }
 
+interface SessionConfig {
+    /** Secret key for JWT signing (use strong random value in production) */
+    secret: string
+    /** Session TTL in minutes (default: 15) */
+    ttlMinutes: number
+    /** Cookie name for session token (default: "session_token") */
+    cookieName: string
+    /** Refresh token if remaining time is less than this (minutes, default: 5) */
+    refreshThresholdMinutes: number
+}
+
 interface Config {
     microCache: MicroCacheConfig
     postgresql: PostgresqeConfig
     redis: RedisConfig
+    session: SessionConfig
     uploadTempDir: string
     maxUploadFileSize: number // bytes
+    migrations?: Migration[]
+}
+
+interface Migration {
+    version: number
+    name: string
+    up: string  // SQL to run
 }
 
 interface PostgresqeConfig {
