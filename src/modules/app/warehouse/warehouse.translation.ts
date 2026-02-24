@@ -1,0 +1,72 @@
+export const WAREHOUSE_T = {
+    titles: {
+        admin: 'Sklady — Administrace',
+        create: 'Nový sklad — Administrace',
+        edit: 'Upravit sklad — Administrace',
+        movement: 'Pohyb zásob — Administrace',
+    },
+    headings: {
+        admin: 'Sklady',
+        create: 'Nový sklad',
+        edit: 'Upravit sklad',
+        stock: 'Zásoby',
+        movement: 'Pohyb zásob',
+    },
+    columns: {
+        warehouse: 'Sklad',
+        code: 'Kód',
+        address: 'Adresa',
+        productCount: 'Produktů',
+        totalStock: 'Celkem ks',
+        status: 'Stav',
+        actions: 'Akce',
+        product: 'Produkt',
+        quantity: 'Množství',
+        updated: 'Aktualizace',
+    },
+    actions: {
+        addWarehouse: 'Přidat sklad',
+        stock: 'Zásoby',
+        edit: 'Upravit',
+        delete: 'Smazat',
+        stockMovement: 'Pohyb zásob',
+        backToWarehouses: 'Zpět na sklady',
+    },
+    confirm: {
+        deleteWarehouse: 'Opravdu chcete smazat tento sklad? Všechny zásoby v něm budou odstraněny.',
+    },
+    filters: {
+        allStatuses: 'Všechny stavy',
+        active: 'Aktivní',
+        inactive: 'Neaktivní',
+    },
+    empty: {
+        warehouses: 'Žádné sklady k zobrazení',
+        stock: 'Žádné zásoby v tomto skladu',
+        movements: 'Zatím žádné pohyby',
+    },
+    errors: {
+        invalidRequest: 'Neplatný požadavek',
+        validationError: 'Chyba validace',
+        genericError: 'Došlo k chybě, zkuste to znovu',
+        codeExists: 'Sklad s tímto kódem již existuje',
+        zeroQuantity: 'Množství nesmí být nula',
+        selectWarehouse: 'Vyberte sklad',
+        selectProduct: 'Vyberte produkt',
+        warehouseNotFound: 'Vybraný sklad neexistuje nebo není aktivní',
+        productNotFound: 'Vybraný produkt neexistuje',
+    },
+    detail: {
+        recentMovements: 'Poslední pohyby',
+    },
+    statuses: {
+        active: 'Aktivní',
+        inactive: 'Neaktivní',
+    },
+    movementTypes: {
+        receipt: 'Příjem',
+        issue: 'Výdej',
+        transfer: 'Převod',
+        adjustment: 'Korekce',
+    },
+} as const;

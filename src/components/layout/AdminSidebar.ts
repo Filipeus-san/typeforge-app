@@ -15,9 +15,21 @@ export const adminNavSections: NavSection[] = [
         ]
     },
     {
+        title: SIDEBAR_T.sections.eshop,
+        items: [
+            { path: '/admin/orders', icon: 'cart3', label: SIDEBAR_T.items.orders, badge: '12' },
+            { path: '/admin/products', icon: 'box-seam', label: SIDEBAR_T.items.products },
+            { path: '/admin/categories', icon: 'folder', label: SIDEBAR_T.items.categories },
+            { path: '/admin/customers', icon: 'people', label: SIDEBAR_T.items.customers },
+            { path: '/admin/warehouse', icon: 'building', label: SIDEBAR_T.items.warehouse }
+        ]
+    },
+    {
         title: SIDEBAR_T.sections.content,
         items: [
+            { path: '/admin/blog', icon: 'journal-richtext', label: SIDEBAR_T.items.blog },
             { path: '/admin/media', icon: 'images', label: SIDEBAR_T.items.media },
+            { path: '/admin/translations', icon: 'translate', label: SIDEBAR_T.items.translations }
         ]
     },
     {

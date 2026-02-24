@@ -5,3 +5,4 @@ dist
 deploy-local.sh
 .playwright-mcp/
 .vscode/
+screenshot*.png

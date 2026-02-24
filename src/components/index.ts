@@ -13,5 +13,8 @@ export * from './data';
 // Layout Components
 export * from './layout';
 
+// Shop Components
+export * from './shop';
+
 // Block Components
 export * from './blocks';
