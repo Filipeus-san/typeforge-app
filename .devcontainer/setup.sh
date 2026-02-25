@@ -44,7 +44,7 @@ const projectPath = '/workspaces/Test';
 const mcpServers = {
   vibe_kanban: { command: 'npx', args: ['-y', 'vibe-kanban@latest', '--mcp'] },
   playwright: { command: 'npx', args: ['@playwright/mcp@latest', '--no-sandbox'] },
-  ...(process.env.MCP_API_KEY ? { typeforge: { type: 'http', url: 'https://typeforge.filipeus.cz/api/mcp', headers: { Authorization: 'Bearer ' + process.env.MCP_API_KEY } } } : {})
+  ...(process.env.TYPEFORGE_MCP_API_TOKEN ? { typeforge: { type: 'http', url: 'https://typeforge.filipeus.cz/api/mcp', headers: { Authorization: 'Bearer ' + process.env.TYPEFORGE_MCP_API_TOKEN } } } : {})
 };
 let config = {};
 try { config = JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch {}
