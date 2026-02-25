@@ -16,24 +16,19 @@
  *   node typeforge-mcp.js list_deployments project_id=1 environment_id=2
  *
  * Environment:
- *   TYPEFORGE_MCP_API_TOKEN - API token (required, or fallback to ~/.typeforge-token)
+ *   TYPEFORGE_MCP_API_TOKEN - API token (required)
  *   TYPEFORGE_API_URL       - MCP endpoint (default: https://typeforge.filipeus.cz/api/mcp)
  */
 
 const https = require('https');
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
 
 const API_URL = process.env.TYPEFORGE_API_URL || 'https://typeforge.filipeus.cz/api/mcp';
 
 function getToken() {
   if (process.env.TYPEFORGE_MCP_API_TOKEN) return process.env.TYPEFORGE_MCP_API_TOKEN;
 
-  const homeTokenFile = path.join(process.env.HOME || '/home/user', '.typeforge-token');
-  if (fs.existsSync(homeTokenFile)) return fs.readFileSync(homeTokenFile, 'utf-8').trim();
-
-  console.error('Error: No API token found. Set TYPEFORGE_MCP_API_TOKEN env var or create ~/.typeforge-token file.');
+  console.error('Error: TYPEFORGE_MCP_API_TOKEN environment variable is not set.');
   process.exit(1);
 }
 
@@ -197,7 +192,7 @@ Other commands:
   github_list_pull_requests, github_create_pull_request, github_get_pull_request
   github_search_code, github_move_or_rename_file, github_copy_file
 
-Token: Set TYPEFORGE_MCP_API_TOKEN env var or create ~/.typeforge-token file`);
+Token: Set TYPEFORGE_MCP_API_TOKEN environment variable`);
 }
 
 (async () => {

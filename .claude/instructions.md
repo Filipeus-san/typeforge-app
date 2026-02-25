@@ -76,7 +76,7 @@ After each deploy, test the changes in the browser using `browse.js`:
 
 ### TypeForge MCP CLI (`typeforge-mcp.js`)
 
-Wrapper script for the TypeForge MCP API. Replaces direct MCP tool calls. Token is read from `TYPEFORGE_MCP_API_TOKEN` env var or `~/.typeforge-token` file.
+Wrapper script for the TypeForge MCP API. Replaces direct MCP tool calls. Requires `TYPEFORGE_MCP_API_TOKEN` environment variable.
 
 ```bash
 node typeforge-mcp.js <command> [key=value ...]
