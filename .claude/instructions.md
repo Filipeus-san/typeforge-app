@@ -1,4 +1,4 @@
-Vždy po commitnutí a pusnutí nasad projekt na testovací prostředí (typeforge-mcp.js, scripts/deploy.sh) a potom ho otestuj v prohlížeři pomocí nástroje browse.js, který používá Playwright. Informace o projektu (nazev, id) najdeš v typeforge.json.
+Vždy po commitnutí a pusnutí nasad projekt na testovací prostředí (typeforge-mcp.js, scripts/deploy.sh) a potom ho otestuj v prohlížeři pomocí nástroje browse.js, který používá Playwright. Informace o projektu (nazev, id) najdeš v typeforge.json. Vypiš mi nakocnci url testovacího prostředí. 
 
 ### Deployment
 
