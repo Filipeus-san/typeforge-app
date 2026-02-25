@@ -142,9 +142,13 @@ if ! api_call -s -X GET "${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/status" 
 fi
 
 STATUS=$(echo "$API_RESPONSE" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+DEPLOY_URL=$(echo "$API_RESPONSE" | grep -o '"url":"[^"]*"' | cut -d'"' -f4)
 
 if [ "$STATUS" = "success" ]; then
     ok "Deploy completed successfully (ID: $DEPLOYMENT_ID)"
+    if [ -n "$DEPLOY_URL" ]; then
+        ok "URL: $DEPLOY_URL"
+    fi
 elif [ "$STATUS" = "failed" ]; then
     ERROR_MSG=$(echo "$API_RESPONSE" | grep -o '"error_message":"[^"]*"' | cut -d'"' -f4)
     error "Deployment failed: $ERROR_MSG"
