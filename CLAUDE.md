@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+Vždy se řit těmito instrukcemi v souboru: .claude/instructions.md
+
 ## Project Overview
 
 TypeForge is a serverless web framework that compiles TypeScript to Lua using TypeScript-to-Lua (TSTL). The compiled Lua bundle runs on a Lua JIT hosting runtime that provides built-in APIs for HTTP, database, file I/O, crypto, and more.
