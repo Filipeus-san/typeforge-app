@@ -1,8 +1,8 @@
 ### Deployment
 
 ```bash
-HOSTING_API_SECRET=<secret> ./scripts/deploy.sh              # Standard deploy (includes git metadata)
-HOSTING_API_SECRET=<secret> ./scripts/deploy.sh --local      # Local deploy (no git metadata)
+./scripts/deploy.sh              # Standard deploy (includes git metadata)
+./scripts/deploy.sh --local      # Local deploy (no git metadata)
 ```
 
 Optional env vars: `HOSTING_API_URL` (default: `http://localhost:3005/hosting`), `HOSTING_ENV` (default: `production`), `SKIP_BUILD=1` to skip build step.
