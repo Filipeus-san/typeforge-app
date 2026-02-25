@@ -1,8 +1,9 @@
 # CLAUDE.md
 
+Načti si do contextu soubor a řid se instrukacemi: .claude/instructions.md
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Vždy se řit těmito instrukcemi v souboru: .claude/instructions.md
 
 ## Project Overview
 
