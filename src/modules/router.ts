@@ -1,4 +1,4 @@
-import { renderIndex, renderLogin, renderRegister, handleLogout, renderArticle, renderBlog, renderEshop, renderProduct, renderCategory, renderCart, handleCartAdd, handleCartUpdate, handleCartRemove, renderCheckout, renderCheckoutPayment, renderCheckoutReview, renderCheckoutConfirmation, renderAdmin, renderAdminAnalytics, renderAdminOrders, renderAdminOrderDetail, renderAdminOrderCreate, renderAdminOrderEdit, renderAdminProducts, renderAdminProductCreate, renderAdminProductEdit, handleAdminProductDelete, renderAdminCategories, renderAdminCategoryCreate, renderAdminCategoryEdit, handleAdminCategoryDelete, renderAdminCustomers, renderAdminCustomerDetail, renderAdminCustomerCreate, renderAdminCustomerEdit, handleAdminCustomerDelete, renderAdminPages, renderAdminArticles, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderAdminSettings, renderAdminUsers, renderAdminUserCreate, renderAdminUserEdit, handleAdminUserDelete, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDelete, renderAdminWarehouse, renderAdminWarehouseCreate, renderAdminWarehouseEdit, handleAdminWarehouseDelete, renderAdminWarehouseStock, renderAdminWarehouseMovement, renderAdminTranslations, renderAdminTranslationCreate, renderAdminTranslationEdit, handleAdminTranslationDelete } from "./app";
+import { renderIndex, renderLogin, renderRegister, handleLogout, renderArticle, renderBlog, renderEshop, renderProduct, renderCategory, renderCart, handleCartAdd, handleCartUpdate, handleCartRemove, renderCheckout, renderCheckoutPayment, renderCheckoutReview, renderCheckoutConfirmation, renderAdmin, renderAdminAnalytics, renderAdminOrders, renderAdminOrderDetail, renderAdminOrderCreate, renderAdminOrderEdit, renderAdminProducts, renderAdminProductCreate, renderAdminProductEdit, handleAdminProductDelete, renderAdminCategories, renderAdminCategoryCreate, renderAdminCategoryEdit, handleAdminCategoryDelete, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDelete } from "./app";
 import { RouterPaths } from "./types";
 
 // Router
@@ -160,41 +160,6 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
             type: "action"
         },
         {
-            path: "/admin/customers",
-            route: renderAdminCustomers,
-            type: "render"
-        },
-        {
-            path: "/admin/customers/detail",
-            route: renderAdminCustomerDetail,
-            type: "render"
-        },
-        {
-            path: "/admin/customers/create",
-            route: renderAdminCustomerCreate,
-            type: "action"
-        },
-        {
-            path: "/admin/customers/edit",
-            route: renderAdminCustomerEdit,
-            type: "action"
-        },
-        {
-            path: "/admin/customers/delete",
-            route: handleAdminCustomerDelete,
-            type: "action"
-        },
-        {
-            path: "/admin/pages",
-            route: renderAdminPages,
-            type: "render"
-        },
-        {
-            path: "/admin/articles",
-            route: renderAdminArticles,
-            type: "render"
-        },
-        {
             path: "/admin/media",
             route: renderAdminMedia,
             type: "render"
@@ -207,31 +172,6 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
         {
             path: "/admin/media/delete",
             route: handleAdminMediaDelete,
-            type: "action"
-        },
-        {
-            path: "/admin/settings",
-            route: renderAdminSettings,
-            type: "action"
-        },
-        {
-            path: "/admin/users",
-            route: renderAdminUsers,
-            type: "render"
-        },
-        {
-            path: "/admin/users/create",
-            route: renderAdminUserCreate,
-            type: "action"
-        },
-        {
-            path: "/admin/users/edit",
-            route: renderAdminUserEdit,
-            type: "action"
-        },
-        {
-            path: "/admin/users/delete",
-            route: handleAdminUserDelete,
             type: "action"
         },
         {
@@ -252,56 +192,6 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
         {
             path: "/admin/blog/delete",
             route: handleAdminBlogDelete,
-            type: "action"
-        },
-        {
-            path: "/admin/warehouse",
-            route: renderAdminWarehouse,
-            type: "render"
-        },
-        {
-            path: "/admin/warehouse/create",
-            route: renderAdminWarehouseCreate,
-            type: "action"
-        },
-        {
-            path: "/admin/warehouse/edit",
-            route: renderAdminWarehouseEdit,
-            type: "action"
-        },
-        {
-            path: "/admin/warehouse/delete",
-            route: handleAdminWarehouseDelete,
-            type: "action"
-        },
-        {
-            path: "/admin/warehouse/stock",
-            route: renderAdminWarehouseStock,
-            type: "render"
-        },
-        {
-            path: "/admin/warehouse/movement",
-            route: renderAdminWarehouseMovement,
-            type: "action"
-        },
-        {
-            path: "/admin/translations",
-            route: renderAdminTranslations,
-            type: "render"
-        },
-        {
-            path: "/admin/translations/create",
-            route: renderAdminTranslationCreate,
-            type: "action"
-        },
-        {
-            path: "/admin/translations/edit",
-            route: renderAdminTranslationEdit,
-            type: "action"
-        },
-        {
-            path: "/admin/translations/delete",
-            route: handleAdminTranslationDelete,
             type: "action"
         },
     ];

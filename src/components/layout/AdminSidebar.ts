@@ -19,24 +19,14 @@ export const adminNavSections: NavSection[] = [
         items: [
             { path: '/admin/orders', icon: 'cart3', label: SIDEBAR_T.items.orders, badge: '12' },
             { path: '/admin/products', icon: 'box-seam', label: SIDEBAR_T.items.products },
-            { path: '/admin/categories', icon: 'folder', label: SIDEBAR_T.items.categories },
-            { path: '/admin/customers', icon: 'people', label: SIDEBAR_T.items.customers },
-            { path: '/admin/warehouse', icon: 'building', label: SIDEBAR_T.items.warehouse }
+            { path: '/admin/categories', icon: 'folder', label: SIDEBAR_T.items.categories }
         ]
     },
     {
         title: SIDEBAR_T.sections.content,
         items: [
             { path: '/admin/blog', icon: 'journal-richtext', label: SIDEBAR_T.items.blog },
-            { path: '/admin/media', icon: 'images', label: SIDEBAR_T.items.media },
-            { path: '/admin/translations', icon: 'translate', label: SIDEBAR_T.items.translations }
-        ]
-    },
-    {
-        title: SIDEBAR_T.sections.system,
-        items: [
-            { path: '/admin/settings', icon: 'gear', label: SIDEBAR_T.items.settings },
-            { path: '/admin/users', icon: 'shield-lock', label: SIDEBAR_T.items.users }
+            { path: '/admin/media', icon: 'images', label: SIDEBAR_T.items.media }
         ]
     }
 ];

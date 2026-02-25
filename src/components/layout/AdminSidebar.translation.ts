@@ -3,7 +3,6 @@ export const SIDEBAR_T = {
         main: 'Hlavní',
         eshop: 'E-Shop',
         content: 'Obsah',
-        system: 'Systém',
     },
     items: {
         dashboard: 'Dashboard',
@@ -11,13 +10,8 @@ export const SIDEBAR_T = {
         orders: 'Objednávky',
         products: 'Produkty',
         categories: 'Kategorie',
-        customers: 'Zákazníci',
-        warehouse: 'Sklady',
         blog: 'Blog',
         media: 'Média',
-        translations: 'Překlady',
-        settings: 'Nastavení',
-        users: 'Uživatelé',
     },
     defaults: {
         userName: 'Jan Novák',

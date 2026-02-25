@@ -1,6 +1,6 @@
 import { getAppConfig } from './config';
 import { runMigrations } from './migration-runner';
-import { renderNotFound } from './modules/app';
+import { getHtmlTemplate } from './template';
 import { getRouter } from './modules/router';
 
 /** @noSelf */
@@ -36,5 +36,18 @@ export function main(request: Request): Response {
         return find.route(request, response);
     }
 
-    return renderNotFound(request, response);
+    response.status = 404;
+    response.content = getHtmlTemplate("404 — Stránka nenalezena", `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
+            <div style="text-align:center;max-width:480px;">
+                <div style="font-size:8rem;font-weight:800;line-height:1;margin-bottom:0.5rem;" class="text-gradient">404</div>
+                <h1 style="font-size:1.5rem;font-weight:600;margin-bottom:1rem;color:var(--tf-text);">Stránka nenalezena</h1>
+                <p style="color:var(--tf-text-muted);margin-bottom:2rem;">Omlouváme se, ale stránka <code style="background:var(--tf-surface-light);padding:2px 8px;border-radius:4px;">${request.path}</code> neexistuje.</p>
+                <a href="/" class="btn btn-primary-tf">
+                    <i class="bi bi-house me-2"></i>Zpět na úvod
+                </a>
+            </div>
+        </div>
+    `);
+    return response;
 }

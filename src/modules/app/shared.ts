@@ -309,12 +309,6 @@ export interface DbCustomer {
     updated_at: string;
 }
 
-export function getInitials(firstName: string, lastName: string): string {
-    const f = firstName?.charAt(0)?.toUpperCase() ?? '';
-    const l = lastName?.charAt(0)?.toUpperCase() ?? '';
-    return f + l;
-}
-
 // =============================================================================
 // Auth Helper
 // =============================================================================
