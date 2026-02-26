@@ -1,5 +1,17 @@
 Toto vždy proveď:
-Vždy po commitnutí a pusnutí nasad projekt na testovací prostředí (typeforge-mcp.js, scripts/deploy.sh) a potom ho otestuj v prohlížeři pomocí nástroje browse.js, který používá Playwright. Informace o projektu (nazev, id) najdeš v typeforge.json. Vypiš mi nakocnci url testovacího prostředí. 
+Vždy po commitnutí a pusnutí nasaď projekt na testovací prostředí (typeforge-mcp.js, scripts/deploy.sh) a potom ho otestuj v prohlížeči pomocí nástroje browse.js, který používá Playwright. Informace o projektu (nazev, id) najdeš v typeforge.json. Vypiš mi nakonci url testovacího prostředí.
+
+### Pre-deploy: React Build
+
+If React components were changed, rebuild the React bundle before deploying:
+
+```bash
+cd react-app && npm run build && cd ..   # Build React app
+# Then embed the bundle into TSTL source (see CLAUDE.md for embed script)
+npm run build                             # TSTL compile
+```
+
+The deploy script runs `npm run build` (TSTL) automatically, but does NOT rebuild React. Always rebuild React manually if `.tsx` files changed.
 
 ### Deployment
 
