@@ -3,6 +3,11 @@ set -e
 
 # Required: HOSTING_API_SECRET, HOSTING_API_URL
 # Optional: HOSTING_ENV (default: production), SKIP_BUILD
+#
+# Usage:
+#   ./scripts/deploy.sh                          # Standard deploy (Lua bundle)
+#   ./scripts/deploy.sh --react                   # Deploy React dist to Cloud Storage
+#   ./scripts/deploy.sh --react --react-dir=path  # Custom React dist directory
 
 HOSTING_API_URL="${HOSTING_API_URL:-http://localhost:3005/hosting}"
 HOSTING_ENV="${HOSTING_ENV:-production}"
@@ -57,11 +62,111 @@ mark_failed() {
 
 if [ -z "$HOSTING_API_SECRET" ]; then
     error "HOSTING_API_SECRET is required"
+    echo ""
+    echo "Usage:"
+    echo "  HOSTING_API_SECRET=your_secret ./scripts/deploy.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --react           Deploy React dist folder to Cloud Storage"
+    echo "  --react-dir=PATH  Custom React dist directory (default: react-app/dist)"
+    echo ""
     exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Parse arguments
+REACT_DEPLOY=0
+REACT_DIR_ARG=""
+for arg in "$@"; do
+    case "$arg" in
+        --react)
+            REACT_DEPLOY=1
+            ;;
+        --react-dir=*)
+            REACT_DIR_ARG="${arg#--react-dir=}"
+            ;;
+    esac
+done
+
+# Set REACT_DIR
+if [ -n "$REACT_DIR_ARG" ]; then
+    if [[ "$REACT_DIR_ARG" != /* ]]; then
+        REACT_DIR="$PROJECT_ROOT/$REACT_DIR_ARG"
+    else
+        REACT_DIR="$REACT_DIR_ARG"
+    fi
+else
+    REACT_DIR="$PROJECT_ROOT/react-app/dist"
+fi
+
+# ===== React deploy mode =====
+if [ "$REACT_DEPLOY" = "1" ]; then
+    echo ""
+    echo "=========================================="
+    echo "  TypeForge React Assets Deploy"
+    echo "=========================================="
+    echo ""
+    echo "  API URL:     $HOSTING_API_URL"
+    echo "  Environment: $HOSTING_ENV"
+    echo "  Dist dir:    $REACT_DIR"
+    echo ""
+    echo "=========================================="
+    echo ""
+
+    # Build React if not skipped
+    if [ "$SKIP_BUILD" != "1" ]; then
+        info "Building React..."
+        cd "$PROJECT_ROOT/react-app"
+        [ ! -d "node_modules" ] && npm install
+        npm run build
+        cd "$PROJECT_ROOT"
+        ok "React build completed"
+    else
+        warn "Skipping React build (SKIP_BUILD=1)"
+    fi
+
+    if [ ! -d "$REACT_DIR" ]; then
+        error "React dist directory not found: $REACT_DIR"
+        exit 1
+    fi
+
+    FILE_COUNT=$(find "$REACT_DIR" -type f | wc -l | tr -d ' ')
+    if [ "$FILE_COUNT" -eq 0 ]; then
+        error "No files found in $REACT_DIR"
+        exit 1
+    fi
+
+    info "Found $FILE_COUNT files to upload"
+
+    # Build curl command with all files
+    CURL_ARGS=(-s -X POST "${HOSTING_API_URL}/api/deploy/react" \
+        -F "api_secret=${HOSTING_API_SECRET}" \
+        -F "environment=${HOSTING_ENV}")
+
+    while IFS= read -r -d '' file; do
+        REL_PATH="${file#$REACT_DIR/}"
+        CURL_ARGS+=(-F "files=@${file};filename=${REL_PATH}")
+    done < <(find "$REACT_DIR" -type f -print0)
+
+    if ! api_call "${CURL_ARGS[@]}"; then
+        error "React deploy failed"
+        exit 1
+    fi
+
+    STATUS=$(echo "$API_RESPONSE" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+    BASE_URL=$(echo "$API_RESPONSE" | grep -o '"base_url":"[^"]*"' | cut -d'"' -f4)
+    FILES_UPLOADED=$(echo "$API_RESPONSE" | grep -o '"files_uploaded":[0-9]*' | cut -d':' -f2)
+
+    echo ""
+    ok "React deploy completed (status: $STATUS, files: $FILES_UPLOADED)"
+    ok "Base URL: $BASE_URL"
+    echo ""
+    exit 0
+fi
+
+# ===== Standard Lua bundle deploy =====
 
 # Detect project structure: server/ subdirectory or root-level
 if [ -d "$PROJECT_ROOT/server" ]; then

@@ -16,11 +16,25 @@ The deploy script runs `npm run build` (TSTL) automatically, but does NOT rebuil
 ### Deployment
 
 ```bash
-./scripts/deploy.sh              # Standard deploy (includes git metadata)
+./scripts/deploy.sh              # Standard deploy (Lua bundle, includes git metadata)
 ./scripts/deploy.sh --local      # Local deploy (no git metadata)
+./scripts/deploy.sh --react      # Deploy React dist folder to Cloud Storage
+./scripts/deploy.sh --react --react-dir=path  # Custom React dist directory
 ```
 
 Optional env vars: `HOSTING_API_URL` (default: `http://localhost:3005/hosting`), `HOSTING_ENV` (default: `production`), `SKIP_BUILD=1` to skip build step.
+
+### React Assets Deploy
+
+Deploy React dist folder (`react-app/dist/`) to Cloud Storage. The endpoint returns `base_url` — the public URL where assets are accessible. Backend uses this URL to serve the React SPA.
+
+```bash
+./scripts/deploy.sh --react                       # Build + deploy React assets
+SKIP_BUILD=1 ./scripts/deploy.sh --react          # Deploy without rebuilding
+./scripts/deploy.sh --react --react-dir=custom/dist  # Custom dist path
+```
+
+Files are uploaded to `gs://{bucket}/{project}/{env}/react/` and accessible at `https://storage.googleapis.com/{bucket}/{project}/{env}/react/`.
 
 ### Local Deploy (Test Environment)
 
