@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useT } from '../../i18n';
 
 const confirmationStyles = `
   .confirmation-page {
@@ -126,6 +127,7 @@ const confirmationStyles = `
 
 export function CheckoutConfirmationPage() {
   const { toggleTheme } = useTheme();
+  const t = useT('cart');
 
   return (
     <div className="confirmation-page">
@@ -141,7 +143,7 @@ export function CheckoutConfirmationPage() {
           <button
             className="btn-theme-toggle"
             onClick={toggleTheme}
-            title="Přepnout téma"
+            title={t.nav.toggleTheme}
             style={{ width: 32, height: 32, fontSize: '0.9rem' }}
           >
             <i className="bi bi-moon" />
@@ -156,22 +158,22 @@ export function CheckoutConfirmationPage() {
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Doprava</span>
+              <span>{t.checkout.steps.shipping}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Platba</span>
+              <span>{t.checkout.steps.payment}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Shrnutí</span>
+              <span>{t.checkout.steps.review}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Hotovo</span>
+              <span>{t.checkout.steps.done}</span>
             </div>
           </div>
         </div>
@@ -184,17 +186,16 @@ export function CheckoutConfirmationPage() {
             <div className="confirmation-icon">
               <i className="bi bi-check-circle-fill" />
             </div>
-            <h2>Děkujeme za objednávku!</h2>
+            <h2>{t.headings.thankYou}</h2>
             <p className="subtitle">
-              Vaše objednávka byla úspěšně přijata.<br />
-              Potvrzení jsme odeslali na váš e-mail.
+              {t.checkout.confirmation.subtitle}
             </p>
             <div className="confirmation-actions">
               <a href="/eshop" className="btn-primary-tf">
-                <i className="bi bi-bag me-2" />Pokračovat v nákupu
+                <i className="bi bi-bag me-2" />{t.actions.continueShopping2}
               </a>
               <a href="/" className="btn-outline-tf">
-                <i className="bi bi-house me-2" />Na hlavní stránku
+                <i className="bi bi-house me-2" />{t.actions.goHome}
               </a>
             </div>
           </div>

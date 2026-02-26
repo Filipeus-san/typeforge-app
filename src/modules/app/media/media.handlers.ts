@@ -3,7 +3,7 @@ import { checkCsrfToken } from "../../../utils";
 import { UserSession, requireAdmin } from "../shared";
 import { getMediaTypeFilter } from "./media.utils";
 import { findAllMedia, insertMedia, findMediaById, deleteMedia } from "./media.repository";
-import { MEDIA_T } from "./media.translation";
+
 
 // =============================================================================
 // Admin Media Module — Route Handlers
@@ -21,7 +21,7 @@ export function renderAdminMedia(request: Request, response: Response): Response
         ? mediaItems.filter(m => getMediaTypeFilter(m.mime_type) === typeFilter)
         : mediaItems;
 
-    response.content = getReactPageTemplate(MEDIA_T.titles.admin, "AdminMedia", {
+    response.content = getReactPageTemplate('Média — Administrace', "AdminMedia", {
         mediaItems: filteredItems.map(m => ({
             id: String(m.id),
             originalName: m.original_name,

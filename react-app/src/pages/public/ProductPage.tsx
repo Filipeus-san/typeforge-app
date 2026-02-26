@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface ProductPageProps {
   product: {
@@ -260,6 +261,7 @@ const productStyles = `
 
 export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('shop');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -287,12 +289,12 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
           </a>
           <div className="d-flex align-items-center gap-3">
-            <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
+            <a href="/eshop" className="nav-link d-none d-md-inline">{t.nav.eshop}</a>
             <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -310,7 +312,7 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
         <div className="container">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="/eshop">E-Shop</a></li>
+              <li className="breadcrumb-item"><a href="/eshop">{t.breadcrumb.eshop}</a></li>
               {product.categoryName && (
                 <li className="breadcrumb-item">
                   <a href={`/category?slug=${product.categorySlug || ''}`}>{product.categoryName}</a>
@@ -389,7 +391,7 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
                 <div className="product-actions">
                   <button type="submit" className="btn-primary-tf" style={{ padding: '0.7rem 2rem', flex: 1 }}>
                     <i className="bi bi-cart-plus me-2" />
-                    Přidat do košíku
+                    {t.product.addToCart}
                   </button>
                   <button type="button" className="btn-wishlist" title="Přidat do oblíbených">
                     <i className="bi bi-heart" />
@@ -401,19 +403,19 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
               <div className="product-meta">
                 <div className="meta-item">
                   <i className="bi bi-truck" />
-                  <span>Doprava zdarma nad 1 000 Kč</span>
+                  <span>{t.product.freeShipping}</span>
                 </div>
                 <div className="meta-item">
                   <i className="bi bi-box-seam" />
-                  <span>{stockNum > 0 ? `Skladem (${product.stock} ks)` : 'Momentálně nedostupné'}</span>
+                  <span>{stockNum > 0 ? `${t.product.inStock} (${product.stock} ks)` : t.product.outOfStock}</span>
                 </div>
                 <div className="meta-item">
                   <i className="bi bi-shield-check" />
-                  <span>Záruka 2 roky</span>
+                  <span>{t.product.warranty}</span>
                 </div>
                 <div className="meta-item">
                   <i className="bi bi-arrow-return-left" />
-                  <span>30 dní na vrácení</span>
+                  <span>{t.product.returnPolicy}</span>
                 </div>
               </div>
             </div>
@@ -426,7 +428,7 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
         <section className="product-description">
           <div className="container">
             <div className="desc-card">
-              <h3>Popis produktu</h3>
+              <h3>{t.product.description}</h3>
               <div className="desc-content" dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
           </div>

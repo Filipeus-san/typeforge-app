@@ -1,8 +1,4 @@
-export const DASHBOARD_T = {
-    titles: {
-        admin: 'Administrace — TypeForge',
-        analytics: 'Analytika — Administrace',
-    },
+export const dashboard = {
     headings: {
         dashboard: 'Dashboard',
         analytics: 'Analytika',
@@ -93,7 +89,7 @@ export const DASHBOARD_T = {
         shipped: 'Odesláno',
         delivered: 'Doručeno',
         cancelled: 'Zrušeno',
-    },
+    } as Record<string, string>,
     months: {
         '01': 'Leden', '02': 'Únor', '03': 'Březen', '04': 'Duben',
         '05': 'Květen', '06': 'Červen', '07': 'Červenec', '08': 'Srpen',

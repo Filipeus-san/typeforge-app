@@ -4,6 +4,7 @@ import { AdminDataList } from '../../components/data/AdminDataList';
 import { Badge } from '../../components/ui/Badge';
 import type { DataListColumn, DataListAction, FilterDef } from '../../types';
 import { formatDate, getInitials } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CustomerListProps {
   customers: { id: string; firstName: string; lastName: string; email: string; phone?: string; company?: string; status: string; createdAt: string }[];
@@ -24,6 +25,8 @@ function getCustomerStatusVariant(status: string): 'success' | 'warning' | 'defa
 }
 
 export function CustomerListPage({ customers, statusFilter }: CustomerListProps) {
+  const t = useT('common');
+
   const rows = customers.map((c) => ({
     id: c.id,
     fullName: `${c.firstName} ${c.lastName}`,
@@ -39,7 +42,7 @@ export function CustomerListPage({ customers, statusFilter }: CustomerListProps)
   const columns: DataListColumn[] = [
     {
       key: 'fullName',
-      label: 'Zakaznik',
+      label: t.customers.columns.name,
       width: '25%',
       render: (v, row) => (
         <div className="d-flex align-items-center gap-2">
@@ -52,7 +55,7 @@ export function CustomerListPage({ customers, statusFilter }: CustomerListProps)
         </div>
       ),
     },
-    { key: 'email', label: 'Email' },
+    { key: 'email', label: t.customers.columns.email },
     { key: 'phone', label: 'Telefon', render: (v) => v || '-' },
     { key: 'company', label: 'Spolecnost', render: (v) => v || '-' },
     {
@@ -64,7 +67,7 @@ export function CustomerListPage({ customers, statusFilter }: CustomerListProps)
     },
     {
       key: 'createdAt',
-      label: 'Registrace',
+      label: t.customers.columns.registered,
       render: (v) => formatDate(v),
     },
   ];
@@ -78,13 +81,13 @@ export function CustomerListPage({ customers, statusFilter }: CustomerListProps)
   ];
 
   return (
-    <AdminLayout title="Zakaznici" activePage="customers">
+    <AdminLayout title={t.customers.heading} activePage="customers">
       <AdminDataList
         columns={columns}
         rows={rows}
         actions={actions}
         filters={filters}
-        emptyMessage="Zadni zakaznici"
+        emptyMessage={t.customers.empty}
       />
     </AdminLayout>
   );

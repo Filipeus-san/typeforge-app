@@ -4,7 +4,7 @@ import { transformValidate, ValidationError } from "../../../validator";
 import { UserSession } from "../shared";
 import { LoginForm, RegisterForm } from "./auth.validation";
 import { findUserByEmail, findUserIdByEmail, insertUser } from "./auth.repository";
-import { AUTH_T } from "./auth.translation";
+
 
 export function renderIndex(request: Request, response: Response): Response {
     const session = getSession<UserSession>(request);
@@ -26,14 +26,14 @@ export function renderLogin(request: Request, response: Response): Response {
         return handleLogin(request, response);
     }
 
-    response.content = getReactPageTemplate(AUTH_T.titles.login, "Login", {});
+    response.content = getReactPageTemplate('Přihlášení — TypeForge', "Login", {});
     return response;
 }
 
 function handleLogin(request: Request, response: Response): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(AUTH_T.titles.login, "Login", { error: AUTH_T.errors.invalidRequest });
+        response.content = getReactPageTemplate('Přihlášení — TypeForge', "Login", { error: 'Neplatný požadavek' });
         return response;
     }
 
@@ -42,7 +42,7 @@ function handleLogin(request: Request, response: Response): Response {
 
         const user = findUserByEmail(data.email);
         if (!user || !verifyPassword(data.password, user.password_hash)) {
-            response.content = getReactPageTemplate(AUTH_T.titles.login, "Login", { error: AUTH_T.errors.invalidCredentials, email: data.email });
+            response.content = getReactPageTemplate('Přihlášení — TypeForge', "Login", { error: 'Neplatný email nebo heslo', email: data.email });
             return response;
         }
         response = setSession<UserSession>({
@@ -60,11 +60,11 @@ function handleLogin(request: Request, response: Response): Response {
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? AUTH_T.errors.validationError;
-            response.content = getReactPageTemplate(AUTH_T.titles.login, "Login", { error: firstError, email: raw.email });
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Přihlášení — TypeForge', "Login", { error: firstError, email: raw.email });
             return response;
         }
-        response.content = getReactPageTemplate(AUTH_T.titles.login, "Login", { error: AUTH_T.errors.genericError });
+        response.content = getReactPageTemplate('Přihlášení — TypeForge', "Login", { error: 'Došlo k chybě, zkuste to znovu' });
         return response;
     }
 }
@@ -89,14 +89,14 @@ export function renderRegister(request: Request, response: Response): Response {
         return handleRegister(request, response);
     }
 
-    response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", {});
+    response.content = getReactPageTemplate('Registrace — TypeForge', "Register", {});
     return response;
 }
 
 function handleRegister(request: Request, response: Response): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: AUTH_T.errors.invalidRequest });
+        response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: 'Neplatný požadavek' });
         return response;
     }
 
@@ -104,13 +104,13 @@ function handleRegister(request: Request, response: Response): Response {
         const data = transformValidate(RegisterForm, raw);
 
         if (data.password !== data.passwordConfirm) {
-            response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: AUTH_T.errors.passwordMismatch, values: raw });
+            response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: 'Hesla se neshodují', values: raw });
             return response;
         }
 
         const existingUser = findUserIdByEmail(data.email);
         if (existingUser) {
-            response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: AUTH_T.errors.emailExists, values: raw });
+            response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: 'Účet s tímto emailem již existuje', values: raw });
             return response;
         }
 
@@ -119,7 +119,7 @@ function handleRegister(request: Request, response: Response): Response {
         const user = insertUser(data.firstName, data.lastName, data.email, passwordHash);
 
         if (!user) {
-            response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: AUTH_T.errors.registrationFailed, values: raw });
+            response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: 'Registrace se nezdařila, zkuste to znovu', values: raw });
             return response;
         }
         response = setSession<UserSession>({
@@ -137,11 +137,11 @@ function handleRegister(request: Request, response: Response): Response {
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? AUTH_T.errors.validationError;
-            response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: firstError, values: raw });
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: firstError, values: raw });
             return response;
         }
-        response.content = getReactPageTemplate(AUTH_T.titles.register, "Register", { error: AUTH_T.errors.genericError });
+        response.content = getReactPageTemplate('Registrace — TypeForge', "Register", { error: 'Došlo k chybě, zkuste to znovu' });
         return response;
     }
 }

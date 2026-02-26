@@ -1,4 +1,5 @@
 import React from 'react';
+import { useT } from '../../i18n';
 import { Icon } from '../ui/Icon';
 
 interface FooterLink { label: string; href: string }
@@ -13,12 +14,15 @@ interface FooterProps {
 }
 
 export function Footer({
-  brand = { text: 'TypeForge', icon: 'braces-asterisk', description: 'Moderní serverless web framework pro TypeScript vývojáře.' },
+  brand: brandProp,
   sections = [],
   socialLinks = [],
-  copyright = `© ${new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.`,
+  copyright: copyrightProp,
   bottomLinks = [],
 }: FooterProps) {
+  const t = useT('common');
+  const brand = brandProp ?? { text: t.footer.brand, icon: 'braces-asterisk', description: t.footer.tagline };
+  const copyright = copyrightProp ?? `\u00A9 ${new Date().getFullYear()} ${t.footer.copyright}`;
   return (
     <footer className="footer-tf">
       <div className="container">

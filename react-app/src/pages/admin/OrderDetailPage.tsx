@@ -4,6 +4,7 @@ import { CardSection } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusVariant } from '../../utils';
+import { useT } from '../../i18n';
 
 interface OrderDetailProps {
   order: {
@@ -15,14 +16,15 @@ interface OrderDetailProps {
 }
 
 export function OrderDetailPage({ order, items }: OrderDetailProps) {
+  const t = useT('orders');
   return (
-    <AdminLayout title={`Objednávka ${order.orderNumber}`} activePage="orders"
-      headerActions={<Button href={`/admin/orders/edit?id=${order.id}`} variant="outline" size="sm" icon="pencil">Upravit</Button>}>
+    <AdminLayout title={`${t.headings.admin} ${order.orderNumber}`} activePage="orders"
+      headerActions={<Button href={`/admin/orders/edit?id=${order.id}`} variant="outline" size="sm" icon="pencil">{t.actions.edit}</Button>}>
       <div className="row g-4">
         <div className="col-md-8">
-          <CardSection title="Položky objednávky">
+          <CardSection title={t.detail.sections.items}>
             <table className="data-table">
-              <thead><tr><th>Produkt</th><th style={{textAlign:'center'}}>Množství</th><th style={{textAlign:'right'}}>Cena/ks</th><th style={{textAlign:'right'}}>Celkem</th></tr></thead>
+              <thead><tr><th>{t.columns.product}</th><th style={{textAlign:'center'}}>{t.columns.quantity}</th><th style={{textAlign:'right'}}>{t.columns.pricePerUnit}</th><th style={{textAlign:'right'}}>{t.columns.total}</th></tr></thead>
               <tbody>
                 {items.map((item) => (
                   <tr key={item.id}>
@@ -35,20 +37,20 @@ export function OrderDetailPage({ order, items }: OrderDetailProps) {
               </tbody>
             </table>
             <div className="d-flex justify-content-end mt-3">
-              <div style={{fontSize:'1.25rem',fontWeight:800}}>Celkem: {formatPrice(Number(order.totalAmount))}</div>
+              <div style={{fontSize:'1.25rem',fontWeight:800}}>{t.columns.totalLabel} {formatPrice(Number(order.totalAmount))}</div>
             </div>
           </CardSection>
-          {order.notes && <CardSection title="Poznámky"><p>{order.notes}</p></CardSection>}
+          {order.notes && <CardSection title={t.detail.sections.notes}><p>{order.notes}</p></CardSection>}
         </div>
         <div className="col-md-4">
-          <CardSection title="Info">
-            <div className="mb-3"><strong>Stav:</strong> <Badge variant={getOrderStatusVariant(order.status) as any}>{getOrderStatusLabel(order.status)}</Badge></div>
-            <div className="mb-3"><strong>Datum:</strong> {formatDate(order.createdAt)}</div>
-            <div className="mb-3"><strong>Zákazník:</strong> {order.customerName}</div>
-            <div className="mb-3"><strong>Email:</strong> {order.customerEmail}</div>
+          <CardSection title={t.detail.sections.info}>
+            <div className="mb-3"><strong>{t.detail.labels.status}:</strong> <Badge variant={getOrderStatusVariant(order.status) as any}>{getOrderStatusLabel(order.status)}</Badge></div>
+            <div className="mb-3"><strong>{t.detail.labels.createdAt}:</strong> {formatDate(order.createdAt)}</div>
+            <div className="mb-3"><strong>{t.detail.labels.name}:</strong> {order.customerName}</div>
+            <div className="mb-3"><strong>{t.detail.labels.email}:</strong> {order.customerEmail}</div>
           </CardSection>
-          {order.shippingAddress && <CardSection title="Doručovací adresa"><p>{order.shippingAddress}</p></CardSection>}
-          {order.billingAddress && <CardSection title="Fakturační adresa"><p>{order.billingAddress}</p></CardSection>}
+          {order.shippingAddress && <CardSection title={t.detail.sections.shippingAddress}><p>{order.shippingAddress}</p></CardSection>}
+          {order.billingAddress && <CardSection title="Fakturacni adresa"><p>{order.billingAddress}</p></CardSection>}
         </div>
       </div>
     </AdminLayout>

@@ -1,7 +1,7 @@
 import { getReactPageTemplate } from "../../../react";
 import { getCookie, setCookie, getPayloudData } from "../../../utils";
 import { findCartItems, addCartItem, updateCartItemQuantity, removeCartItem, getCartItemCount } from "./cart.repository";
-import { CART_T } from "./cart.translation";
+
 
 function getCartSessionId(request: Request, response: Response): { sessionId: string; response: Response } {
     let sessionId = getCookie("cart_session", request);
@@ -20,7 +20,7 @@ export function renderCart(request: Request, response: Response): Response {
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getReactPageTemplate(CART_T.titles.cart, "Cart", {
+    response.content = getReactPageTemplate('Košík — TypeForge', "Cart", {
         items: items.map(item => ({
             productId: String(item.product_id),
             productName: item.product_name,
@@ -107,7 +107,7 @@ export function renderCheckout(request: Request, response: Response): Response {
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getReactPageTemplate(CART_T.titles.checkoutShipping, "CheckoutShipping", {
+    response.content = getReactPageTemplate('Checkout - Doručení | TypeForge', "CheckoutShipping", {
         items: items.map(item => ({
             productName: item.product_name,
             quantity: String(item.quantity),
@@ -124,7 +124,7 @@ export function renderCheckoutPayment(request: Request, response: Response): Res
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getReactPageTemplate(CART_T.titles.checkoutPayment, "CheckoutPayment", {
+    response.content = getReactPageTemplate('Checkout - Platba | TypeForge', "CheckoutPayment", {
         items: items.map(item => ({
             productName: item.product_name,
             quantity: String(item.quantity),
@@ -141,7 +141,7 @@ export function renderCheckoutReview(request: Request, response: Response): Resp
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getReactPageTemplate(CART_T.titles.checkoutReview, "CheckoutReview", {
+    response.content = getReactPageTemplate('Checkout - Přehled | TypeForge', "CheckoutReview", {
         items: items.map(item => ({
             productName: item.product_name,
             quantity: String(item.quantity),
@@ -155,6 +155,6 @@ export function renderCheckoutReview(request: Request, response: Response): Resp
 
 // CHECKOUT STEP 4: Confirmation
 export function renderCheckoutConfirmation(request: Request, response: Response): Response {
-    response.content = getReactPageTemplate(CART_T.titles.checkoutConfirmation, "CheckoutConfirmation", {});
+    response.content = getReactPageTemplate('Objednávka dokončena | TypeForge', "CheckoutConfirmation", {});
     return response;
 }

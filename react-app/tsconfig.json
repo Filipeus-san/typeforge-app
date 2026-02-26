@@ -15,7 +15,11 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared": ["../src/shared-keys.ts"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../src/shared-keys.ts"]
 }

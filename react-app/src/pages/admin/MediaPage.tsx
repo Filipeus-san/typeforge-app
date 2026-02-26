@@ -7,19 +7,12 @@ import { Select } from '../../components/form/Select';
 import { FormGroup } from '../../components/form/FormGroup';
 import { ConfirmDialog } from '../../components/data/ConfirmDialog';
 import { formatDate } from '../../utils';
+import { useT } from '../../i18n';
 
 interface MediaProps {
   mediaItems: { id: string; filename: string; contentType: string; storagePath: string; url: string; createdAt: string }[];
   typeFilter: string;
 }
-
-const TYPE_FILTER_OPTIONS = [
-  { value: '', label: 'Vse' },
-  { value: 'image', label: 'Obrazky' },
-  { value: 'document', label: 'Dokumenty' },
-  { value: 'video', label: 'Videa' },
-  { value: 'audio', label: 'Audio' },
-];
 
 function getMediaTypeIcon(contentType: string): string {
   if (contentType.startsWith('image/')) return 'file-earmark-image';
@@ -41,9 +34,18 @@ function matchesTypeFilter(contentType: string, filter: string): boolean {
 }
 
 export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
+  const t = useT('media');
   const [uploadOpen, setUploadOpen] = useState(false);
   const [previewItem, setPreviewItem] = useState<typeof mediaItems[0] | null>(null);
   const [confirmState, setConfirmState] = useState<{ url: string; message: string } | null>(null);
+
+  const TYPE_FILTER_OPTIONS = [
+    { value: '', label: t.filters.allTypes },
+    { value: 'image', label: t.filters.images },
+    { value: 'document', label: t.filters.documents },
+    { value: 'video', label: t.filters.videos },
+    { value: 'audio', label: 'Audio' },
+  ];
 
   const filteredItems = mediaItems.filter((m) => matchesTypeFilter(m.contentType, typeFilter));
 
@@ -58,17 +60,17 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
   const handleDelete = (item: typeof mediaItems[0]) => {
     setConfirmState({
       url: `/admin/media/delete?id=${item.id}`,
-      message: `Opravdu smazat soubor "${item.filename}"?`,
+      message: t.confirm.deleteFile,
     });
   };
 
   return (
     <AdminLayout
-      title="Media"
+      title={t.headings.admin}
       activePage="media"
       headerActions={
         <Button variant="primary" size="sm" icon="upload" onClick={() => setUploadOpen(true)}>
-          Nahrat soubor
+          {t.actions.upload}
         </Button>
       }
     >
@@ -91,7 +93,8 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
         {filteredItems.length === 0 ? (
           <div className="text-center text-muted-tf py-5">
             <Icon name="images" size="xl" />
-            <p className="mt-2">Zadna media</p>
+            <p className="mt-2">{t.empty.noMedia}</p>
+            <p className="small">{t.empty.uploadHint}</p>
           </div>
         ) : (
           <div style={{
@@ -180,7 +183,7 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
                       style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                       onClick={(e) => { e.stopPropagation(); setPreviewItem(item); }}
                     >
-                      <Icon name="eye" /> Zobrazit
+                      <Icon name="eye" /> {t.actions.open}
                     </button>
                     <button
                       type="button"
@@ -188,7 +191,7 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
                       style={{ color: '#ff6b6b', borderColor: 'rgba(255,107,107,0.5)', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                       onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
                     >
-                      <Icon name="trash" /> Smazat
+                      <Icon name="trash" /> {t.actions.delete}
                     </button>
                   </div>
                 </div>
@@ -215,28 +218,28 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
             width: '90%',
           }}>
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 style={{ margin: 0 }}>Nahrat soubor</h5>
+              <h5 style={{ margin: 0 }}>{t.form.uploadTitle}</h5>
               <button type="button" className="btn-action" onClick={() => setUploadOpen(false)}>
                 <Icon name="x-lg" />
               </button>
             </div>
             <form method="post" encType="multipart/form-data" action="/admin/media/upload">
               <div className="mb-3">
-                <FormGroup label="Soubor" required>
+                <FormGroup label={t.form.selectFile} required>
                   <input type="file" name="file" className="form-control" required />
                 </FormGroup>
               </div>
               <div className="mb-3">
-                <FormGroup label="Alternativni text">
-                  <input type="text" name="alt_text" className="form-control" placeholder="Popis obrazku" />
+                <FormGroup label={t.form.altText}>
+                  <input type="text" name="alt_text" className="form-control" placeholder={t.form.altPlaceholder} />
                 </FormGroup>
               </div>
               <div className="d-flex gap-2 justify-content-end">
                 <button type="button" className="btn-outline-tf btn-sm" onClick={() => setUploadOpen(false)}>
-                  Zrusit
+                  {t.actions.cancelBtn}
                 </button>
                 <button type="submit" className="btn-add">
-                  <Icon name="upload" /> Nahrat
+                  <Icon name="upload" /> {t.actions.uploadBtn}
                 </button>
               </div>
             </form>

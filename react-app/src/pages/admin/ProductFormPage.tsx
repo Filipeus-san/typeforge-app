@@ -2,6 +2,7 @@ import React from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { AdminForm } from '../../components/data/AdminForm';
 import type { FormSection } from '../../types';
+import { useT } from '../../i18n';
 
 interface ProductFormProps {
   categories: { value: string; label: string }[];
@@ -11,62 +12,63 @@ interface ProductFormProps {
 }
 
 export function ProductFormPage({ categories, values, error, isEdit = false }: ProductFormProps) {
+  const t = useT('catalog');
   const statusOptions = [
-    { value: 'active', label: 'Aktivní' },
-    { value: 'inactive', label: 'Neaktivní' },
-    { value: 'soldout', label: 'Vyprodáno' },
+    { value: 'active', label: t.statuses.active },
+    { value: 'inactive', label: t.statuses.inactive },
+    { value: 'soldout', label: t.statuses.soldout },
   ];
 
   const sections: FormSection[] = [
     {
-      title: 'Základní informace',
+      title: t.form.sections.basicInfo,
       position: 'main',
       fields: [
-        { name: 'name', label: 'Název produktu', required: true, colSpan: 8 },
-        { name: 'slug', label: 'Slug', colSpan: 4 },
-        { name: 'short_description', label: 'Krátký popis', type: 'textarea', rows: 2 },
-        { name: 'description', label: 'Popis', type: 'textarea', rows: 5 },
+        { name: 'name', label: t.form.labels.productName, required: true, colSpan: 8 },
+        { name: 'slug', label: t.form.labels.slug, colSpan: 4, placeholder: t.form.placeholders.autoFromName },
+        { name: 'short_description', label: t.form.labels.shortDescription, type: 'textarea', rows: 2 },
+        { name: 'description', label: t.form.labels.description, type: 'textarea', rows: 5 },
       ],
     },
     {
-      title: 'Cena a sklad',
+      title: t.form.sections.priceStock,
       position: 'main',
       fields: [
-        { name: 'price', label: 'Cena (Kč)', type: 'number', step: '0.01', min: '0', required: true, colSpan: 4 },
-        { name: 'old_price', label: 'Původní cena', type: 'number', step: '0.01', min: '0', colSpan: 4 },
-        { name: 'stock', label: 'Sklad (ks)', type: 'number', min: '0', colSpan: 4 },
+        { name: 'price', label: t.form.labels.price, type: 'number', step: '0.01', min: '0', required: true, colSpan: 4 },
+        { name: 'old_price', label: t.form.labels.oldPrice, type: 'number', step: '0.01', min: '0', colSpan: 4, placeholder: t.form.placeholders.discountHint },
+        { name: 'stock', label: t.form.labels.stock, type: 'number', min: '0', colSpan: 4 },
       ],
     },
     {
-      title: 'Kategorie',
+      title: t.form.labels.category,
       position: 'sidebar',
       fields: [
-        { name: 'category_id', label: 'Kategorie', type: 'select', options: categories, placeholder: 'Bez kategorie' },
+        { name: 'category_id', label: t.form.labels.category, type: 'select', options: categories, placeholder: t.form.labels.noCategory },
       ],
     },
     {
-      title: 'Stav',
+      title: t.form.labels.status,
       position: 'sidebar',
       fields: [
-        { name: 'status', label: 'Stav', type: 'select', options: statusOptions },
+        { name: 'status', label: t.form.labels.status, type: 'select', options: statusOptions },
       ],
     },
     {
-      title: 'Ikona',
+      title: t.form.labels.icon,
       position: 'sidebar',
       fields: [
-        { name: 'icon', label: 'Bootstrap ikona', placeholder: 'box' },
+        { name: 'icon', label: t.form.labels.icon, placeholder: t.form.placeholders.iconExamples },
       ],
     },
   ];
 
   return (
-    <AdminLayout title={isEdit ? 'Upravit produkt' : 'Nový produkt'} activePage="products">
+    <AdminLayout title={isEdit ? t.headings.productEdit : t.headings.productCreate} activePage="products">
       <AdminForm
         sections={sections}
         values={values}
         error={error}
-        submitLabel={isEdit ? 'Uložit změny' : 'Vytvořit produkt'}
+        submitLabel={isEdit ? t.actions.saveChanges : t.actions.createProduct}
         backUrl="/admin/products"
       />
     </AdminLayout>

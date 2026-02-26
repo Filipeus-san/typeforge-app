@@ -4,6 +4,7 @@ import { CardSection } from '../../components/ui/Card';
 import { Icon } from '../../components/ui/Icon';
 import { FormGroup } from '../../components/form/FormGroup';
 import { Select } from '../../components/form/Select';
+import { useT } from '../../i18n';
 
 interface BlogFormProps {
   isEdit: boolean;
@@ -14,13 +15,14 @@ interface BlogFormProps {
 }
 
 export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia = [], error }: BlogFormProps) {
+  const t = useT('blog');
   const [formValues, setFormValues] = useState<Record<string, string>>(initialValues ?? {});
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [featuredImage, setFeaturedImage] = useState<string>(initialValues?.featured_image ?? '');
 
   const statusOptions = [
-    { value: 'draft', label: 'Koncept' },
-    { value: 'published', label: 'Publikovano' },
+    { value: 'draft', label: t.statuses.draft },
+    { value: 'published', label: t.statuses.published },
     { value: 'archived', label: 'Archivovano' },
   ];
 
@@ -40,7 +42,7 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
   };
 
   return (
-    <AdminLayout title={isEdit ? 'Upravit clanek' : 'Novy clanek'} activePage="blog">
+    <AdminLayout title={isEdit ? t.headings.edit : t.headings.create} activePage="blog">
       {error && <div className="alert alert-danger mb-4">{error}</div>}
       <form method="post">
         {editId && <input type="hidden" name="id" value={editId} />}
@@ -48,26 +50,28 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
 
         <div className="row g-4">
           <div className="col-lg-8">
-            <CardSection title="Obsah">
+            <CardSection title={t.form.sections.content}>
               <div className="row g-3">
                 <div className="col-md-8">
-                  <FormGroup label="Nazev" required>
+                  <FormGroup label={t.form.labels.title} required>
                     <input
                       type="text"
                       name="title"
                       className="form-control"
                       required
+                      placeholder={t.form.placeholders.title}
                       value={formValues.title ?? ''}
                       onChange={handleChange('title')}
                     />
                   </FormGroup>
                 </div>
                 <div className="col-md-4">
-                  <FormGroup label="Slug">
+                  <FormGroup label={t.form.labels.slug}>
                     <input
                       type="text"
                       name="slug"
                       className="form-control"
+                      placeholder={t.form.placeholders.slug}
                       value={formValues.slug ?? ''}
                       onChange={handleChange('slug')}
                     />
@@ -75,22 +79,24 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                 </div>
               </div>
               <div className="mb-3 mt-3">
-                <FormGroup label="Vytah">
+                <FormGroup label={t.form.labels.excerpt}>
                   <textarea
                     name="excerpt"
                     className="form-control"
                     rows={3}
+                    placeholder={t.form.placeholders.excerpt}
                     value={formValues.excerpt ?? ''}
                     onChange={handleChange('excerpt')}
                   />
                 </FormGroup>
               </div>
               <div className="mb-3">
-                <FormGroup label="Obsah">
+                <FormGroup label={t.form.labels.content}>
                   <textarea
                     name="content"
                     className="form-control"
                     rows={15}
+                    placeholder={t.form.placeholders.content}
                     value={formValues.content ?? ''}
                     onChange={handleChange('content')}
                   />
@@ -101,12 +107,12 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
 
           <div className="col-lg-4">
             {/* Featured Image Card */}
-            <CardSection title="Hlavni obrazek">
+            <CardSection title={t.form.sections.featuredImage}>
               {featuredImage ? (
                 <div className="mb-3">
                   <img
                     src={featuredImage}
-                    alt="Hlavni obrazek"
+                    alt={t.form.sections.featuredImage}
                     style={{ width: '100%', borderRadius: 8, objectFit: 'cover', maxHeight: 200 }}
                   />
                   <div className="d-flex gap-2 mt-2">
@@ -115,7 +121,7 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                       className="btn-outline-tf btn-sm"
                       onClick={() => setMediaPickerOpen(true)}
                     >
-                      <Icon name="arrow-repeat" /> Zmenit
+                      <Icon name="arrow-repeat" /> {t.actions.selectFromMedia}
                     </button>
                     <button
                       type="button"
@@ -123,29 +129,29 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                       style={{ color: 'var(--tf-danger)' }}
                       onClick={handleRemoveImage}
                     >
-                      <Icon name="x-lg" /> Odstranit
+                      <Icon name="x-lg" /> {t.actions.removeImage}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-3">
                   <Icon name="image" size="xl" className="text-muted-tf" />
-                  <p className="text-muted-tf small mt-2 mb-3">Zadny obrazek</p>
+                  <p className="text-muted-tf small mt-2 mb-3">{t.form.labels.noImage}</p>
                   <button
                     type="button"
                     className="btn-outline-tf btn-sm"
                     onClick={() => setMediaPickerOpen(true)}
                   >
-                    <Icon name="images" /> Vybrat z medii
+                    <Icon name="images" /> {t.actions.selectFromMedia}
                   </button>
                 </div>
               )}
             </CardSection>
 
             {/* Settings Card */}
-            <CardSection title="Nastaveni">
+            <CardSection title={t.form.sections.settings}>
               <div className="mb-3">
-                <FormGroup label="Stav">
+                <FormGroup label={t.form.labels.status}>
                   <Select
                     name="status"
                     options={statusOptions}
@@ -155,19 +161,19 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                 </FormGroup>
               </div>
               <div className="mb-3">
-                <FormGroup label="Kategorie">
+                <FormGroup label={t.form.labels.category}>
                   <input
                     type="text"
                     name="category"
                     className="form-control"
-                    placeholder="Nazev kategorie"
+                    placeholder={t.form.placeholders.category}
                     value={formValues.category ?? ''}
                     onChange={handleChange('category')}
                   />
                 </FormGroup>
               </div>
               <div className="mb-3">
-                <FormGroup label="Doba cteni (min)">
+                <FormGroup label={t.form.labels.readTime}>
                   <input
                     type="number"
                     name="read_time"
@@ -184,9 +190,9 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
             <CardSection>
               <div className="d-grid gap-2">
                 <button type="submit" className="btn-add w-100 justify-content-center">
-                  <Icon name="check-lg" /> {isEdit ? 'Ulozit zmeny' : 'Vytvorit clanek'}
+                  <Icon name="check-lg" /> {isEdit ? t.actions.saveChanges : t.actions.createArticle}
                 </button>
-                <a href="/admin/blog" className="btn btn-outline-tf btn-sm text-center">Zrusit</a>
+                <a href="/admin/blog" className="btn btn-outline-tf btn-sm text-center">{t.actions.backToList}</a>
               </div>
             </CardSection>
           </div>
@@ -212,7 +218,7 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
             overflow: 'auto',
           }}>
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 style={{ margin: 0 }}>Vybrat obrazek</h5>
+              <h5 style={{ margin: 0 }}>{t.form.sections.selectImage}</h5>
               <button
                 type="button"
                 className="btn-action"
@@ -224,7 +230,7 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
             {imageMedia.length === 0 ? (
               <div className="text-center text-muted-tf py-4">
                 <Icon name="images" size="xl" />
-                <p className="mt-2">Zadne obrazky v mediich</p>
+                <p className="mt-2">{t.empty.noImages}</p>
               </div>
             ) : (
               <div style={{

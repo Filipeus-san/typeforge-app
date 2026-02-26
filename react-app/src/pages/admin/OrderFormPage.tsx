@@ -5,6 +5,7 @@ import { Icon } from '../../components/ui/Icon';
 import { FormGroup } from '../../components/form/FormGroup';
 import { Select } from '../../components/form/Select';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface OrderItem {
   productId: string;
@@ -32,6 +33,8 @@ export function OrderFormPage({
   existingItems,
   error,
 }: OrderFormProps) {
+  const t = useT('orders');
+
   const [items, setItems] = useState<OrderItem[]>(
     existingItems && existingItems.length > 0
       ? existingItems
@@ -41,10 +44,10 @@ export function OrderFormPage({
   const [formValues, setFormValues] = useState<Record<string, string>>(data ?? {});
 
   const statusOptions = [
-    { value: 'pending', label: 'Cekajici' },
-    { value: 'processing', label: 'Zpracovani' },
-    { value: 'completed', label: 'Dokonceno' },
-    { value: 'cancelled', label: 'Zruseno' },
+    { value: 'pending', label: t.statuses.pending },
+    { value: 'processing', label: t.statuses.processing },
+    { value: 'completed', label: t.statuses.completed },
+    { value: 'cancelled', label: t.statuses.cancelled },
     { value: 'returned', label: 'Vraceno' },
   ];
 
@@ -117,7 +120,7 @@ export function OrderFormPage({
   }));
 
   return (
-    <AdminLayout title={isEdit ? 'Upravit objednavku' : 'Nova objednavka'} activePage="orders">
+    <AdminLayout title={isEdit ? t.actions.edit : t.headings.create} activePage="orders">
       {error && <div className="alert alert-danger mb-4">{error}</div>}
       <form method="post">
         {orderId && <input type="hidden" name="id" value={orderId} />}
@@ -125,15 +128,15 @@ export function OrderFormPage({
         <div className="row g-4">
           <div className="col-lg-8">
             {/* Customer Section */}
-            <CardSection title="Zakaznik">
+            <CardSection title={t.form.sections.customer}>
               <div className="mb-3">
-                <FormGroup label="Vybrat existujiciho zakaznika">
+                <FormGroup label={t.form.labels.selectCustomer}>
                   <select
                     className="form-control"
                     onChange={handleCustomerSelect}
                     defaultValue=""
                   >
-                    <option value="">-- Vyberte zakaznika --</option>
+                    <option value="">{t.form.labels.noAssignment}</option>
                     {customerOptions.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -143,7 +146,7 @@ export function OrderFormPage({
               <input type="hidden" name="customer_id" value={formValues.customer_id ?? ''} />
               <div className="row g-3">
                 <div className="col-md-6">
-                  <FormGroup label="Jmeno zakaznika" required>
+                  <FormGroup label={t.form.labels.customerName} required>
                     <input
                       type="text"
                       name="customer_name"
@@ -155,7 +158,7 @@ export function OrderFormPage({
                   </FormGroup>
                 </div>
                 <div className="col-md-6">
-                  <FormGroup label="Email" required>
+                  <FormGroup label={t.form.labels.email} required>
                     <input
                       type="email"
                       name="customer_email"
@@ -169,7 +172,7 @@ export function OrderFormPage({
               </div>
               <div className="row g-3 mt-1">
                 <div className="col-md-6">
-                  <FormGroup label="Dorucovaci adresa">
+                  <FormGroup label={t.form.labels.shippingAddress}>
                     <textarea
                       name="shipping_address"
                       className="form-control"
@@ -194,15 +197,15 @@ export function OrderFormPage({
             </CardSection>
 
             {/* Items Section */}
-            <CardSection title="Polozky objednavky">
+            <CardSection title={t.form.sections.items}>
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '35%' }}>Produkt</th>
-                    <th style={{ width: '25%' }}>Nazev</th>
-                    <th style={{ width: '10%', textAlign: 'center' }}>Mnozstvi</th>
-                    <th style={{ width: '15%', textAlign: 'right' }}>Cena/ks</th>
-                    <th style={{ width: '10%', textAlign: 'right' }}>Celkem</th>
+                    <th style={{ width: '35%' }}>{t.columns.product}</th>
+                    <th style={{ width: '25%' }}>{t.form.labels.itemName}</th>
+                    <th style={{ width: '10%', textAlign: 'center' }}>{t.columns.quantity}</th>
+                    <th style={{ width: '15%', textAlign: 'right' }}>{t.columns.pricePerUnit}</th>
+                    <th style={{ width: '10%', textAlign: 'right' }}>{t.columns.total}</th>
                     <th style={{ width: '5%' }}></th>
                   </tr>
                 </thead>
@@ -217,7 +220,7 @@ export function OrderFormPage({
                             value={item.productId}
                             onChange={(e) => handleProductSelect(idx, e.target.value)}
                           >
-                            <option value="">-- Vlastni --</option>
+                            <option value="">{t.form.labels.customItem}</option>
                             {productOptions.map((o) => (
                               <option key={o.value} value={o.value}>{o.label}</option>
                             ))}
@@ -228,7 +231,7 @@ export function OrderFormPage({
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Nazev polozky"
+                            placeholder={t.form.labels.itemName}
                             value={item.productName}
                             onChange={(e) => handleItemChange(idx, 'productName', e.target.value)}
                           />
@@ -265,7 +268,7 @@ export function OrderFormPage({
                             <button
                               type="button"
                               className="btn-action danger"
-                              title="Odebrat polozku"
+                              title={t.actions.removeItem}
                               onClick={() => removeItem(idx)}
                             >
                               <Icon name="x-lg" />
@@ -282,17 +285,17 @@ export function OrderFormPage({
 
               <div className="d-flex justify-content-between align-items-center mt-3">
                 <button type="button" className="btn-outline-tf btn-sm" onClick={addItem}>
-                  <Icon name="plus-lg" /> Pridat polozku
+                  <Icon name="plus-lg" /> {t.actions.addItem}
                 </button>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                  Celkem: {formatPrice(totalAmount)}
+                  {t.columns.totalLabel} {formatPrice(totalAmount)}
                 </div>
               </div>
             </CardSection>
 
             {/* Notes Section */}
-            <CardSection title="Poznamky">
-              <FormGroup label="Poznamky k objednavce">
+            <CardSection title={t.form.sections.notes}>
+              <FormGroup label={t.form.labels.notesPlaceholder}>
                 <textarea
                   name="notes"
                   className="form-control"
@@ -305,8 +308,8 @@ export function OrderFormPage({
           </div>
 
           <div className="col-lg-4">
-            <CardSection title="Stav">
-              <FormGroup label="Stav objednavky">
+            <CardSection title={t.columns.status}>
+              <FormGroup label={t.form.sections.orderStatus}>
                 <Select
                   name="status"
                   options={statusOptions}
@@ -319,9 +322,9 @@ export function OrderFormPage({
             <CardSection>
               <div className="d-grid gap-2">
                 <button type="submit" className="btn-add w-100 justify-content-center">
-                  <Icon name="check-lg" /> {isEdit ? 'Ulozit zmeny' : 'Vytvorit objednavku'}
+                  <Icon name="check-lg" /> {isEdit ? t.actions.saveChanges : t.actions.createOrder}
                 </button>
-                <a href="/admin/orders" className="btn btn-outline-tf btn-sm text-center">Zpet</a>
+                <a href="/admin/orders" className="btn btn-outline-tf btn-sm text-center">{t.actions.backToList}</a>
               </div>
             </CardSection>
           </div>

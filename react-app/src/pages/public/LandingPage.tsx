@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useT } from '../../i18n';
 
 interface LandingProps {
   userName?: string;
@@ -234,6 +235,7 @@ const agents = [
 
 export function LandingPage({ userName }: LandingProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('shop');
 
   return (
     <div style={{ background: 'var(--tf-bg)', color: 'var(--tf-text)', minHeight: '100vh' }}>
@@ -251,12 +253,12 @@ export function LandingPage({ userName }: LandingProps) {
             <a href="/#features" className="nav-link d-none d-md-inline">Features</a>
             <a href="/#how-it-works" className="nav-link d-none d-md-inline">Jak to funguje</a>
             <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
-            <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
-            <a href="/admin" className="nav-link d-none d-md-inline">Admin</a>
+            <a href="/eshop" className="nav-link d-none d-md-inline">{t.nav.eshop}</a>
+            <a href="/admin" className="nav-link d-none d-md-inline">{t.nav.admin}</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />

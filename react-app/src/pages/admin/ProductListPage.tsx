@@ -4,6 +4,7 @@ import { AdminDataList } from '../../components/data/AdminDataList';
 import { Badge } from '../../components/ui/Badge';
 import type { DataListColumn, DataListAction, FilterDef } from '../../types';
 import { formatPrice, getProductStatusLabel, getProductStatusVariant, PRODUCT_STATUS_FILTER_OPTIONS } from '../../utils';
+import { useT } from '../../i18n';
 
 interface ProductListProps {
   products: Record<string, string>[];
@@ -13,34 +14,35 @@ interface ProductListProps {
 }
 
 export function ProductListPage({ products, categories, statusFilter, categoryFilter }: ProductListProps) {
+  const t = useT('catalog');
   const columns: DataListColumn[] = [
-    { key: 'name', label: 'Produkt', width: '30%', render: (v, row) => (
+    { key: 'name', label: t.columns.product, width: '30%', render: (v, row) => (
       <><strong>{v}</strong>{row.categoryName && <><br/><small className="text-muted-tf">{row.categoryName}</small></>}</>
     )},
-    { key: 'price', label: 'Cena', align: 'right', render: (v) => formatPrice(Number(v)) },
-    { key: 'stock', label: 'Sklad', align: 'center' },
-    { key: 'status', label: 'Stav', render: (v) => <Badge variant={getProductStatusVariant(v) as any}>{getProductStatusLabel(v)}</Badge> },
+    { key: 'price', label: t.columns.price, align: 'right', render: (v) => formatPrice(Number(v)) },
+    { key: 'stock', label: t.columns.stock, align: 'center' },
+    { key: 'status', label: t.columns.status, render: (v) => <Badge variant={getProductStatusVariant(v) as any}>{getProductStatusLabel(v)}</Badge> },
   ];
 
   const actions: DataListAction[] = [
-    { icon: 'pencil', href: (row) => `/admin/products/edit?id=${row.id}`, title: 'Upravit' },
-    { icon: 'trash', href: (row) => `/admin/products/delete?id=${row.id}`, title: 'Smazat', variant: 'danger', confirm: 'Opravdu smazat tento produkt?' },
+    { icon: 'pencil', href: (row) => `/admin/products/edit?id=${row.id}`, title: t.actions.edit },
+    { icon: 'trash', href: (row) => `/admin/products/delete?id=${row.id}`, title: t.actions.delete, variant: 'danger', confirm: t.confirm.deleteProduct },
   ];
 
   const filters: FilterDef[] = [
-    { name: 'status', options: PRODUCT_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: 'Všechny stavy' },
-    { name: 'category', options: categories, value: categoryFilter, placeholder: 'Všechny kategorie' },
+    { name: 'status', options: PRODUCT_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: t.filters.allStatuses },
+    { name: 'category', options: categories, value: categoryFilter, placeholder: t.filters.allCategories },
   ];
 
   return (
-    <AdminLayout title="Produkty" activePage="products">
+    <AdminLayout title={t.headings.products} activePage="products">
       <AdminDataList
         columns={columns}
         rows={products}
         actions={actions}
         filters={filters}
-        addButton={{ label: 'Nový produkt', href: '/admin/products/create' }}
-        emptyMessage="Žádné produkty"
+        addButton={{ label: t.actions.addProduct, href: '/admin/products/create' }}
+        emptyMessage={t.empty.products}
       />
     </AdminLayout>
   );

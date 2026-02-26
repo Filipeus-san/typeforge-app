@@ -2,12 +2,12 @@ import { getReactPageTemplate } from "../../../react";
 import { DbProductWithCategory, DbCategory } from "../shared";
 import { findFeaturedProducts, findActiveCategoriesWithCount, findProductBySlug, findProductById, findActiveCategoryBySlug, findActiveProductsByCategory, findAllActiveProducts } from "./shop.repository";
 import { findProductImages } from "../catalog/catalog.repository";
-import { SHOP_T } from "./shop.translation";
+
 
 export function renderEshop(request: Request, response: Response): Response {
     const products = findFeaturedProducts();
     const categories = findActiveCategoriesWithCount();
-    response.content = getReactPageTemplate(SHOP_T.titles.eshop, "Eshop", {
+    response.content = getReactPageTemplate('E-Shop — TypeForge', "Eshop", {
         products: products.map(p => ({
             id: String(p.id),
             name: p.name,
@@ -49,7 +49,7 @@ export function renderProduct(request: Request, response: Response): Response {
     }
 
     const galleryImages = findProductImages(product.id);
-    response.content = getReactPageTemplate(`${product.name} ${SHOP_T.titles.product}`, "Product", {
+    response.content = getReactPageTemplate(`${product.name} — TypeForge E-Shop`, "Product", {
         product: {
             id: String(product.id),
             name: product.name,
@@ -85,8 +85,9 @@ export function renderCategory(request: Request, response: Response): Response {
         categoryProducts = findAllActiveProducts();
     }
 
-    const title = category ? category.name : SHOP_T.headings.allProducts;
-    response.content = getReactPageTemplate(`${title} ${SHOP_T.titles.category}`, "Category", {
+    const title = category ? category.name : undefined;
+    const pageTitle = title ? `${title} — TypeForge E-Shop` : '— TypeForge E-Shop';
+    response.content = getReactPageTemplate(pageTitle, "Category", {
         title,
         category: category ? {
             name: category.name,

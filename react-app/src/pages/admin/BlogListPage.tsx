@@ -4,6 +4,7 @@ import { AdminDataList } from '../../components/data/AdminDataList';
 import { Badge } from '../../components/ui/Badge';
 import type { DataListColumn, DataListAction, FilterDef } from '../../types';
 import { formatDate, getBlogStatusLabel, getBlogStatusVariant, BLOG_STATUS_FILTER_OPTIONS } from '../../utils';
+import { useT } from '../../i18n';
 
 interface BlogListProps {
   posts: { id: string; title: string; slug: string; status: string; author: string; category: string; createdAt: string }[];
@@ -11,6 +12,8 @@ interface BlogListProps {
 }
 
 export function BlogListPage({ posts, statusFilter }: BlogListProps) {
+  const t = useT('blog');
+
   const rows = posts.map((p) => ({
     id: p.id,
     title: p.title,
@@ -24,7 +27,7 @@ export function BlogListPage({ posts, statusFilter }: BlogListProps) {
   const columns: DataListColumn[] = [
     {
       key: 'title',
-      label: 'Nazev',
+      label: t.columns.name,
       width: '35%',
       render: (v, row) => (
         <>
@@ -34,41 +37,41 @@ export function BlogListPage({ posts, statusFilter }: BlogListProps) {
         </>
       ),
     },
-    { key: 'author', label: 'Autor' },
-    { key: 'category', label: 'Kategorie' },
+    { key: 'author', label: t.columns.author },
+    { key: 'category', label: t.columns.category },
     {
       key: 'status',
-      label: 'Stav',
+      label: t.columns.status,
       render: (v) => (
         <Badge variant={getBlogStatusVariant(v) as any}>{getBlogStatusLabel(v)}</Badge>
       ),
     },
     {
       key: 'createdAt',
-      label: 'Datum',
+      label: t.columns.date,
       render: (v) => formatDate(v),
     },
   ];
 
   const actions: DataListAction[] = [
-    { icon: 'pencil', href: (row) => `/admin/blog/edit?id=${row.id}`, title: 'Upravit' },
-    { icon: 'eye', href: (row) => `/article?slug=${row.slug}`, title: 'Zobrazit' },
-    { icon: 'trash', href: (row) => `/admin/blog/delete?id=${row.id}`, title: 'Smazat', variant: 'danger', confirm: 'Opravdu smazat tento clanek?' },
+    { icon: 'pencil', href: (row) => `/admin/blog/edit?id=${row.id}`, title: t.actions.edit },
+    { icon: 'eye', href: (row) => `/article?slug=${row.slug}`, title: t.actions.view },
+    { icon: 'trash', href: (row) => `/admin/blog/delete?id=${row.id}`, title: t.actions.delete, variant: 'danger', confirm: t.confirm.deleteArticle },
   ];
 
   const filters: FilterDef[] = [
-    { name: 'status', options: BLOG_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: 'Vsechny stavy' },
+    { name: 'status', options: BLOG_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: t.filters.allStatuses },
   ];
 
   return (
-    <AdminLayout title="Blog" activePage="blog">
+    <AdminLayout title={t.headings.admin} activePage="blog">
       <AdminDataList
         columns={columns}
         rows={rows}
         actions={actions}
         filters={filters}
-        addButton={{ label: 'Novy clanek', href: '/admin/blog/create' }}
-        emptyMessage="Zadne clanky"
+        addButton={{ label: t.actions.newArticle, href: '/admin/blog/create' }}
+        emptyMessage={t.empty.articles}
       />
     </AdminLayout>
   );

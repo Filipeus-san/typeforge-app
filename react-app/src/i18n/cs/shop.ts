@@ -1,9 +1,4 @@
-export const SHOP_T = {
-    titles: {
-        eshop: 'E-Shop — TypeForge',
-        product: '— TypeForge E-Shop',
-        category: '— TypeForge E-Shop',
-    },
+export const shop = {
     headings: {
         allProducts: 'Všechny produkty',
     },

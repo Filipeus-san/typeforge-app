@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CheckoutShippingProps {
   items: {
@@ -292,15 +293,16 @@ const checkoutStyles = `
   }
 `;
 
-const shippingMethods = [
-  { id: 'standard', name: 'Standardní doprava', desc: 'Doručení za 3-5 pracovních dní', price: 0 },
-  { id: 'express', name: 'Expresní doprava', desc: 'Doručení do 24 hodin', price: 99 },
-  { id: 'pickup', name: 'Osobní odběr', desc: 'Odběr na pobočce Praha', price: 0 },
-];
-
 export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('cart');
   const [selectedShipping, setSelectedShipping] = useState('standard');
+
+  const shippingMethods = [
+    { id: 'standard', name: t.checkout.shipping.standardDelivery, desc: t.checkout.shipping.standardDeliveryDesc, price: 0 },
+    { id: 'express', name: t.checkout.shipping.expressDelivery, desc: t.checkout.shipping.expressDeliveryDesc, price: 99 },
+    { id: 'pickup', name: t.checkout.shipping.personalPickup, desc: t.checkout.shipping.personalPickupDesc, price: 0 },
+  ];
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.productPrice) * Number(item.quantity), 0);
   const shippingCost = shippingMethods.find((m) => m.id === selectedShipping)?.price || 0;
@@ -320,12 +322,12 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
           <div className="d-flex align-items-center gap-3">
             <span className="secure-label">
               <i className="bi bi-shield-lock-fill" />
-              Bezpečná platba
+              {t.checkout.secureCheckout}
             </span>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -341,22 +343,22 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
           <div className="progress-steps">
             <div className="progress-step active">
               <div className="step-num">1</div>
-              <span>Doprava</span>
+              <span>{t.checkout.steps.shipping}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">2</div>
-              <span>Platba</span>
+              <span>{t.checkout.steps.payment}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">3</div>
-              <span>Shrnutí</span>
+              <span>{t.checkout.steps.review}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">4</div>
-              <span>Hotovo</span>
+              <span>{t.checkout.steps.done}</span>
             </div>
           </div>
         </div>
@@ -370,22 +372,22 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
               <form method="post" action="/checkout/payment">
                 {/* Contact info */}
                 <div className="checkout-section">
-                  <h5><i className="bi bi-person" />Kontaktní údaje</h5>
+                  <h5><i className="bi bi-person" />{t.checkout.shipping.contactInfo}</h5>
                   <div className="row g-3">
                     <div className="col-md-6">
-                      <label className="form-label" htmlFor="firstName">Jméno</label>
+                      <label className="form-label" htmlFor="firstName">{t.checkout.shipping.firstName}</label>
                       <input type="text" className="form-control" id="firstName" name="firstName" placeholder="Jan" required />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label" htmlFor="lastName">Příjmení</label>
+                      <label className="form-label" htmlFor="lastName">{t.checkout.shipping.lastName}</label>
                       <input type="text" className="form-control" id="lastName" name="lastName" placeholder="Novák" required />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label" htmlFor="email">E-mail</label>
+                      <label className="form-label" htmlFor="email">{t.checkout.shipping.email}</label>
                       <input type="email" className="form-control" id="email" name="email" placeholder="vas@email.cz" required />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label" htmlFor="phone">Telefon</label>
+                      <label className="form-label" htmlFor="phone">{t.checkout.shipping.phone}</label>
                       <input type="tel" className="form-control" id="phone" name="phone" placeholder="+420 123 456 789" />
                     </div>
                   </div>
@@ -393,25 +395,25 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
 
                 {/* Delivery address */}
                 <div className="checkout-section">
-                  <h5><i className="bi bi-geo-alt" />Doručovací adresa</h5>
+                  <h5><i className="bi bi-geo-alt" />{t.checkout.shipping.deliveryAddress}</h5>
                   <div className="row g-3">
                     <div className="col-12">
-                      <label className="form-label" htmlFor="street">Ulice a číslo popisné</label>
+                      <label className="form-label" htmlFor="street">{t.checkout.shipping.street}</label>
                       <input type="text" className="form-control" id="street" name="street" placeholder="Hlavní 123" required />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label" htmlFor="city">Město</label>
+                      <label className="form-label" htmlFor="city">{t.checkout.shipping.city}</label>
                       <input type="text" className="form-control" id="city" name="city" placeholder="Praha" required />
                     </div>
                     <div className="col-md-3">
-                      <label className="form-label" htmlFor="zip">PSČ</label>
+                      <label className="form-label" htmlFor="zip">{t.checkout.shipping.zip}</label>
                       <input type="text" className="form-control" id="zip" name="zip" placeholder="110 00" required />
                     </div>
                     <div className="col-md-3">
-                      <label className="form-label" htmlFor="country">Stát</label>
+                      <label className="form-label" htmlFor="country">{t.checkout.shipping.country}</label>
                       <select className="form-select" id="country" name="country">
-                        <option value="CZ">Česká republika</option>
-                        <option value="SK">Slovensko</option>
+                        <option value="CZ">{t.checkout.shipping.countryCZ}</option>
+                        <option value="SK">{t.checkout.shipping.countrySK}</option>
                         <option value="DE">Německo</option>
                         <option value="AT">Rakousko</option>
                         <option value="PL">Polsko</option>
@@ -422,7 +424,7 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
 
                 {/* Shipping method */}
                 <div className="checkout-section">
-                  <h5><i className="bi bi-truck" />Způsob dopravy</h5>
+                  <h5><i className="bi bi-truck" />{t.checkout.shipping.deliveryMethod}</h5>
                   {shippingMethods.map((method) => (
                     <div
                       key={method.id}
@@ -436,7 +438,7 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                       </div>
                       <div className="option-price">
                         {method.price === 0 ? (
-                          <span style={{ color: '#22c55e' }}>Zdarma</span>
+                          <span style={{ color: '#22c55e' }}>{t.summary.free}</span>
                         ) : (
                           formatPrice(method.price)
                         )}
@@ -450,10 +452,10 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                 <div className="checkout-nav">
                   <a href="/cart" className="back-link">
                     <i className="bi bi-arrow-left" />
-                    Zpět do košíku
+                    {t.actions.backToCart}
                   </a>
                   <button type="submit" className="btn-primary-tf" style={{ padding: '0.7rem 2rem' }}>
-                    Pokračovat k platbě
+                    {t.actions.continueToPayment}
                     <i className="bi bi-arrow-right ms-2" />
                   </button>
                 </div>
@@ -463,7 +465,7 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
             {/* Order summary */}
             <div className="col-lg-4">
               <div className="order-summary-sidebar">
-                <h5>Vaše objednávka</h5>
+                <h5>{t.headings.yourOrder}</h5>
                 {items.map((item, idx) => (
                   <div key={idx} className="summary-item">
                     <div className="item-thumb">
@@ -482,15 +484,15 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                 ))}
                 <div className="summary-totals">
                   <div className="row-total">
-                    <span className="label">Mezisoučet</span>
+                    <span className="label">{t.summary.subtotal}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="row-total">
-                    <span className="label">Doprava</span>
-                    <span>{shippingCost === 0 ? 'Zdarma' : formatPrice(shippingCost)}</span>
+                    <span className="label">{t.summary.shipping}</span>
+                    <span>{shippingCost === 0 ? t.summary.free : formatPrice(shippingCost)}</span>
                   </div>
                   <div className="grand-total">
-                    <span>Celkem</span>
+                    <span>{t.summary.total}</span>
                     <span>{formatPrice(total)}</span>
                   </div>
                 </div>

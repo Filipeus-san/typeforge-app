@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useT } from '../../i18n';
 
 interface LoginProps {
   error?: string;
@@ -108,6 +109,7 @@ const loginStyles = `
 
 export function LoginPage({ error, emailValue }: LoginProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('auth');
 
   return (
     <div className="login-wrapper" style={{ position: 'relative' }}>
@@ -117,7 +119,7 @@ export function LoginPage({ error, emailValue }: LoginProps) {
         <button
           className="btn-theme-toggle"
           onClick={toggleTheme}
-          title="Přepnout téma"
+          title={t.nav.toggleTheme}
           style={{ width: 36, height: 36, fontSize: '1rem' }}
         >
           <i className="bi bi-moon" />
@@ -131,8 +133,8 @@ export function LoginPage({ error, emailValue }: LoginProps) {
             <div className="brand-icon">
               <i className="bi bi-shield-lock" />
             </div>
-            <h4>Přihlášení</h4>
-            <p>Vítejte zpět v TypeForge</p>
+            <h4>{t.headings.login}</h4>
+            <p>{t.headings.loginSubtitle}</p>
           </a>
         </div>
 
@@ -145,7 +147,7 @@ export function LoginPage({ error, emailValue }: LoginProps) {
 
         <form method="post" action="/login" className="login-form">
           <div className="mb-3">
-            <label className="form-label" htmlFor="email">E-mail</label>
+            <label className="form-label" htmlFor="email">{t.form.email}</label>
             <input
               type="email"
               className="form-control"
@@ -158,7 +160,7 @@ export function LoginPage({ error, emailValue }: LoginProps) {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label" htmlFor="password">Heslo</label>
+            <label className="form-label" htmlFor="password">{t.form.password}</label>
             <input
               type="password"
               className="form-control"
@@ -170,14 +172,14 @@ export function LoginPage({ error, emailValue }: LoginProps) {
           </div>
           <button type="submit" className="btn-primary-tf w-100" style={{ padding: '0.65rem', fontSize: '0.95rem' }}>
             <i className="bi bi-box-arrow-in-right me-2" />
-            Přihlásit se
+            {t.actions.login}
           </button>
         </form>
 
-        <div className="login-divider">nebo</div>
+        <div className="login-divider">{t.links.or}</div>
 
         <div className="login-link">
-          Nemáte účet? <a href="/register">Zaregistrujte se</a>
+          {t.links.noAccount} <a href="/register">{t.links.registerLink}</a>
         </div>
       </div>
     </div>

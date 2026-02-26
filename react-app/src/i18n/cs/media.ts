@@ -1,7 +1,4 @@
-export const MEDIA_T = {
-    titles: {
-        admin: 'Média — Administrace',
-    },
+export const media = {
     headings: {
         admin: 'Média',
     },

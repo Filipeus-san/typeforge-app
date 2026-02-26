@@ -3,7 +3,7 @@ import { getPayloudData } from "../../../utils";
 import { Required, MinLength, Transform, transformValidate, ValidationError } from "../../../validator";
 import { DbOrder, DbOrderItem, requireAdmin, generateOrderNumber } from "../shared";
 import { findAllOrdersWithProducts, findOrderById, findOrderItems, findActiveProductsForForm, findActiveCustomersForForm, insertOrder, insertOrderItem, updateOrder, deleteOrderItems } from "./orders.repository";
-import { ORDERS_T } from "./orders.translation";
+
 
 // =============================================================================
 // Admin Orders Module
@@ -21,7 +21,7 @@ export function renderAdminOrders(request: Request, response: Response): Respons
         ? orders.filter(o => o.status === statusFilter)
         : orders;
 
-    response.content = getReactPageTemplate(ORDERS_T.titles.admin, "AdminOrderList", {
+    response.content = getReactPageTemplate('Objednávky — Administrace', "AdminOrderList", {
         orders: filteredOrders.map((o: any) => ({
             id: String(o.id),
             orderNumber: o.order_number,
@@ -63,7 +63,7 @@ export function renderAdminOrderDetail(request: Request, response: Response): Re
     const items = findOrderItems(order.id);
 
     response.content = getReactPageTemplate(
-        `${ORDERS_T.titles.detail} #${order.order_number}`,
+        `${'Objednávka'} #${order.order_number}`,
         "AdminOrderDetail",
         {
             order: {
@@ -123,7 +123,7 @@ export function renderAdminOrderCreate(request: Request, response: Response): Re
 
     const availableProducts = findActiveProductsForForm();
     const availableCustomers = findActiveCustomersForForm();
-    response.content = getReactPageTemplate(ORDERS_T.titles.create, "AdminOrderForm", {
+    response.content = getReactPageTemplate('Nová objednávka — Administrace', "AdminOrderForm", {
         values: { status: 'pending' },
         isEdit: false,
         availableProducts: availableProducts.map(p => ({ id: String(p.id), name: p.name, price: String(p.price) })),
@@ -163,9 +163,9 @@ function handleOrderCreate(request: Request, response: Response): Response {
     if (!raw) {
         const availableProducts = findActiveProductsForForm();
         const availableCustomers = findActiveCustomersForForm();
-        response.content = getReactPageTemplate(ORDERS_T.titles.create, "AdminOrderForm", {
+        response.content = getReactPageTemplate('Nová objednávka — Administrace', "AdminOrderForm", {
             values: { status: 'pending' },
-            error: ORDERS_T.errors.invalidRequest,
+            error: 'Neplatný požadavek',
             isEdit: false,
             availableProducts: availableProducts.map(p => ({ id: String(p.id), name: p.name, price: String(p.price) })),
             availableCustomers: availableCustomers.map(c => ({
@@ -206,10 +206,10 @@ function handleOrderCreate(request: Request, response: Response): Response {
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? ORDERS_T.errors.validationError;
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
             const availableProducts = findActiveProductsForForm();
             const availableCustomers = findActiveCustomersForForm();
-            response.content = getReactPageTemplate(ORDERS_T.titles.create, "AdminOrderForm", {
+            response.content = getReactPageTemplate('Nová objednávka — Administrace', "AdminOrderForm", {
                 values: raw,
                 error: firstError,
                 isEdit: false,
@@ -225,9 +225,9 @@ function handleOrderCreate(request: Request, response: Response): Response {
         }
         const availableProducts = findActiveProductsForForm();
         const availableCustomers = findActiveCustomersForForm();
-        response.content = getReactPageTemplate(ORDERS_T.titles.create, "AdminOrderForm", {
+        response.content = getReactPageTemplate('Nová objednávka — Administrace', "AdminOrderForm", {
             values: { status: 'pending' },
-            error: ORDERS_T.errors.genericError,
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: false,
             availableProducts: availableProducts.map(p => ({ id: String(p.id), name: p.name, price: String(p.price) })),
             availableCustomers: availableCustomers.map(c => ({
@@ -283,7 +283,7 @@ export function renderAdminOrderEdit(request: Request, response: Response): Resp
     const availableProducts = findActiveProductsForForm();
     const availableCustomers = findActiveCustomersForForm();
     response.content = getReactPageTemplate(
-        `${ORDERS_T.titles.edit} #${order.order_number}`,
+        `${'Upravit objednávku'} #${order.order_number}`,
         "AdminOrderForm",
         {
             values: formData,
@@ -313,7 +313,7 @@ function handleOrderEdit(request: Request, response: Response, order: DbOrder): 
         const availableProducts = findActiveProductsForForm();
         const availableCustomers = findActiveCustomersForForm();
         response.content = getReactPageTemplate(
-            `${ORDERS_T.titles.edit} #${order.order_number}`,
+            `${'Upravit objednávku'} #${order.order_number}`,
             "AdminOrderForm",
             {
                 values: { status: order.status },
@@ -362,7 +362,7 @@ function handleOrderEdit(request: Request, response: Response, order: DbOrder): 
             const availableProducts = findActiveProductsForForm();
             const availableCustomers = findActiveCustomersForForm();
             response.content = getReactPageTemplate(
-                `${ORDERS_T.titles.edit} #${order.order_number}`,
+                `${'Upravit objednávku'} #${order.order_number}`,
                 "AdminOrderForm",
                 {
                     values: raw,
@@ -383,7 +383,7 @@ function handleOrderEdit(request: Request, response: Response, order: DbOrder): 
         const availableProducts = findActiveProductsForForm();
         const availableCustomers = findActiveCustomersForForm();
         response.content = getReactPageTemplate(
-            `${ORDERS_T.titles.edit} #${order.order_number}`,
+            `${'Upravit objednávku'} #${order.order_number}`,
             "AdminOrderForm",
             {
                 values: { status: order.status },

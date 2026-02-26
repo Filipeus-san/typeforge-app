@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatDate } from '../../utils';
+import { useT } from '../../i18n';
 
 interface ArticleProps {
   title: string;
@@ -185,6 +186,7 @@ const articleStyles = `
 
 export function ArticlePage({ title, content, category, date, author, readTime, featuredImageUrl }: ArticleProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('blog');
 
   return (
     <div className="article-page">
@@ -198,13 +200,13 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
           </a>
           <div className="d-flex align-items-center gap-3">
-            <a href="/" className="nav-link d-none d-md-inline">Domů</a>
+            <a href="/" className="nav-link d-none d-md-inline">{t.public.nav.home}</a>
             <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
             <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.public.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -264,7 +266,7 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
       {/* Back link */}
       <div className="container text-center mb-4">
         <a href="/blog" className="btn-outline-tf">
-          <i className="bi bi-arrow-left me-2" />Zpět na blog
+          <i className="bi bi-arrow-left me-2" />{t.actions.backToList}
         </a>
       </div>
 

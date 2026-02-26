@@ -9,7 +9,7 @@ import {
     findAllCategoriesWithProductCount, findCategoryById, insertCategory, updateCategory, deleteCategory,
     findProductImages, replaceProductImages, findLastInsertedProduct
 } from "./catalog.repository";
-import { CATALOG_T } from "./catalog.translation";
+
 
 // =============================================================================
 // Admin Products Module
@@ -44,7 +44,7 @@ export function renderAdminProducts(request: Request, response: Response): Respo
         status: p.status,
     }));
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.products, "AdminProductList", {
+    response.content = getReactPageTemplate('Produkty — Administrace', "AdminProductList", {
         products: rows,
         categories: categories.map(c => ({ value: String(c.id), label: c.name })),
         statusFilter,
@@ -63,7 +63,7 @@ export function renderAdminProductCreate(request: Request, response: Response): 
         return handleProductCreate(request, response, categories);
     }
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+    response.content = getReactPageTemplate('Nový produkt — Administrace', "AdminProductForm", {
         categories: categories.map(c => ({ value: String(c.id), label: c.name })),
         values: { status: 'active', icon: DEFAULT_PRODUCT_ICON, stock: '0', price: '0' },
         isEdit: false,
@@ -74,9 +74,9 @@ export function renderAdminProductCreate(request: Request, response: Response): 
 function handleProductCreate(request: Request, response: Response, categories: DbCategory[]): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+        response.content = getReactPageTemplate('Nový produkt — Administrace', "AdminProductForm", {
             categories: categories.map(c => ({ value: String(c.id), label: c.name })),
-            error: CATALOG_T.errors.invalidRequest,
+            error: 'Neplatný požadavek',
             isEdit: false,
         });
         return response;
@@ -106,8 +106,8 @@ function handleProductCreate(request: Request, response: Response, categories: D
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Nový produkt — Administrace', "AdminProductForm", {
                 categories: categories.map(c => ({ value: String(c.id), label: c.name })),
                 values: raw,
                 error: firstError,
@@ -115,10 +115,10 @@ function handleProductCreate(request: Request, response: Response, categories: D
             });
             return response;
         }
-        response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+        response.content = getReactPageTemplate('Nový produkt — Administrace', "AdminProductForm", {
             categories: categories.map(c => ({ value: String(c.id), label: c.name })),
             values: raw,
-            error: CATALOG_T.errors.genericError,
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: false,
         });
         return response;
@@ -166,7 +166,7 @@ export function renderAdminProductEdit(request: Request, response: Response): Re
         featured_image: product.featured_image || ''
     };
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+    response.content = getReactPageTemplate('Upravit produkt — Administrace', "AdminProductForm", {
         categories: categories.map(c => ({ value: String(c.id), label: c.name })),
         values: formData,
         isEdit: true,
@@ -178,9 +178,9 @@ export function renderAdminProductEdit(request: Request, response: Response): Re
 function handleProductEdit(request: Request, response: Response, product: DbProduct, categories: DbCategory[]): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+        response.content = getReactPageTemplate('Upravit produkt — Administrace', "AdminProductForm", {
             categories: categories.map(c => ({ value: String(c.id), label: c.name })),
-            error: CATALOG_T.errors.invalidRequest,
+            error: 'Neplatný požadavek',
             isEdit: true,
         });
         return response;
@@ -209,8 +209,8 @@ function handleProductEdit(request: Request, response: Response, product: DbProd
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Upravit produkt — Administrace', "AdminProductForm", {
                 categories: categories.map(c => ({ value: String(c.id), label: c.name })),
                 values: raw,
                 error: firstError,
@@ -218,10 +218,10 @@ function handleProductEdit(request: Request, response: Response, product: DbProd
             });
             return response;
         }
-        response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+        response.content = getReactPageTemplate('Upravit produkt — Administrace', "AdminProductForm", {
             categories: categories.map(c => ({ value: String(c.id), label: c.name })),
             values: raw,
-            error: CATALOG_T.errors.genericError,
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: true,
         });
         return response;
@@ -268,7 +268,7 @@ export function renderAdminCategories(request: Request, response: Response): Res
         status: c.status,
     }));
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.categories, "AdminCategoryList", {
+    response.content = getReactPageTemplate('Kategorie — Administrace', "AdminCategoryList", {
         categories: rows,
         statusFilter,
     });
@@ -283,7 +283,7 @@ export function renderAdminCategoryCreate(request: Request, response: Response):
         return handleCategoryCreate(request, response);
     }
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+    response.content = getReactPageTemplate('Nová kategorie — Administrace', "AdminCategoryForm", {
         values: { status: 'active', icon: DEFAULT_CATEGORY_ICON, sort_order: '0' },
         isEdit: false,
     });
@@ -293,8 +293,8 @@ export function renderAdminCategoryCreate(request: Request, response: Response):
 function handleCategoryCreate(request: Request, response: Response): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
-            error: CATALOG_T.errors.invalidRequest,
+        response.content = getReactPageTemplate('Nová kategorie — Administrace', "AdminCategoryForm", {
+            error: 'Neplatný požadavek',
             isEdit: false,
         });
         return response;
@@ -313,17 +313,17 @@ function handleCategoryCreate(request: Request, response: Response): Response {
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Nová kategorie — Administrace', "AdminCategoryForm", {
                 values: raw,
                 error: firstError,
                 isEdit: false,
             });
             return response;
         }
-        response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+        response.content = getReactPageTemplate('Nová kategorie — Administrace', "AdminCategoryForm", {
             values: raw,
-            error: CATALOG_T.errors.genericError,
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: false,
         });
         return response;
@@ -364,7 +364,7 @@ export function renderAdminCategoryEdit(request: Request, response: Response): R
         featured_image: category.featured_image || ''
     };
 
-    response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+    response.content = getReactPageTemplate('Upravit kategorii — Administrace', "AdminCategoryForm", {
         values: formData,
         isEdit: true,
     });
@@ -374,8 +374,8 @@ export function renderAdminCategoryEdit(request: Request, response: Response): R
 function handleCategoryEdit(request: Request, response: Response, category: DbCategory): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
-            error: CATALOG_T.errors.invalidRequest,
+        response.content = getReactPageTemplate('Upravit kategorii — Administrace', "AdminCategoryForm", {
+            error: 'Neplatný požadavek',
             isEdit: true,
         });
         return response;
@@ -394,17 +394,17 @@ function handleCategoryEdit(request: Request, response: Response, category: DbCa
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Upravit kategorii — Administrace', "AdminCategoryForm", {
                 values: raw,
                 error: firstError,
                 isEdit: true,
             });
             return response;
         }
-        response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+        response.content = getReactPageTemplate('Upravit kategorii — Administrace', "AdminCategoryForm", {
             values: raw,
-            error: CATALOG_T.errors.genericError,
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: true,
         });
         return response;

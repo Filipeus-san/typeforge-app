@@ -1,10 +1,4 @@
-export const ORDERS_T = {
-    titles: {
-        admin: 'Objednávky — Administrace',
-        create: 'Nová objednávka — Administrace',
-        edit: 'Upravit objednávku',
-        detail: 'Objednávka',
-    },
+export const orders = {
     headings: {
         admin: 'Objednávky',
         create: 'Nová objednávka',
@@ -37,11 +31,6 @@ export const ORDERS_T = {
     empty: {
         orders: 'Žádné objednávky k zobrazení',
         items: 'Žádné položky',
-    },
-    errors: {
-        invalidRequest: 'Neplatný požadavek',
-        validationError: 'Chyba validace',
-        genericError: 'Došlo k chybě, zkuste to znovu',
     },
     form: {
         sections: {

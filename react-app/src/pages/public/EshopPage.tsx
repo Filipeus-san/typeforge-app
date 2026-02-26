@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface EshopProps {
   products: {
@@ -268,6 +269,7 @@ const eshopStyles = `
 
 export function EshopPage({ products, categories }: EshopProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('shop');
 
   return (
     <div className="eshop-page">
@@ -281,13 +283,13 @@ export function EshopPage({ products, categories }: EshopProps) {
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
           </a>
           <div className="d-flex align-items-center gap-3">
-            <a href="/" className="nav-link d-none d-md-inline">Domů</a>
-            <a href="/eshop" className="nav-link d-none d-md-inline" style={{ color: 'var(--tf-text)' }}>E-Shop</a>
+            <a href="/" className="nav-link d-none d-md-inline">{t.nav.home}</a>
+            <a href="/eshop" className="nav-link d-none d-md-inline" style={{ color: 'var(--tf-text)' }}>{t.nav.eshop}</a>
             <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -305,19 +307,19 @@ export function EshopPage({ products, categories }: EshopProps) {
         <div className="container">
           <span className="eshop-badge">
             <i className="bi bi-stars me-1" />
-            Nová kolekce 2026
+            {t.hero.badge}
           </span>
           <h1>
-            Objevte náš<br />
-            <span className="text-gradient">prémiový výběr</span>
+            {t.hero.titleLine1}<br />
+            <span className="text-gradient">{t.hero.titleLine2}</span>
           </h1>
-          <p>Kvalitní produkty za skvělé ceny. Doprava zdarma nad 1 000 Kč.</p>
+          <p>{t.hero.subtitle}</p>
           <div className="d-flex gap-3 justify-content-center">
             <a href="#products" className="btn-primary-tf">
-              <i className="bi bi-bag me-2" />Prohlédnout produkty
+              <i className="bi bi-bag me-2" />{t.hero.shopNow}
             </a>
             <a href="#categories" className="btn-outline-tf">
-              <i className="bi bi-grid me-2" />Kategorie
+              <i className="bi bi-grid me-2" />{t.hero.categories}
             </a>
           </div>
         </div>
@@ -330,25 +332,25 @@ export function EshopPage({ products, categories }: EshopProps) {
             <div className="col-6 col-lg-3">
               <div className="feature-item">
                 <i className="bi bi-truck" />
-                <span>Doprava zdarma</span>
+                <span>{t.features.freeShipping}</span>
               </div>
             </div>
             <div className="col-6 col-lg-3">
               <div className="feature-item">
                 <i className="bi bi-shield-check" />
-                <span>Záruka 2 roky</span>
+                <span>{t.features.warranty}</span>
               </div>
             </div>
             <div className="col-6 col-lg-3">
               <div className="feature-item">
                 <i className="bi bi-arrow-return-left" />
-                <span>30 dní na vrácení</span>
+                <span>{t.features.returnPolicy}</span>
               </div>
             </div>
             <div className="col-6 col-lg-3">
               <div className="feature-item">
                 <i className="bi bi-headset" />
-                <span>24/7 podpora</span>
+                <span>{t.features.support}</span>
               </div>
             </div>
           </div>
@@ -359,7 +361,7 @@ export function EshopPage({ products, categories }: EshopProps) {
       {categories.length > 0 && (
         <section className="container mb-5" id="categories">
           <div className="d-flex align-items-center justify-content-between mb-4">
-            <h3 className="fw-bold mb-0">Kategorie</h3>
+            <h3 className="fw-bold mb-0">{t.sections.categories}</h3>
           </div>
           <div className="row g-3">
             {categories.map((cat) => (
@@ -373,7 +375,7 @@ export function EshopPage({ products, categories }: EshopProps) {
                     )}
                   </div>
                   <h6>{cat.name}</h6>
-                  <div className="cat-count">{cat.productCount} produktů</div>
+                  <div className="cat-count">{cat.productCount} {t.category.totalProducts}</div>
                 </a>
               </div>
             ))}
@@ -384,13 +386,13 @@ export function EshopPage({ products, categories }: EshopProps) {
       {/* Products */}
       <section className="container pb-5" id="products">
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <h3 className="fw-bold mb-0">Produkty</h3>
-          <span className="text-muted-tf" style={{ fontSize: '0.9rem' }}>{products.length} produktů</span>
+          <h3 className="fw-bold mb-0">{t.headings.allProducts}</h3>
+          <span className="text-muted-tf" style={{ fontSize: '0.9rem' }}>{products.length} {t.category.totalProducts}</span>
         </div>
         {products.length === 0 ? (
           <div className="text-center py-5">
             <i className="bi bi-bag-x" style={{ fontSize: '3rem', color: 'var(--tf-text-muted)' }} />
-            <p className="text-muted-tf mt-3">Zatím nemáme žádné produkty.</p>
+            <p className="text-muted-tf mt-3">{t.empty.noProducts}</p>
           </div>
         ) : (
           <div className="row g-4">
@@ -419,7 +421,7 @@ export function EshopPage({ products, categories }: EshopProps) {
                         <span className="price-old">{formatPrice(Number(p.oldPrice))}</span>
                       )}
                       <form method="post" action={`/cart/add?productId=${p.id}&quantity=1`} style={{ display: 'inline', marginLeft: 'auto' }}>
-                        <button type="submit" className="btn-add-cart" title="Přidat do košíku">
+                        <button type="submit" className="btn-add-cart" title={t.product.addToCart}>
                           <i className="bi bi-cart-plus" />
                         </button>
                       </form>
@@ -437,11 +439,11 @@ export function EshopPage({ products, categories }: EshopProps) {
         <div className="container">
           <div className="newsletter-box">
             <i className="bi bi-envelope" style={{ fontSize: '2rem', color: 'var(--tf-primary)', marginBottom: '0.75rem', display: 'block' }} />
-            <h4>Odebírejte novinky</h4>
-            <p>Buďte první, kdo se dozví o nových produktech a slevách.</p>
+            <h4>{t.newsletter.title}</h4>
+            <p>{t.newsletter.subtitle}</p>
             <div className="newsletter-input-group">
-              <input type="email" placeholder="Váš e-mail" />
-              <button className="btn-primary-tf">Odebírat</button>
+              <input type="email" placeholder={t.newsletter.placeholder} />
+              <button className="btn-primary-tf">{t.newsletter.subscribe}</button>
             </div>
           </div>
         </div>

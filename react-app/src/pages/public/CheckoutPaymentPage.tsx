@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CheckoutPaymentProps {
   items: {
@@ -317,17 +318,18 @@ const paymentStyles = `
   }
 `;
 
-const paymentMethods = [
-  { id: 'card', name: 'Platební karta', desc: 'Visa, Mastercard, Maestro', icon: 'credit-card' },
-  { id: 'bank', name: 'Bankovní převod', desc: 'Platba převodem na účet', icon: 'bank' },
-  { id: 'cod', name: 'Dobírka', desc: 'Platba při převzetí zásilky', icon: 'cash-coin' },
-  { id: 'paypal', name: 'PayPal', desc: 'Platba přes PayPal účet', icon: 'paypal' },
-];
-
 export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('cart');
   const [selectedPayment, setSelectedPayment] = useState('card');
   const [sameAsBilling, setSameAsBilling] = useState(true);
+
+  const paymentMethods = [
+    { id: 'card', name: t.checkout.payment.card, desc: t.checkout.payment.cardDesc, icon: 'credit-card' },
+    { id: 'bank', name: t.checkout.payment.bankTransfer, desc: t.checkout.payment.bankTransferDesc, icon: 'bank' },
+    { id: 'cod', name: t.checkout.payment.cod, desc: t.checkout.payment.codDesc, icon: 'cash-coin' },
+    { id: 'paypal', name: t.checkout.payment.paypal, desc: t.checkout.payment.paypalDesc, icon: 'paypal' },
+  ];
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.productPrice) * Number(item.quantity), 0);
 
@@ -345,12 +347,12 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
           <div className="d-flex align-items-center gap-3">
             <span className="secure-label">
               <i className="bi bi-shield-lock-fill" />
-              Bezpečná platba
+              {t.checkout.secureCheckout}
             </span>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -366,22 +368,22 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Doprava</span>
+              <span>{t.checkout.steps.shipping}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step active">
               <div className="step-num">2</div>
-              <span>Platba</span>
+              <span>{t.checkout.steps.payment}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">3</div>
-              <span>Shrnutí</span>
+              <span>{t.checkout.steps.review}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">4</div>
-              <span>Hotovo</span>
+              <span>{t.checkout.steps.done}</span>
             </div>
           </div>
         </div>
@@ -395,7 +397,7 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
               <form method="post" action="/checkout/review">
                 {/* Payment methods */}
                 <div className="checkout-section">
-                  <h5><i className="bi bi-credit-card" />Způsob platby</h5>
+                  <h5><i className="bi bi-credit-card" />{t.checkout.payment.selectMethod}</h5>
                   {paymentMethods.map((method) => (
                     <div
                       key={method.id}
@@ -419,19 +421,19 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                     <div className="card-form">
                       <div className="row g-3">
                         <div className="col-12">
-                          <label className="form-label" htmlFor="cardNumber">Číslo karty</label>
+                          <label className="form-label" htmlFor="cardNumber">{t.checkout.payment.cardNumber}</label>
                           <input type="text" className="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" />
                         </div>
                         <div className="col-md-4">
-                          <label className="form-label" htmlFor="cardExpiry">Platnost</label>
+                          <label className="form-label" htmlFor="cardExpiry">{t.checkout.payment.cardExpiry}</label>
                           <input type="text" className="form-control" id="cardExpiry" name="cardExpiry" placeholder="MM/RR" />
                         </div>
                         <div className="col-md-4">
-                          <label className="form-label" htmlFor="cardCvv">CVV</label>
+                          <label className="form-label" htmlFor="cardCvv">{t.checkout.payment.cardCvv}</label>
                           <input type="text" className="form-control" id="cardCvv" name="cardCvv" placeholder="123" />
                         </div>
                         <div className="col-md-4">
-                          <label className="form-label" htmlFor="cardName">Jméno na kartě</label>
+                          <label className="form-label" htmlFor="cardName">{t.checkout.payment.cardName}</label>
                           <input type="text" className="form-control" id="cardName" name="cardName" placeholder="Jan Novák" />
                         </div>
                       </div>
@@ -441,7 +443,7 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
 
                 {/* Billing address */}
                 <div className="checkout-section">
-                  <h5><i className="bi bi-receipt" />Fakturační adresa</h5>
+                  <h5><i className="bi bi-receipt" />{t.checkout.payment.billingInfo}</h5>
                   <div className="billing-toggle">
                     <input
                       type="checkbox"
@@ -451,22 +453,22 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                       onChange={(e) => setSameAsBilling(e.target.checked)}
                     />
                     <label className="form-check-label" htmlFor="sameAsBilling" style={{ color: 'var(--tf-text)', fontSize: '0.9rem' }}>
-                      Stejná jako doručovací adresa
+                      {t.checkout.payment.sameAsShipping}
                     </label>
                   </div>
 
                   {!sameAsBilling && (
                     <div className="row g-3 mt-1">
                       <div className="col-md-6">
-                        <label className="form-label" htmlFor="company">Firma (volitelné)</label>
+                        <label className="form-label" htmlFor="company">{t.checkout.payment.companyName}</label>
                         <input type="text" className="form-control" id="company" name="company" placeholder="Název firmy" />
                       </div>
                       <div className="col-md-3">
-                        <label className="form-label" htmlFor="ico">ICO</label>
+                        <label className="form-label" htmlFor="ico">{t.checkout.payment.ico}</label>
                         <input type="text" className="form-control" id="ico" name="ico" placeholder="12345678" />
                       </div>
                       <div className="col-md-3">
-                        <label className="form-label" htmlFor="dic">DIC</label>
+                        <label className="form-label" htmlFor="dic">{t.checkout.payment.dic}</label>
                         <input type="text" className="form-control" id="dic" name="dic" placeholder="CZ12345678" />
                       </div>
                       <div className="col-12">
@@ -499,10 +501,10 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                 <div className="checkout-nav">
                   <a href="/checkout" className="back-link">
                     <i className="bi bi-arrow-left" />
-                    Zpět k dopravě
+                    {t.actions.backToShipping}
                   </a>
                   <button type="submit" className="btn-primary-tf" style={{ padding: '0.7rem 2rem' }}>
-                    Pokračovat ke shrnutí
+                    {t.actions.reviewOrder}
                     <i className="bi bi-arrow-right ms-2" />
                   </button>
                 </div>
@@ -512,7 +514,7 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
             {/* Order summary */}
             <div className="col-lg-4">
               <div className="order-summary-sidebar">
-                <h5>Vaše objednávka</h5>
+                <h5>{t.headings.yourOrder}</h5>
                 {items.map((item, idx) => (
                   <div key={idx} className="summary-item">
                     <div className="item-thumb">
@@ -531,15 +533,15 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                 ))}
                 <div className="summary-totals">
                   <div className="row-total">
-                    <span className="label">Mezisoučet</span>
+                    <span className="label">{t.summary.subtotal}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="row-total">
-                    <span className="label">Doprava</span>
-                    <span style={{ color: '#22c55e' }}>Zdarma</span>
+                    <span className="label">{t.summary.shipping}</span>
+                    <span style={{ color: '#22c55e' }}>{t.summary.free}</span>
                   </div>
                   <div className="grand-total">
-                    <span>Celkem</span>
+                    <span>{t.summary.total}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                 </div>

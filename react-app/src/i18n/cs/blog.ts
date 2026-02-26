@@ -1,11 +1,4 @@
-export const BLOG_T = {
-    titles: {
-        admin: 'Blog — Administrace',
-        create: 'Nový článek — Administrace',
-        edit: 'Upravit článek — Administrace',
-        public: 'Blog — TypeForge',
-        article: 'Článek — TypeForge',
-    },
+export const blog = {
     headings: {
         admin: 'Blog',
         create: 'Nový článek',
@@ -38,12 +31,6 @@ export const BLOG_T = {
         articles: 'Žádné články k zobrazení',
         noArticlesYet: 'Zatím zde nejsou žádné články.',
         noImages: 'Zatím nejsou nahrány žádné obrázky.',
-    },
-    errors: {
-        invalidRequest: 'Neplatný požadavek',
-        validationError: 'Chyba validace',
-        genericError: 'Došlo k chybě, zkuste to znovu',
-        slugExists: 'Článek s tímto URL slugem již existuje',
     },
     statuses: {
         published: 'Publikováno',

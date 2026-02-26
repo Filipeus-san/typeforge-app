@@ -5,6 +5,7 @@ import { CardSection } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import type { StatData } from '../../types';
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusVariant, getInitials } from '../../utils';
+import { useT } from '../../i18n';
 
 interface DashboardProps {
   stats: StatData[];
@@ -13,19 +14,20 @@ interface DashboardProps {
 }
 
 export function DashboardPage({ stats, recentOrders, lowStockProducts }: DashboardProps) {
+  const t = useT('dashboard');
   return (
-    <AdminLayout title="Dashboard" activePage="dashboard">
+    <AdminLayout title={t.headings.dashboard} activePage="dashboard">
       <StatsGrid stats={stats} />
       <div className="row g-4">
         <div className="col-md-8">
-          <CardSection title="Poslední objednávky">
+          <CardSection title={t.sections.recentOrders}>
             <table className="data-table">
               <thead>
-                <tr><th>Objednávka</th><th>Zákazník</th><th style={{textAlign:'right'}}>Částka</th><th>Stav</th><th>Datum</th></tr>
+                <tr><th>{t.columns.number}</th><th>{t.columns.customer}</th><th style={{textAlign:'right'}}>{t.columns.amount}</th><th>{t.columns.status}</th><th>{t.columns.date}</th></tr>
               </thead>
               <tbody>
                 {recentOrders.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center text-muted-tf py-4">Žádné objednávky</td></tr>
+                  <tr><td colSpan={5} className="text-center text-muted-tf py-4">{t.empty.orders}</td></tr>
                 ) : recentOrders.map((o) => (
                   <tr key={o.id}>
                     <td><a href={`/admin/orders/detail?id=${o.id}`} className="order-id">{o.orderNumber}</a></td>
@@ -45,9 +47,9 @@ export function DashboardPage({ stats, recentOrders, lowStockProducts }: Dashboa
           </CardSection>
         </div>
         <div className="col-md-4">
-          <CardSection title="Nízký sklad">
+          <CardSection title={t.sections.lowStock}>
             {lowStockProducts.length === 0 ? (
-              <p className="text-muted-tf">Žádné produkty s nízkým skladem</p>
+              <p className="text-muted-tf">{t.empty.noProducts}</p>
             ) : lowStockProducts.map((p) => (
               <div key={p.id} className="d-flex justify-content-between align-items-center py-2" style={{borderBottom:'1px solid var(--tf-border)'}}>
                 <a href={`/admin/products/edit?id=${p.id}`} style={{color:'var(--tf-text)', textDecoration:'none'}}>{p.name}</a>

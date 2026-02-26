@@ -7,7 +7,7 @@ import { BlogPostForm } from "./blog.validation";
 import { findPostBySlugWithAuthor, findAllPostsWithAuthor, findPostById, findPostBySlug, findPostBySlugExcluding, insertPost, updatePost, deletePost } from "./blog.repository";
 import { escapeHtmlBlog } from "./blog.utils";
 import { DEFAULT_READ_TIME } from "./blog.const";
-import { BLOG_T } from "./blog.translation";
+
 
 // =============================================================================
 // Public Blog Pages
@@ -44,7 +44,7 @@ export function renderArticle(request: Request, response: Response): Response {
         }
     }
 
-    response.content = getReactPageTemplate(BLOG_T.titles.article, "Article", {
+    response.content = getReactPageTemplate('Článek — TypeForge', "Article", {
         title: "Článek nenalezen",
         content: "<p>Požadovaný článek nebyl nalezen.</p>",
     });
@@ -54,7 +54,7 @@ export function renderArticle(request: Request, response: Response): Response {
 export function renderBlog(request: Request, response: Response): Response {
     const posts = findAllPostsWithAuthor();
     const publishedPosts = posts.filter(p => p.status === 'published');
-    response.content = getReactPageTemplate(BLOG_T.titles.public, "BlogList", {
+    response.content = getReactPageTemplate('Blog — TypeForge', "BlogList", {
         posts: publishedPosts.map(p => ({
             slug: p.slug,
             title: p.title,
@@ -85,7 +85,7 @@ export function renderAdminBlog(request: Request, response: Response): Response 
         ? posts.filter(p => p.status === statusFilter)
         : posts;
 
-    response.content = getReactPageTemplate(BLOG_T.titles.admin, "AdminBlogList", {
+    response.content = getReactPageTemplate('Blog — Administrace', "AdminBlogList", {
         posts: filteredPosts.map(p => ({
             id: String(p.id),
             title: p.title,
@@ -112,7 +112,7 @@ export function renderAdminBlogCreate(request: Request, response: Response): Res
         return handleBlogCreate(request, response, auth.session);
     }
 
-    response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+    response.content = getReactPageTemplate('Nový článek — Administrace', "AdminBlogForm", {
         isEdit: false,
     });
     return response;
@@ -121,8 +121,8 @@ export function renderAdminBlogCreate(request: Request, response: Response): Res
 function handleBlogCreate(request: Request, response: Response, session: UserSession): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
-            error: BLOG_T.errors.invalidRequest,
+        response.content = getReactPageTemplate('Nový článek — Administrace', "AdminBlogForm", {
+            error: 'Neplatný požadavek',
             isEdit: false,
         });
         return response;
@@ -135,9 +135,9 @@ function handleBlogCreate(request: Request, response: Response, session: UserSes
 
         const existing = findPostBySlug(slug);
         if (existing) {
-            response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+            response.content = getReactPageTemplate('Nový článek — Administrace', "AdminBlogForm", {
                 values: raw,
-                error: BLOG_T.errors.slugExists,
+                error: 'Článek s tímto URL slugem již existuje',
                 isEdit: false,
             });
             return response;
@@ -150,16 +150,16 @@ function handleBlogCreate(request: Request, response: Response, session: UserSes
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? BLOG_T.errors.validationError;
-            response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Nový článek — Administrace', "AdminBlogForm", {
                 values: raw,
                 error: firstError,
                 isEdit: false,
             });
             return response;
         }
-        response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
-            error: BLOG_T.errors.genericError,
+        response.content = getReactPageTemplate('Nový článek — Administrace', "AdminBlogForm", {
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: false,
         });
         return response;
@@ -205,7 +205,7 @@ export function renderAdminBlogEdit(request: Request, response: Response): Respo
         featured_image: post.featured_image ?? ''
     };
 
-    response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+    response.content = getReactPageTemplate('Upravit článek — Administrace', "AdminBlogForm", {
         values,
         isEdit: true,
         postId: String(post.id),
@@ -228,9 +228,9 @@ function handleBlogEdit(request: Request, response: Response, post: DbBlogPost):
 
         const existing = findPostBySlugExcluding(slug, post.id);
         if (existing) {
-            response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+            response.content = getReactPageTemplate('Upravit článek — Administrace', "AdminBlogForm", {
                 values: raw,
-                error: BLOG_T.errors.slugExists,
+                error: 'Článek s tímto URL slugem již existuje',
                 isEdit: true,
                 postId: String(post.id),
             });
@@ -244,8 +244,8 @@ function handleBlogEdit(request: Request, response: Response, post: DbBlogPost):
         return response;
     } catch (error) {
         if (error instanceof ValidationError) {
-            const firstError = Object.values(error.errors)[0]?.[0] ?? BLOG_T.errors.validationError;
-            response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+            const firstError = Object.values(error.errors)[0]?.[0] ?? 'Chyba validace';
+            response.content = getReactPageTemplate('Upravit článek — Administrace', "AdminBlogForm", {
                 values: raw,
                 error: firstError,
                 isEdit: true,
@@ -253,8 +253,8 @@ function handleBlogEdit(request: Request, response: Response, post: DbBlogPost):
             });
             return response;
         }
-        response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
-            error: BLOG_T.errors.genericError,
+        response.content = getReactPageTemplate('Upravit článek — Administrace', "AdminBlogForm", {
+            error: 'Došlo k chybě, zkuste to znovu',
             isEdit: true,
             postId: String(post.id),
         });

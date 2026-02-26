@@ -1,5 +1,6 @@
 import React from 'react';
 import type { NavItem } from '../../types';
+import { useT } from '../../i18n';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
 
@@ -20,6 +21,7 @@ export function Navbar({
   ctaButton,
   fixed = true,
 }: NavbarProps) {
+  const t = useT('common');
   const classes = ['navbar navbar-expand-lg navbar-dark navbar-tf', fixed ? 'fixed-top' : ''].filter(Boolean).join(' ');
 
   return (
@@ -44,7 +46,7 @@ export function Navbar({
             ))}
             {showAdminLink && (
               <li className="nav-item">
-                <a className="nav-link" href="/admin"><i className="bi bi-speedometer2 me-1" />Admin</a>
+                <a className="nav-link" href="/admin"><i className="bi bi-speedometer2 me-1" />{t.nav.admin}</a>
               </li>
             )}
             {showThemeToggle && (
@@ -63,10 +65,11 @@ export function Navbar({
 }
 
 export function PublicNavbar({ activePath }: { activePath?: string }) {
+  const t = useT('common');
   const items: NavItem[] = [
-    { path: '/', label: 'Domů', active: activePath === '/' },
-    { path: '/blog', label: 'Blog', active: activePath === '/blog' },
-    { path: '/eshop', label: 'E-Shop', active: activePath === '/eshop' },
+    { path: '/', label: t.nav.home, active: activePath === '/' },
+    { path: '/blog', label: t.sidebar.items.blog, active: activePath === '/blog' },
+    { path: '/eshop', label: t.nav.eshop, active: activePath === '/eshop' },
   ];
   return <Navbar items={items} showAdminLink ctaButton={{ text: 'Vyzkoušet', href: '/login' }} />;
 }

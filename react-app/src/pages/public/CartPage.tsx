@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CartProps {
   items: {
@@ -250,6 +251,7 @@ const cartStyles = `
 
 export function CartPage({ items }: CartProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('cart');
 
   const totalItems = items.reduce((sum, item) => sum + Number(item.quantity), 0);
   const subtotal = items.reduce((sum, item) => sum + Number(item.productPrice) * Number(item.quantity), 0);
@@ -270,7 +272,7 @@ export function CartPage({ items }: CartProps) {
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -288,7 +290,7 @@ export function CartPage({ items }: CartProps) {
       <div className="cart-content">
         <div className="container">
           <div className="cart-header">
-            <h1><i className="bi bi-cart3 me-3" />Nákupní košík</h1>
+            <h1><i className="bi bi-cart3 me-3" />{t.headings.cart}</h1>
             <span className="item-count">{totalItems} položek</span>
           </div>
 
@@ -343,25 +345,25 @@ export function CartPage({ items }: CartProps) {
 
               <div className="col-lg-4">
                 <div className="cart-summary">
-                  <h5>Souhrn objednávky</h5>
+                  <h5>{t.headings.orderSummary}</h5>
                   <div className="summary-row">
-                    <span className="label">Mezisoučet</span>
+                    <span className="label">{t.summary.subtotal}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="summary-row">
-                    <span className="label">Doprava</span>
-                    <span style={{ color: '#22c55e' }}>Zdarma</span>
+                    <span className="label">{t.summary.shipping}</span>
+                    <span style={{ color: '#22c55e' }}>{t.summary.free}</span>
                   </div>
                   <div className="summary-total">
-                    <span>Celkem</span>
+                    <span>{t.summary.total}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="summary-actions">
                     <a href="/checkout" className="btn-primary-tf w-100 text-center" style={{ padding: '0.7rem' }}>
-                      <i className="bi bi-lock me-2" />Pokračovat k objednávce
+                      <i className="bi bi-lock me-2" />{t.actions.checkout}
                     </a>
                     <a href="/eshop" className="continue-link">
-                      <i className="bi bi-arrow-left me-1" />Pokračovat v nákupu
+                      <i className="bi bi-arrow-left me-1" />{t.actions.continueShopping}
                     </a>
                   </div>
                 </div>

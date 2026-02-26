@@ -1,7 +1,7 @@
 import { getReactPageTemplate } from "../../../react";
 import { requireAdmin, formatPrice, formatOrderDate, getOrderStatusLabel } from "../shared";
 import { countOrders, sumRevenue, countCustomers, countProductsInStock, countLowStockProducts, countPendingOrders, findRecentOrders, findLowStockProducts, findRecentCustomers, avgOrderValue, findOrdersByStatus, findTopProducts, findRecentCustomersForAnalytics, findStockOverview, findMonthlyRevenue, countActiveCarts, countCartItems, sumCartValue, avgCartValue, findTopCartProducts } from "./dashboard.repository";
-import { DASHBOARD_T } from "./dashboard.translation";
+
 
 export function renderAdmin(request: Request, response: Response): Response {
     const auth = requireAdmin(request, response);
@@ -17,10 +17,10 @@ export function renderAdmin(request: Request, response: Response): Response {
     const activeCartsCount = countActiveCarts();
 
     const stats = [
-        { icon: "cart3", iconColor: "purple" as const, value: String(orderCount), label: DASHBOARD_T.stats.totalOrders },
-        { icon: "currency-dollar", iconColor: "green" as const, value: formatPrice(totalRevenue), label: DASHBOARD_T.stats.totalRevenue },
-        { icon: "people", iconColor: "blue" as const, value: String(customerCount), label: DASHBOARD_T.stats.customers },
-        { icon: "box-seam", iconColor: "orange" as const, value: String(productStock), label: DASHBOARD_T.stats.productsInStock }
+        { icon: "cart3", iconColor: "purple" as const, value: String(orderCount) },
+        { icon: "currency-dollar", iconColor: "green" as const, value: formatPrice(totalRevenue) },
+        { icon: "people", iconColor: "blue" as const, value: String(customerCount) },
+        { icon: "box-seam", iconColor: "orange" as const, value: String(productStock) }
     ];
 
     // Fetch recent orders from database
@@ -33,31 +33,31 @@ export function renderAdmin(request: Request, response: Response): Response {
     const recentCustomers = findRecentCustomers(5);
 
     // Build activity feed from recent orders and customers
-    const activityItems: { color: string; text: string; time: string }[] = [];
+    const activityItems: { color: string; type: string; name: string; amount: string; time: string; statusLabel?: string }[] = [];
 
     for (let i = 0; i < dbOrders.length && activityItems.length < 8; i++) {
         const o = dbOrders[i];
         const statusLabel = getOrderStatusLabel(o.status);
         const name = o.customer_name;
         if (o.status === 'completed') {
-            activityItems.push({ color: "green", text: `${name} — ${DASHBOARD_T.activity.orderCompleted} (${formatPrice(o.total_amount)})`, time: formatOrderDate(o.created_at) });
+            activityItems.push({ color: "green", type: "orderCompleted", name, amount: String(o.total_amount), time: formatOrderDate(o.created_at) });
         } else if (o.status === 'pending') {
-            activityItems.push({ color: "orange", text: `${name} — ${DASHBOARD_T.activity.newOrder} (${formatPrice(o.total_amount)})`, time: formatOrderDate(o.created_at) });
+            activityItems.push({ color: "orange", type: "newOrder", name, amount: String(o.total_amount), time: formatOrderDate(o.created_at) });
         } else if (o.status === 'cancelled') {
-            activityItems.push({ color: "red", text: `${name} — ${DASHBOARD_T.activity.orderCancelled}`, time: formatOrderDate(o.created_at) });
+            activityItems.push({ color: "red", type: "orderCancelled", name, amount: "", time: formatOrderDate(o.created_at) });
         } else {
-            activityItems.push({ color: "blue", text: `${name} — ${DASHBOARD_T.activity.orderPrefix} ${statusLabel}`, time: formatOrderDate(o.created_at) });
+            activityItems.push({ color: "blue", type: "other", name, statusLabel: statusLabel, amount: "", time: formatOrderDate(o.created_at) });
         }
     }
 
     for (let i = 0; i < recentCustomers.length && activityItems.length < 8; i++) {
         const c = recentCustomers[i];
         const name = c.first_name + ' ' + c.last_name;
-        activityItems.push({ color: "purple", text: `${DASHBOARD_T.activity.newCustomer} ${name}`, time: formatOrderDate(c.created_at) });
+        activityItems.push({ color: "purple", type: "newCustomer", name, amount: "", time: formatOrderDate(c.created_at) });
     }
 
-    response.content = getReactPageTemplate(DASHBOARD_T.titles.admin, "AdminDashboard", {
-        stats: stats.map(s => ({ icon: s.icon, iconColor: s.iconColor, value: s.value, label: s.label })),
+    response.content = getReactPageTemplate('Administrace — TypeForge', "AdminDashboard", {
+        stats: stats.map(s => ({ icon: s.icon, iconColor: s.iconColor, value: s.value })),
         recentOrders: dbOrders.map(o => ({
             id: String(o.id),
             orderNumber: o.order_number,
@@ -121,10 +121,10 @@ export function renderAdminAnalytics(request: Request, response: Response): Resp
 
     // Stats grid
     const stats = [
-        { icon: 'currency-dollar', iconColor: 'green' as const, value: formatAnalyticsCurrency(totalRevenue), label: DASHBOARD_T.stats.totalTurnover },
-        { icon: 'cart', iconColor: 'purple' as const, value: String(totalOrders), label: DASHBOARD_T.stats.totalOrdersCount },
-        { icon: 'people', iconColor: 'blue' as const, value: String(totalCustomers), label: DASHBOARD_T.stats.customers },
-        { icon: 'receipt', iconColor: 'orange' as const, value: formatAnalyticsCurrency(avgOrderVal), label: DASHBOARD_T.stats.averageOrder }
+        { icon: 'currency-dollar', iconColor: 'green' as const, value: formatAnalyticsCurrency(totalRevenue) },
+        { icon: 'cart', iconColor: 'purple' as const, value: String(totalOrders) },
+        { icon: 'people', iconColor: 'blue' as const, value: String(totalCustomers) },
+        { icon: 'receipt', iconColor: 'orange' as const, value: formatAnalyticsCurrency(avgOrderVal) }
     ];
 
     // Orders by status
@@ -149,8 +149,8 @@ export function renderAdminAnalytics(request: Request, response: Response): Resp
     const avgCart = avgCartValue();
     const topCartProducts = findTopCartProducts(10);
 
-    response.content = getReactPageTemplate(DASHBOARD_T.titles.analytics, "AdminAnalytics", {
-        stats: stats.map(s => ({ icon: s.icon, iconColor: s.iconColor, value: s.value, label: s.label })),
+    response.content = getReactPageTemplate('Analytika — Administrace', "AdminAnalytics", {
+        stats: stats.map(s => ({ icon: s.icon, iconColor: s.iconColor, value: s.value })),
         ordersByStatus: ordersByStatus.map(s => ({ status: s.status, count: s.count })),
         totalOrders,
         topProducts: topProducts.map(p => ({

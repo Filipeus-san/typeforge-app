@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CategoryPageProps {
   title: string;
@@ -231,6 +232,7 @@ const categoryStyles = `
 
 export function CategoryPage({ title, category, products }: CategoryPageProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('shop');
 
   return (
     <div className="category-page">
@@ -244,12 +246,12 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
           </a>
           <div className="d-flex align-items-center gap-3">
-            <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
+            <a href="/eshop" className="nav-link d-none d-md-inline">{t.nav.eshop}</a>
             <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -267,7 +269,7 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
         <div className="container">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="/eshop">E-Shop</a></li>
+              <li className="breadcrumb-item"><a href="/eshop">{t.breadcrumb.eshop}</a></li>
               <li className="breadcrumb-item active">{category?.name || title}</li>
             </ol>
           </nav>
@@ -298,7 +300,7 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
       {/* Sort bar */}
       <section className="container">
         <div className="cat-sort-bar">
-          <span className="product-count">{products.length} produktů</span>
+          <span className="product-count">{products.length} {t.category.totalProducts}</span>
         </div>
       </section>
 
@@ -307,9 +309,9 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
         {products.length === 0 ? (
           <div className="cat-empty">
             <i className="bi bi-inbox" />
-            <p>V této kategorii zatím nejsou žádné produkty.</p>
+            <p>{t.category.noProducts}</p>
             <a href="/eshop" className="btn-primary-tf">
-              <i className="bi bi-arrow-left me-2" />Zpět na E-Shop
+              <i className="bi bi-arrow-left me-2" />{t.category.backToEshop}
             </a>
           </div>
         ) : (
@@ -334,7 +336,7 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
                       <span className="price-current">{formatPrice(Number(p.price))}</span>
                       {p.oldPrice && <span className="price-old">{formatPrice(Number(p.oldPrice))}</span>}
                       <form method="post" action={`/cart/add?productId=${p.id}&quantity=1`} style={{ display: 'inline', marginLeft: 'auto' }}>
-                        <button type="submit" className="btn-add" title="Přidat do košíku">
+                        <button type="submit" className="btn-add" title={t.product.addToCart}>
                           <i className="bi bi-cart-plus" />
                         </button>
                       </form>

@@ -1,12 +1,4 @@
-export const CATALOG_T = {
-    titles: {
-        products: 'Produkty — Administrace',
-        productCreate: 'Nový produkt — Administrace',
-        productEdit: 'Upravit produkt — Administrace',
-        categories: 'Kategorie — Administrace',
-        categoryCreate: 'Nová kategorie — Administrace',
-        categoryEdit: 'Upravit kategorii — Administrace',
-    },
+export const catalog = {
     headings: {
         products: 'Produkty',
         productCreate: 'Nový produkt',
@@ -50,11 +42,6 @@ export const CATALOG_T = {
         categories: 'Žádné kategorie k zobrazení',
         noImages: 'Žádné obrázky v médiích. Nejprve nahrajte obrázky.',
         noGalleryImages: 'Galerie je prázdná. Přidejte obrázky z médií.',
-    },
-    errors: {
-        invalidRequest: 'Neplatný požadavek',
-        validationError: 'Chyba validace',
-        genericError: 'Došlo k chybě, zkuste to znovu',
     },
     form: {
         sections: {

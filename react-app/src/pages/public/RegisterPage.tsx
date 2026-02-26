@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useT } from '../../i18n';
 
 interface RegisterProps {
   error?: string;
@@ -146,6 +147,7 @@ function getPasswordStrength(password: string): number {
 
 export function RegisterPage({ error, values = {} }: RegisterProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('auth');
   const [password, setPassword] = useState('');
   const strength = getPasswordStrength(password);
 
@@ -157,7 +159,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
         <button
           className="btn-theme-toggle"
           onClick={toggleTheme}
-          title="Přepnout téma"
+          title={t.nav.toggleTheme}
           style={{ width: 36, height: 36, fontSize: '1rem' }}
         >
           <i className="bi bi-moon" />
@@ -171,8 +173,8 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
             <div className="brand-icon">
               <i className="bi bi-person-plus" />
             </div>
-            <h4>Registrace</h4>
-            <p>Vytvořte si účet v TypeForge</p>
+            <h4>{t.headings.register}</h4>
+            <p>{t.headings.registerSubtitle}</p>
           </a>
         </div>
 
@@ -186,7 +188,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
         <form method="post" action="/register" className="register-form">
           <div className="row g-3 mb-3">
             <div className="col-6">
-              <label className="form-label" htmlFor="firstName">Jméno</label>
+              <label className="form-label" htmlFor="firstName">{t.form.firstName}</label>
               <input
                 type="text"
                 className="form-control"
@@ -199,7 +201,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
               />
             </div>
             <div className="col-6">
-              <label className="form-label" htmlFor="lastName">Příjmení</label>
+              <label className="form-label" htmlFor="lastName">{t.form.lastName}</label>
               <input
                 type="text"
                 className="form-control"
@@ -212,7 +214,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
             </div>
           </div>
           <div className="mb-3">
-            <label className="form-label" htmlFor="email">E-mail</label>
+            <label className="form-label" htmlFor="email">{t.form.email}</label>
             <input
               type="email"
               className="form-control"
@@ -224,7 +226,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label" htmlFor="password">Heslo</label>
+            <label className="form-label" htmlFor="password">{t.form.password}</label>
             <input
               type="password"
               className="form-control"
@@ -241,7 +243,7 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
             </div>
           </div>
           <div className="mb-3">
-            <label className="form-label" htmlFor="passwordConfirm">Potvrzení hesla</label>
+            <label className="form-label" htmlFor="passwordConfirm">{t.form.confirmPassword}</label>
             <input
               type="password"
               className="form-control"
@@ -254,19 +256,19 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
           <div className="mb-3 form-check">
             <input type="checkbox" className="form-check-input" id="terms" name="terms" required />
             <label className="form-check-label" htmlFor="terms">
-              Souhlasím s <a href="/terms">podmínkami použití</a> a <a href="/privacy">ochranou soukromí</a>
+              Souhlasím s <a href="/terms">{t.links.terms}</a> a <a href="/privacy">{t.links.privacy}</a>
             </label>
           </div>
           <button type="submit" className="btn-primary-tf w-100" style={{ padding: '0.65rem', fontSize: '0.95rem' }}>
             <i className="bi bi-person-plus me-2" />
-            Zaregistrovat se
+            {t.actions.register}
           </button>
         </form>
 
-        <div className="register-divider">nebo</div>
+        <div className="register-divider">{t.links.or}</div>
 
         <div className="register-link">
-          Již máte účet? <a href="/login">Přihlaste se</a>
+          {t.links.hasAccount} <a href="/login">{t.links.loginLink}</a>
         </div>
       </div>
     </div>

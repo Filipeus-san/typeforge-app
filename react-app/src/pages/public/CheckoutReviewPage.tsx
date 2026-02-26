@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
+import { useT } from '../../i18n';
 
 interface CheckoutReviewProps {
   items: {
@@ -259,6 +260,7 @@ const reviewStyles = `
 
 export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('cart');
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.productPrice) * Number(item.quantity), 0);
 
@@ -276,12 +278,12 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
           <div className="d-flex align-items-center gap-3">
             <span className="secure-label">
               <i className="bi bi-shield-lock-fill" />
-              Bezpečná platba
+              {t.checkout.secureCheckout}
             </span>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -297,22 +299,22 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Doprava</span>
+              <span>{t.checkout.steps.shipping}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
-              <span>Platba</span>
+              <span>{t.checkout.steps.payment}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step active">
               <div className="step-num">3</div>
-              <span>Shrnutí</span>
+              <span>{t.checkout.steps.review}</span>
               <div className="step-line" />
             </div>
             <div className="progress-step">
               <div className="step-num">4</div>
-              <span>Hotovo</span>
+              <span>{t.checkout.steps.done}</span>
             </div>
           </div>
         </div>
@@ -326,8 +328,8 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               {/* Order items */}
               <div className="review-section">
                 <div className="section-header">
-                  <h5><i className="bi bi-bag" />Položky objednávky</h5>
-                  <a href="/cart" className="edit-link"><i className="bi bi-pencil" />Upravit</a>
+                  <h5><i className="bi bi-bag" />{t.checkout.review.orderItems}</h5>
+                  <a href="/cart" className="edit-link"><i className="bi bi-pencil" />{t.checkout.review.edit}</a>
                 </div>
                 {items.map((item, idx) => (
                   <div key={idx} className="review-item">
@@ -350,8 +352,8 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               {/* Contact info */}
               <div className="review-section">
                 <div className="section-header">
-                  <h5><i className="bi bi-person" />Kontaktní údaje</h5>
-                  <a href="/checkout" className="edit-link"><i className="bi bi-pencil" />Upravit</a>
+                  <h5><i className="bi bi-person" />{t.checkout.review.contactInfo}</h5>
+                  <a href="/checkout" className="edit-link"><i className="bi bi-pencil" />{t.checkout.review.edit}</a>
                 </div>
                 <div className="info-grid">
                   <div className="info-item">
@@ -376,21 +378,21 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               {/* Delivery */}
               <div className="review-section">
                 <div className="section-header">
-                  <h5><i className="bi bi-truck" />Způsob dopravy</h5>
-                  <a href="/checkout" className="edit-link"><i className="bi bi-pencil" />Upravit</a>
+                  <h5><i className="bi bi-truck" />{t.checkout.review.deliveryMethod}</h5>
+                  <a href="/checkout" className="edit-link"><i className="bi bi-pencil" />{t.checkout.review.edit}</a>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <i className="bi bi-truck" style={{ color: 'var(--tf-primary)' }} />
                   <span>Standardní doprava (3-5 pracovních dní)</span>
-                  <span className="ms-auto fw-bold" style={{ color: '#22c55e' }}>Zdarma</span>
+                  <span className="ms-auto fw-bold" style={{ color: '#22c55e' }}>{t.summary.free}</span>
                 </div>
               </div>
 
               {/* Payment */}
               <div className="review-section">
                 <div className="section-header">
-                  <h5><i className="bi bi-credit-card" />Způsob platby</h5>
-                  <a href="/checkout/payment" className="edit-link"><i className="bi bi-pencil" />Upravit</a>
+                  <h5><i className="bi bi-credit-card" />{t.checkout.review.paymentMethod}</h5>
+                  <a href="/checkout/payment" className="edit-link"><i className="bi bi-pencil" />{t.checkout.review.edit}</a>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <i className="bi bi-credit-card" style={{ color: 'var(--tf-primary)' }} />
@@ -402,12 +404,12 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               <div className="checkout-nav">
                 <a href="/checkout/payment" className="back-link">
                   <i className="bi bi-arrow-left" />
-                  Zpět k platbě
+                  {t.actions.backToPayment}
                 </a>
                 <form method="post" action="/checkout/confirm" style={{ display: 'inline' }}>
                   <button type="submit" className="btn-primary-tf" style={{ padding: '0.7rem 2rem' }}>
                     <i className="bi bi-check-circle me-2" />
-                    Odeslat objednávku
+                    {t.actions.submitOrder}
                   </button>
                 </form>
               </div>
@@ -421,18 +423,18 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
             {/* Order summary */}
             <div className="col-lg-4">
               <div className="order-summary-sidebar">
-                <h5>Souhrn objednávky</h5>
+                <h5>{t.headings.orderSummary}</h5>
                 <div className="summary-totals">
                   <div className="row-total">
-                    <span className="label">Mezisoučet ({items.length} položek)</span>
+                    <span className="label">{t.summary.subtotal} ({items.length})</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="row-total">
-                    <span className="label">Doprava</span>
-                    <span style={{ color: '#22c55e' }}>Zdarma</span>
+                    <span className="label">{t.summary.shipping}</span>
+                    <span style={{ color: '#22c55e' }}>{t.summary.free}</span>
                   </div>
                   <div className="grand-total">
-                    <span>Celkem</span>
+                    <span>{t.summary.total}</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                 </div>

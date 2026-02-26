@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AdminSidebar } from './AdminSidebar';
+import { useT } from '../../i18n';
 import { Icon } from '../ui/Icon';
 import { Button } from '../ui/Button';
 import { SearchInput } from '../form/SearchInput';
@@ -22,11 +23,12 @@ export function AdminLayout({
   sidebarProps,
 }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const t = useT('common');
 
   const defaultActions = (
     <>
       <SearchInput />
-      <Button href="/" variant="outline" size="sm" icon="box-arrow-up-right">Web</Button>
+      <Button href="/" variant="outline" size="sm" icon="box-arrow-up-right">{t.layout.web}</Button>
     </>
   );
 

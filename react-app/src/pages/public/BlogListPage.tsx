@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { formatDate } from '../../utils';
+import { useT } from '../../i18n';
 
 interface PublicBlogListProps {
   posts: {
@@ -186,6 +187,7 @@ const blogListStyles = `
 
 export function BlogListPage({ posts }: PublicBlogListProps) {
   const { toggleTheme } = useTheme();
+  const t = useT('blog');
 
   return (
     <div className="blog-list-page">
@@ -199,13 +201,13 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
           </a>
           <div className="d-flex align-items-center gap-3">
-            <a href="/" className="nav-link d-none d-md-inline">Domů</a>
+            <a href="/" className="nav-link d-none d-md-inline">{t.public.nav.home}</a>
             <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
             <a href="/blog" className="nav-link d-none d-md-inline" style={{ color: 'var(--tf-text)' }}>Blog</a>
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title="Přepnout téma"
+              title={t.public.nav.toggleTheme}
               style={{ width: 32, height: 32, fontSize: '0.9rem' }}
             >
               <i className="bi bi-moon" />
@@ -223,9 +225,9 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
             Blog
           </span>
           <h1>
-            Novinky a <span className="text-gradient">články</span>
+            {t.public.newsAndArticles} <span className="text-gradient">{t.public.articles}</span>
           </h1>
-          <p>Nejnovější články o vývoji, technologiích a novinkách z TypeForge.</p>
+          <p>{t.public.subtitle}</p>
         </div>
       </section>
 
@@ -234,7 +236,7 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
         {posts.length === 0 ? (
           <div className="blog-empty">
             <i className="bi bi-journal-x" />
-            <p>Zatím nemáme žádné články. Zkuste to později.</p>
+            <p>{t.empty.noArticlesYet}</p>
           </div>
         ) : (
           <div className="blog-grid">
