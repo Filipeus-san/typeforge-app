@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -283,7 +286,7 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
 
       {/* Navbar */}
       <nav className="product-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -304,12 +307,12 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
               <i className="bi bi-cart3" />
             </a>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Breadcrumb */}
       <div className="product-breadcrumb">
-        <div className="container">
+        <Container>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item"><a href="/eshop">{t.breadcrumb.eshop}</a></li>
@@ -321,14 +324,14 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
               <li className="breadcrumb-item active">{product.name}</li>
             </ol>
           </nav>
-        </div>
+        </Container>
       </div>
 
       {/* Product detail */}
-      <section className="container pb-4">
-        <div className="row g-4">
+      <Container as="section" className="pb-4">
+        <Row className="g-4">
           {/* Gallery */}
-          <div className="col-lg-6">
+          <Col lg={6}>
             <div className="product-gallery">
               <div className="main-image">
                 {allImages.length > 0 ? (
@@ -351,10 +354,10 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
                 </div>
               )}
             </div>
-          </div>
+          </Col>
 
           {/* Info */}
-          <div className="col-lg-6">
+          <Col lg={6}>
             <div className="product-info">
               {product.categoryName && (
                 <div className="category-label">
@@ -419,27 +422,27 @@ export function ProductPage({ product, galleryImages = [] }: ProductPageProps) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </Col>
+        </Row>
+      </Container>
 
       {/* Description */}
       {product.description && (
         <section className="product-description">
-          <div className="container">
+          <Container>
             <div className="desc-card">
               <h3>{t.product.description}</h3>
               <div className="desc-content" dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
-          </div>
+          </Container>
         </section>
       )}
 
       {/* Footer */}
       <footer className="product-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

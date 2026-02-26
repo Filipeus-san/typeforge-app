@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -277,7 +280,7 @@ export function EshopPage({ products, categories }: EshopProps) {
 
       {/* Navbar */}
       <nav className="shop-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -299,12 +302,12 @@ export function EshopPage({ products, categories }: EshopProps) {
               <i className="bi bi-cart3" />
             </a>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Hero */}
       <section className="eshop-hero">
-        <div className="container">
+        <Container>
           <span className="eshop-badge">
             <i className="bi bi-stars me-1" />
             {t.hero.badge}
@@ -322,50 +325,50 @@ export function EshopPage({ products, categories }: EshopProps) {
               <i className="bi bi-grid me-2" />{t.hero.categories}
             </a>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Features bar */}
       <div className="features-bar">
-        <div className="container">
-          <div className="row g-3">
-            <div className="col-6 col-lg-3">
+        <Container>
+          <Row className="g-3">
+            <Col xs={6} lg={3}>
               <div className="feature-item">
                 <i className="bi bi-truck" />
                 <span>{t.features.freeShipping}</span>
               </div>
-            </div>
-            <div className="col-6 col-lg-3">
+            </Col>
+            <Col xs={6} lg={3}>
               <div className="feature-item">
                 <i className="bi bi-shield-check" />
                 <span>{t.features.warranty}</span>
               </div>
-            </div>
-            <div className="col-6 col-lg-3">
+            </Col>
+            <Col xs={6} lg={3}>
               <div className="feature-item">
                 <i className="bi bi-arrow-return-left" />
                 <span>{t.features.returnPolicy}</span>
               </div>
-            </div>
-            <div className="col-6 col-lg-3">
+            </Col>
+            <Col xs={6} lg={3}>
               <div className="feature-item">
                 <i className="bi bi-headset" />
                 <span>{t.features.support}</span>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
       {/* Categories */}
       {categories.length > 0 && (
-        <section className="container mb-5" id="categories">
+        <Container as="section" className="mb-5" id="categories">
           <div className="d-flex align-items-center justify-content-between mb-4">
             <h3 className="fw-bold mb-0">{t.sections.categories}</h3>
           </div>
-          <div className="row g-3">
+          <Row className="g-3">
             {categories.map((cat) => (
-              <div key={cat.id} className="col-6 col-md-4 col-lg-3">
+              <Col key={cat.id} xs={6} md={4} lg={3}>
                 <a href={`/category?slug=${cat.slug}`} className="category-card">
                   <div className="cat-icon">
                     {cat.featuredImage ? (
@@ -377,14 +380,14 @@ export function EshopPage({ products, categories }: EshopProps) {
                   <h6>{cat.name}</h6>
                   <div className="cat-count">{cat.productCount} {t.category.totalProducts}</div>
                 </a>
-              </div>
+              </Col>
             ))}
-          </div>
-        </section>
+          </Row>
+        </Container>
       )}
 
       {/* Products */}
-      <section className="container pb-5" id="products">
+      <Container as="section" className="pb-5" id="products">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h3 className="fw-bold mb-0">{t.headings.allProducts}</h3>
           <span className="text-muted-tf" style={{ fontSize: '0.9rem' }}>{products.length} {t.category.totalProducts}</span>
@@ -395,9 +398,9 @@ export function EshopPage({ products, categories }: EshopProps) {
             <p className="text-muted-tf mt-3">{t.empty.noProducts}</p>
           </div>
         ) : (
-          <div className="row g-4">
+          <Row className="g-4">
             {products.map((p) => (
-              <div key={p.id} className="col-md-6 col-lg-3">
+              <Col key={p.id} md={6} lg={3}>
                 <div className="eshop-product-card">
                   <a href={`/product?slug=${p.slug}`} className="text-decoration-none">
                     <div className="product-img">
@@ -428,15 +431,15 @@ export function EshopPage({ products, categories }: EshopProps) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Col>
             ))}
-          </div>
+          </Row>
         )}
-      </section>
+      </Container>
 
       {/* Newsletter */}
       <section className="newsletter-section">
-        <div className="container">
+        <Container>
           <div className="newsletter-box">
             <i className="bi bi-envelope" style={{ fontSize: '2rem', color: 'var(--tf-primary)', marginBottom: '0.75rem', display: 'block' }} />
             <h4>{t.newsletter.title}</h4>
@@ -446,14 +449,14 @@ export function EshopPage({ products, categories }: EshopProps) {
               <button className="btn-primary-tf">{t.newsletter.subscribe}</button>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Footer */}
       <footer className="eshop-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

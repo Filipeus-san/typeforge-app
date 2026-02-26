@@ -1,4 +1,5 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
 import { useTheme } from '../../context/ThemeContext';
 import { useT } from '../../i18n';
 
@@ -135,7 +136,7 @@ export function CheckoutConfirmationPage() {
 
       {/* Navbar */}
       <nav className="confirmation-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -149,12 +150,12 @@ export function CheckoutConfirmationPage() {
             <i className="bi bi-moon" />
             <i className="bi bi-sun" />
           </button>
-        </div>
+        </Container>
       </nav>
 
       {/* Progress - all completed */}
       <div className="checkout-progress">
-        <div className="container">
+        <Container>
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
@@ -176,12 +177,12 @@ export function CheckoutConfirmationPage() {
               <span>{t.checkout.steps.done}</span>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Confirmation card */}
       <div className="confirmation-content">
-        <div className="container">
+        <Container>
           <div className="confirmation-card">
             <div className="confirmation-icon">
               <i className="bi bi-check-circle-fill" />
@@ -199,14 +200,14 @@ export function CheckoutConfirmationPage() {
               </a>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Footer */}
       <footer className="confirmation-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

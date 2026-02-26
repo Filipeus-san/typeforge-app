@@ -1,4 +1,6 @@
 import React from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Form from 'react-bootstrap/Form';
 import { useTheme } from '../../context/ThemeContext';
 import { useT } from '../../i18n';
 
@@ -139,18 +141,17 @@ export function LoginPage({ error, emailValue }: LoginProps) {
         </div>
 
         {error && (
-          <div className="alert alert-danger d-flex align-items-center gap-2" style={{ borderRadius: 8, fontSize: '0.9rem' }}>
+          <Alert variant="danger" className="d-flex align-items-center gap-2" style={{ borderRadius: 8, fontSize: '0.9rem' }}>
             <i className="bi bi-exclamation-triangle" />
             {error}
-          </div>
+          </Alert>
         )}
 
         <form method="post" action="/login" className="login-form">
           <div className="mb-3">
             <label className="form-label" htmlFor="email">{t.form.email}</label>
-            <input
+            <Form.Control
               type="email"
-              className="form-control"
               id="email"
               name="email"
               placeholder="vas@email.cz"
@@ -161,9 +162,8 @@ export function LoginPage({ error, emailValue }: LoginProps) {
           </div>
           <div className="mb-3">
             <label className="form-label" htmlFor="password">{t.form.password}</label>
-            <input
+            <Form.Control
               type="password"
-              className="form-control"
               id="password"
               name="password"
               placeholder="Vaše heslo"

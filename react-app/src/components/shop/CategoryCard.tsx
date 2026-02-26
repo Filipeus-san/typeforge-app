@@ -1,4 +1,6 @@
 import React from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Icon } from '../ui/Icon';
 
 const colorStyles: Record<string, { bg: string; border: string }> = {
@@ -32,14 +34,19 @@ export function CategoryCard({ title, icon, count, href = '/category', color = '
 }
 
 export function CategoryGrid({ categories, columns = 6 }: { categories: CategoryCardProps[]; columns?: 2 | 3 | 4 | 6 }) {
-  const colMap: Record<number, string> = { 2: 'col-6', 3: 'col-6 col-md-4', 4: 'col-6 col-md-3', 6: 'col-6 col-md-4 col-lg-2' };
-  const colClass = colMap[columns];
+  const colMap: Record<number, Record<string, number>> = {
+    2: { xs: 6 },
+    3: { xs: 6, md: 4 },
+    4: { xs: 6, md: 3 },
+    6: { xs: 6, md: 4, lg: 2 },
+  };
+  const colProps = colMap[columns];
   return (
-    <div className="row g-3">
+    <Row className="g-3">
       {categories.map((cat, i) => (
-        <div key={i} className={colClass}><CategoryCard {...cat} /></div>
+        <Col key={i} {...colProps}><CategoryCard {...cat} /></Col>
       ))}
-    </div>
+    </Row>
   );
 }
 

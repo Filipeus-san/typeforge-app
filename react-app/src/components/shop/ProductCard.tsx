@@ -1,4 +1,6 @@
 import React from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Icon } from '../ui/Icon';
 
 interface ProductCardProps {
@@ -49,13 +51,13 @@ export function ProductCard({
 }
 
 export function ProductGrid({ products, columns = 4 }: { products: ProductCardProps[]; columns?: 2 | 3 | 4 }) {
-  const colClass = columns === 2 ? 'col-md-6' : columns === 3 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-3';
+  const colProps = columns === 2 ? { md: 6 } : columns === 3 ? { md: 6, lg: 4 } : { md: 6, lg: 3 };
   return (
-    <div className="row g-4">
+    <Row className="g-4">
       {products.map((p, i) => (
-        <div key={i} className={colClass}><ProductCard {...p} /></div>
+        <Col key={i} {...colProps}><ProductCard {...p} /></Col>
       ))}
-    </div>
+    </Row>
   );
 }
 

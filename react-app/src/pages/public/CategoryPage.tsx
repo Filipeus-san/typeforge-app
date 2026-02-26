@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -240,7 +243,7 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
 
       {/* Navbar */}
       <nav className="cat-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -261,23 +264,23 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
               <i className="bi bi-cart3" />
             </a>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Breadcrumb */}
       <div className="cat-breadcrumb">
-        <div className="container">
+        <Container>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item"><a href="/eshop">{t.breadcrumb.eshop}</a></li>
               <li className="breadcrumb-item active">{category?.name || title}</li>
             </ol>
           </nav>
-        </div>
+        </Container>
       </div>
 
       {/* Category header */}
-      <section className="container">
+      <Container as="section">
         <div className="cat-header">
           <div className="d-flex align-items-center gap-3">
             {(category?.icon || category?.featuredImage) && (
@@ -295,17 +298,17 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
             </div>
           </div>
         </div>
-      </section>
+      </Container>
 
       {/* Sort bar */}
-      <section className="container">
+      <Container as="section">
         <div className="cat-sort-bar">
           <span className="product-count">{products.length} {t.category.totalProducts}</span>
         </div>
-      </section>
+      </Container>
 
       {/* Products */}
-      <section className="container pb-5">
+      <Container as="section" className="pb-5">
         {products.length === 0 ? (
           <div className="cat-empty">
             <i className="bi bi-inbox" />
@@ -315,9 +318,9 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
             </a>
           </div>
         ) : (
-          <div className="row g-4">
+          <Row className="g-4">
             {products.map((p) => (
-              <div key={p.id} className="col-md-6 col-lg-4">
+              <Col key={p.id} md={6} lg={4}>
                 <div className="cat-product-card">
                   <a href={`/product?slug=${p.slug}`} className="text-decoration-none">
                     <div className="img-wrap">
@@ -343,17 +346,17 @@ export function CategoryPage({ title, category, products }: CategoryPageProps) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Col>
             ))}
-          </div>
+          </Row>
         )}
-      </section>
+      </Container>
 
       {/* Footer */}
       <footer className="cat-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
+import Form from 'react-bootstrap/Form';
 import type { FormSection, FormField } from '../../types';
 import { CardSection } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 import { FormGroup } from '../form/FormGroup';
-import { Textarea } from '../form/Textarea';
 import { Select } from '../form/Select';
 
 interface AdminFormProps {
@@ -15,10 +18,6 @@ interface AdminFormProps {
   backUrl?: string;
   backLabel?: string;
   action?: string;
-}
-
-function escapeHtml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 export function AdminForm({
@@ -51,9 +50,9 @@ export function AdminForm({
     if (fieldType === 'textarea') {
       return (
         <FormGroup key={field.name} label={field.label} required={field.required} hint={field.hint}>
-          <textarea
+          <Form.Control
+            as="textarea"
             name={field.name}
-            className="form-control"
             rows={field.rows ?? 3}
             placeholder={field.placeholder}
             required={field.required}
@@ -82,10 +81,9 @@ export function AdminForm({
 
     return (
       <FormGroup key={field.name} label={field.label} required={field.required} hint={field.hint}>
-        <input
+        <Form.Control
           type={fieldType}
           name={field.name}
-          className="form-control"
           value={val}
           placeholder={field.placeholder}
           required={field.required}
@@ -101,13 +99,13 @@ export function AdminForm({
     const hasGrid = fields.some((f) => (f.colSpan ?? 12) < 12);
     if (hasGrid) {
       return (
-        <div className="row g-3">
+        <Row className="g-3">
           {fields.map((f) => {
             const col = f.colSpan ?? 12;
             if ((f.type ?? 'text') === 'hidden') return renderField(f);
-            return <div key={f.name} className={`col-md-${col}`}>{renderField(f)}</div>;
+            return <Col key={f.name} md={col}>{renderField(f)}</Col>;
           })}
-        </div>
+        </Row>
       );
     }
     return <>{fields.map((f) => {
@@ -126,11 +124,11 @@ export function AdminForm({
 
   return (
     <>
-      {error && <div className="alert alert-danger mb-4">{error}</div>}
+      {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
       <form method="post" action={action} className="admin-form">
-        <div className="row g-4">
-          <div className="col-md-8">{renderSections(mainSections)}</div>
-          <div className="col-md-4">
+        <Row className="g-4">
+          <Col md={8}>{renderSections(mainSections)}</Col>
+          <Col md={4}>
             {renderSections(sidebarSections)}
             <CardSection>
               <div className="d-grid gap-2">
@@ -142,8 +140,8 @@ export function AdminForm({
                 )}
               </div>
             </CardSection>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </form>
     </>
   );

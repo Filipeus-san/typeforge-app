@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -314,7 +318,7 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
 
       {/* Navbar */}
       <nav className="checkout-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -334,12 +338,12 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
               <i className="bi bi-sun" />
             </button>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Progress */}
       <div className="checkout-progress">
-        <div className="container">
+        <Container>
           <div className="progress-steps">
             <div className="progress-step active">
               <div className="step-num">1</div>
@@ -361,55 +365,55 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
               <span>{t.checkout.steps.done}</span>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Content */}
       <div className="checkout-content">
-        <div className="container">
-          <div className="row g-4">
-            <div className="col-lg-8">
+        <Container>
+          <Row className="g-4">
+            <Col lg={8}>
               <form method="post" action="/checkout/payment">
                 {/* Contact info */}
                 <div className="checkout-section">
                   <h5><i className="bi bi-person" />{t.checkout.shipping.contactInfo}</h5>
-                  <div className="row g-3">
-                    <div className="col-md-6">
+                  <Row className="g-3">
+                    <Col md={6}>
                       <label className="form-label" htmlFor="firstName">{t.checkout.shipping.firstName}</label>
-                      <input type="text" className="form-control" id="firstName" name="firstName" placeholder="Jan" required />
-                    </div>
-                    <div className="col-md-6">
+                      <Form.Control type="text" id="firstName" name="firstName" placeholder="Jan" required />
+                    </Col>
+                    <Col md={6}>
                       <label className="form-label" htmlFor="lastName">{t.checkout.shipping.lastName}</label>
-                      <input type="text" className="form-control" id="lastName" name="lastName" placeholder="Novák" required />
-                    </div>
-                    <div className="col-md-6">
+                      <Form.Control type="text" id="lastName" name="lastName" placeholder="Novák" required />
+                    </Col>
+                    <Col md={6}>
                       <label className="form-label" htmlFor="email">{t.checkout.shipping.email}</label>
-                      <input type="email" className="form-control" id="email" name="email" placeholder="vas@email.cz" required />
-                    </div>
-                    <div className="col-md-6">
+                      <Form.Control type="email" id="email" name="email" placeholder="vas@email.cz" required />
+                    </Col>
+                    <Col md={6}>
                       <label className="form-label" htmlFor="phone">{t.checkout.shipping.phone}</label>
-                      <input type="tel" className="form-control" id="phone" name="phone" placeholder="+420 123 456 789" />
-                    </div>
-                  </div>
+                      <Form.Control type="tel" id="phone" name="phone" placeholder="+420 123 456 789" />
+                    </Col>
+                  </Row>
                 </div>
 
                 {/* Delivery address */}
                 <div className="checkout-section">
                   <h5><i className="bi bi-geo-alt" />{t.checkout.shipping.deliveryAddress}</h5>
-                  <div className="row g-3">
-                    <div className="col-12">
+                  <Row className="g-3">
+                    <Col xs={12}>
                       <label className="form-label" htmlFor="street">{t.checkout.shipping.street}</label>
-                      <input type="text" className="form-control" id="street" name="street" placeholder="Hlavní 123" required />
-                    </div>
-                    <div className="col-md-6">
+                      <Form.Control type="text" id="street" name="street" placeholder="Hlavní 123" required />
+                    </Col>
+                    <Col md={6}>
                       <label className="form-label" htmlFor="city">{t.checkout.shipping.city}</label>
-                      <input type="text" className="form-control" id="city" name="city" placeholder="Praha" required />
-                    </div>
-                    <div className="col-md-3">
+                      <Form.Control type="text" id="city" name="city" placeholder="Praha" required />
+                    </Col>
+                    <Col md={3}>
                       <label className="form-label" htmlFor="zip">{t.checkout.shipping.zip}</label>
-                      <input type="text" className="form-control" id="zip" name="zip" placeholder="110 00" required />
-                    </div>
-                    <div className="col-md-3">
+                      <Form.Control type="text" id="zip" name="zip" placeholder="110 00" required />
+                    </Col>
+                    <Col md={3}>
                       <label className="form-label" htmlFor="country">{t.checkout.shipping.country}</label>
                       <select className="form-select" id="country" name="country">
                         <option value="CZ">{t.checkout.shipping.countryCZ}</option>
@@ -418,8 +422,8 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                         <option value="AT">Rakousko</option>
                         <option value="PL">Polsko</option>
                       </select>
-                    </div>
-                  </div>
+                    </Col>
+                  </Row>
                 </div>
 
                 {/* Shipping method */}
@@ -460,10 +464,10 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                   </button>
                 </div>
               </form>
-            </div>
+            </Col>
 
             {/* Order summary */}
-            <div className="col-lg-4">
+            <Col lg={4}>
               <div className="order-summary-sidebar">
                 <h5>{t.headings.yourOrder}</h5>
                 {items.map((item, idx) => (
@@ -497,9 +501,9 @@ export function CheckoutShippingPage({ items }: CheckoutShippingProps) {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </div>
   );

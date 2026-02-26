@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Form from 'react-bootstrap/Form';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { CardSection } from '../../components/ui/Card';
 import { Icon } from '../../components/ui/Icon';
@@ -226,12 +227,12 @@ export function MediaPage({ mediaItems, typeFilter }: MediaProps) {
             <form method="post" encType="multipart/form-data" action="/admin/media/upload">
               <div className="mb-3">
                 <FormGroup label={t.form.selectFile} required>
-                  <input type="file" name="file" className="form-control" required />
+                  <Form.Control type="file" name="file" required />
                 </FormGroup>
               </div>
               <div className="mb-3">
                 <FormGroup label={t.form.altText}>
-                  <input type="text" name="alt_text" className="form-control" placeholder={t.form.altPlaceholder} />
+                  <Form.Control type="text" name="alt_text" placeholder={t.form.altPlaceholder} />
                 </FormGroup>
               </div>
               <div className="d-flex gap-2 justify-content-end">

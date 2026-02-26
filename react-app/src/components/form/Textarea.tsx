@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from 'react-bootstrap/Form';
 import { FormGroup } from './FormGroup';
 
 interface TextareaProps {
@@ -24,16 +25,16 @@ export function Textarea({
   className,
   onChange,
 }: TextareaProps) {
-  const classes = ['form-control', className].filter(Boolean).join(' ');
   const textarea = (
-    <textarea
+    <Form.Control
+      as="textarea"
       name={name}
       placeholder={placeholder}
       rows={rows}
       disabled={disabled}
       required={required}
-      className={classes}
-      onChange={onChange}
+      className={className}
+      onChange={onChange as any}
       defaultValue={value}
     />
   );

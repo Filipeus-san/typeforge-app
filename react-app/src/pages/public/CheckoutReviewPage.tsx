@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -270,7 +273,7 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
 
       {/* Navbar */}
       <nav className="checkout-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -290,12 +293,12 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               <i className="bi bi-sun" />
             </button>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Progress */}
       <div className="checkout-progress">
-        <div className="container">
+        <Container>
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
@@ -317,14 +320,14 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
               <span>{t.checkout.steps.done}</span>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Content */}
       <div className="checkout-content">
-        <div className="container">
-          <div className="row g-4">
-            <div className="col-lg-8">
+        <Container>
+          <Row className="g-4">
+            <Col lg={8}>
               {/* Order items */}
               <div className="review-section">
                 <div className="section-header">
@@ -418,10 +421,10 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
                 <i className="bi bi-shield-lock-fill" />
                 Vaše data jsou chráněna šifrováním SSL a zpracovávána bezpečně.
               </div>
-            </div>
+            </Col>
 
             {/* Order summary */}
-            <div className="col-lg-4">
+            <Col lg={4}>
               <div className="order-summary-sidebar">
                 <h5>{t.headings.orderSummary}</h5>
                 <div className="summary-totals">
@@ -439,9 +442,9 @@ export function CheckoutReviewPage({ items }: CheckoutReviewProps) {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </div>
   );

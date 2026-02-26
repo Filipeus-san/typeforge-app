@@ -3,6 +3,9 @@ import type { NavItem } from '../../types';
 import { useT } from '../../i18n';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
+import BsNavbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Container from 'react-bootstrap/Container';
 
 interface NavbarProps {
   brand?: { text: string; href?: string; icon?: string };
@@ -22,45 +25,38 @@ export function Navbar({
   fixed = true,
 }: NavbarProps) {
   const t = useT('common');
-  const classes = ['navbar navbar-expand-lg navbar-dark navbar-tf', fixed ? 'fixed-top' : ''].filter(Boolean).join(' ');
 
   return (
-    <nav className={classes}>
-      <div className="container">
-        <a className="navbar-brand d-flex align-items-center gap-2" href={brand.href || '/'}>
+    <BsNavbar expand="lg" variant="dark" className="navbar-tf" fixed={fixed ? 'top' : undefined}>
+      <Container>
+        <BsNavbar.Brand href={brand.href || '/'} className="d-flex align-items-center gap-2">
           {brand.icon && <i className={`bi bi-${brand.icon} text-gradient`} />}
           <span className="text-gradient">{brand.text}</span>
-        </a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon" />
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-center gap-1">
+        </BsNavbar.Brand>
+        <BsNavbar.Toggle aria-controls="navbarNav" />
+        <BsNavbar.Collapse id="navbarNav">
+          <Nav className="ms-auto align-items-center gap-1">
             {items.map((item) => (
-              <li key={item.path} className="nav-item">
-                <a className={`nav-link${item.active ? ' active' : ''}`} href={item.path}>
-                  {item.icon && <i className={`bi bi-${item.icon} me-1`} />}
-                  {item.label}
-                </a>
-              </li>
+              <Nav.Link key={item.path} href={item.path} active={item.active}>
+                {item.icon && <i className={`bi bi-${item.icon} me-1`} />}
+                {item.label}
+              </Nav.Link>
             ))}
             {showAdminLink && (
-              <li className="nav-item">
-                <a className="nav-link" href="/admin"><i className="bi bi-speedometer2 me-1" />{t.nav.admin}</a>
-              </li>
+              <Nav.Link href="/admin"><i className="bi bi-speedometer2 me-1" />{t.nav.admin}</Nav.Link>
             )}
             {showThemeToggle && (
-              <li className="nav-item ms-2"><ThemeToggle size="sm" /></li>
+              <Nav.Item className="ms-2"><ThemeToggle size="sm" /></Nav.Item>
             )}
             {ctaButton && (
-              <li className="nav-item ms-2">
+              <Nav.Item className="ms-2">
                 <Button href={ctaButton.href} variant="primary" size="sm">{ctaButton.text}</Button>
-              </li>
+              </Nav.Item>
             )}
-          </ul>
-        </div>
-      </div>
-    </nav>
+          </Nav>
+        </BsNavbar.Collapse>
+      </Container>
+    </BsNavbar>
   );
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
 import { HeroBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
@@ -29,7 +30,7 @@ export function Hero({ badge, title, subtitle, actions = [], align = 'left', siz
   const classes = ['hero-section', sc.section, align === 'center' ? 'text-center' : ''].filter(Boolean).join(' ');
   return (
     <section className={classes}>
-      <div className="container">
+      <Container>
         {badge && <HeroBadge icon={badge.icon}>{badge.text}</HeroBadge>}
         <h1 className={sc.title}>{title}</h1>
         {subtitle && <p className={sc.subtitle}>{subtitle}</p>}
@@ -40,7 +41,7 @@ export function Hero({ badge, title, subtitle, actions = [], align = 'left', siz
             ))}
           </div>
         )}
-      </div>
+      </Container>
     </section>
   );
 }

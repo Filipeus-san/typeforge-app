@@ -1,4 +1,6 @@
 import React from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import type { IconColor } from '../../types';
 import { Icon } from '../ui/Icon';
 
@@ -42,14 +44,14 @@ export function StatCard({ icon, iconColor = 'purple', value, label, change, cla
 }
 
 export function StatsGrid({ stats, columns = 4 }: { stats: StatCardProps[]; columns?: 2 | 3 | 4 }) {
-  const colClass = columns === 2 ? 'col-md-6' : columns === 3 ? 'col-md-4' : 'col-md-6 col-lg-3';
+  const colProps = columns === 2 ? { md: 6 } : columns === 3 ? { md: 4 } : { md: 6, lg: 3 };
   return (
-    <div className="row g-4 mb-4">
+    <Row className="g-4 mb-4">
       {stats.map((stat, i) => (
-        <div key={i} className={colClass}>
+        <Col key={i} {...colProps}>
           <StatCard {...stat} />
-        </div>
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 }

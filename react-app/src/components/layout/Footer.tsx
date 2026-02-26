@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useT } from '../../i18n';
 import { Icon } from '../ui/Icon';
 
@@ -25,9 +28,9 @@ export function Footer({
   const copyright = copyrightProp ?? `\u00A9 ${new Date().getFullYear()} ${t.footer.copyright}`;
   return (
     <footer className="footer-tf">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-4 mb-4 mb-lg-0">
+      <Container>
+        <Row>
+          <Col lg={4} className="mb-4 mb-lg-0">
             <div className="footer-brand">
               {brand.icon && <Icon name={brand.icon} className="text-gradient" />}
               <span className="text-gradient">{brand.text}</span>
@@ -42,18 +45,18 @@ export function Footer({
                 ))}
               </div>
             )}
-          </div>
+          </Col>
           {sections.map((section, i) => (
-            <div key={i} className="col-6 col-md-3 col-lg-2">
+            <Col key={i} xs={6} md={3} lg={2}>
               <h6 className="footer-title">{section.title}</h6>
               <ul className="footer-links">
                 {section.links.map((link, j) => (
                   <li key={j}><a href={link.href}>{link.label}</a></li>
                 ))}
               </ul>
-            </div>
+            </Col>
           ))}
-        </div>
+        </Row>
         <div className="footer-bottom">
           <div className="footer-copyright">{copyright}</div>
           {bottomLinks.length > 0 && (
@@ -62,7 +65,7 @@ export function Footer({
             </div>
           )}
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

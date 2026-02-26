@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
+import Form from 'react-bootstrap/Form';
 import { useTheme } from '../../context/ThemeContext';
 import { useT } from '../../i18n';
 
@@ -179,19 +183,18 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
         </div>
 
         {error && (
-          <div className="alert alert-danger d-flex align-items-center gap-2" style={{ borderRadius: 8, fontSize: '0.9rem' }}>
+          <Alert variant="danger" className="d-flex align-items-center gap-2" style={{ borderRadius: 8, fontSize: '0.9rem' }}>
             <i className="bi bi-exclamation-triangle" />
             {error}
-          </div>
+          </Alert>
         )}
 
         <form method="post" action="/register" className="register-form">
-          <div className="row g-3 mb-3">
-            <div className="col-6">
+          <Row className="g-3 mb-3">
+            <Col xs={6}>
               <label className="form-label" htmlFor="firstName">{t.form.firstName}</label>
-              <input
+              <Form.Control
                 type="text"
-                className="form-control"
                 id="firstName"
                 name="firstName"
                 placeholder="Jan"
@@ -199,25 +202,23 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
                 required
                 autoFocus
               />
-            </div>
-            <div className="col-6">
+            </Col>
+            <Col xs={6}>
               <label className="form-label" htmlFor="lastName">{t.form.lastName}</label>
-              <input
+              <Form.Control
                 type="text"
-                className="form-control"
                 id="lastName"
                 name="lastName"
                 placeholder="Novák"
                 defaultValue={values['lastName'] || ''}
                 required
               />
-            </div>
-          </div>
+            </Col>
+          </Row>
           <div className="mb-3">
             <label className="form-label" htmlFor="email">{t.form.email}</label>
-            <input
+            <Form.Control
               type="email"
-              className="form-control"
               id="email"
               name="email"
               placeholder="vas@email.cz"
@@ -227,9 +228,8 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
           </div>
           <div className="mb-3">
             <label className="form-label" htmlFor="password">{t.form.password}</label>
-            <input
+            <Form.Control
               type="password"
-              className="form-control"
               id="password"
               name="password"
               placeholder="Min. 6 znaků"
@@ -244,9 +244,8 @@ export function RegisterPage({ error, values = {} }: RegisterProps) {
           </div>
           <div className="mb-3">
             <label className="form-label" htmlFor="passwordConfirm">{t.form.confirmPassword}</label>
-            <input
+            <Form.Control
               type="password"
-              className="form-control"
               id="passwordConfirm"
               name="passwordConfirm"
               placeholder="Zopakujte heslo"

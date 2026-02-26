@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
+import Form from 'react-bootstrap/Form';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { CardSection } from '../../components/ui/Card';
 import { Icon } from '../../components/ui/Icon';
@@ -43,46 +47,44 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
 
   return (
     <AdminLayout title={isEdit ? t.headings.edit : t.headings.create} activePage="blog">
-      {error && <div className="alert alert-danger mb-4">{error}</div>}
+      {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
       <form method="post">
         {editId && <input type="hidden" name="id" value={editId} />}
         <input type="hidden" name="featured_image" value={featuredImage} />
 
-        <div className="row g-4">
-          <div className="col-lg-8">
+        <Row className="g-4">
+          <Col lg={8}>
             <CardSection title={t.form.sections.content}>
-              <div className="row g-3">
-                <div className="col-md-8">
+              <Row className="g-3">
+                <Col md={8}>
                   <FormGroup label={t.form.labels.title} required>
-                    <input
+                    <Form.Control
                       type="text"
                       name="title"
-                      className="form-control"
                       required
                       placeholder={t.form.placeholders.title}
                       value={formValues.title ?? ''}
                       onChange={handleChange('title')}
                     />
                   </FormGroup>
-                </div>
-                <div className="col-md-4">
+                </Col>
+                <Col md={4}>
                   <FormGroup label={t.form.labels.slug}>
-                    <input
+                    <Form.Control
                       type="text"
                       name="slug"
-                      className="form-control"
                       placeholder={t.form.placeholders.slug}
                       value={formValues.slug ?? ''}
                       onChange={handleChange('slug')}
                     />
                   </FormGroup>
-                </div>
-              </div>
+                </Col>
+              </Row>
               <div className="mb-3 mt-3">
                 <FormGroup label={t.form.labels.excerpt}>
-                  <textarea
+                  <Form.Control
+                    as="textarea"
                     name="excerpt"
-                    className="form-control"
                     rows={3}
                     placeholder={t.form.placeholders.excerpt}
                     value={formValues.excerpt ?? ''}
@@ -92,9 +94,9 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
               </div>
               <div className="mb-3">
                 <FormGroup label={t.form.labels.content}>
-                  <textarea
+                  <Form.Control
+                    as="textarea"
                     name="content"
-                    className="form-control"
                     rows={15}
                     placeholder={t.form.placeholders.content}
                     value={formValues.content ?? ''}
@@ -103,9 +105,9 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                 </FormGroup>
               </div>
             </CardSection>
-          </div>
+          </Col>
 
-          <div className="col-lg-4">
+          <Col lg={4}>
             {/* Featured Image Card */}
             <CardSection title={t.form.sections.featuredImage}>
               {featuredImage ? (
@@ -162,10 +164,9 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
               </div>
               <div className="mb-3">
                 <FormGroup label={t.form.labels.category}>
-                  <input
+                  <Form.Control
                     type="text"
                     name="category"
-                    className="form-control"
                     placeholder={t.form.placeholders.category}
                     value={formValues.category ?? ''}
                     onChange={handleChange('category')}
@@ -174,10 +175,9 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
               </div>
               <div className="mb-3">
                 <FormGroup label={t.form.labels.readTime}>
-                  <input
+                  <Form.Control
                     type="number"
                     name="read_time"
-                    className="form-control"
                     min="1"
                     value={formValues.read_time ?? '5'}
                     onChange={handleChange('read_time')}
@@ -195,8 +195,8 @@ export function BlogFormPage({ isEdit, editId, values: initialValues, allMedia =
                 <a href="/admin/blog" className="btn btn-outline-tf btn-sm text-center">{t.actions.backToList}</a>
               </div>
             </CardSection>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </form>
 
       {/* Media Picker Modal */}

@@ -1,4 +1,6 @@
 import React from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { StatsGrid } from '../../components/data/StatCard';
 import { CardSection } from '../../components/ui/Card';
@@ -18,8 +20,8 @@ export function DashboardPage({ stats, recentOrders, lowStockProducts }: Dashboa
   return (
     <AdminLayout title={t.headings.dashboard} activePage="dashboard">
       <StatsGrid stats={stats} />
-      <div className="row g-4">
-        <div className="col-md-8">
+      <Row className="g-4">
+        <Col md={8}>
           <CardSection title={t.sections.recentOrders}>
             <table className="data-table">
               <thead>
@@ -45,8 +47,8 @@ export function DashboardPage({ stats, recentOrders, lowStockProducts }: Dashboa
               </tbody>
             </table>
           </CardSection>
-        </div>
-        <div className="col-md-4">
+        </Col>
+        <Col md={4}>
           <CardSection title={t.sections.lowStock}>
             {lowStockProducts.length === 0 ? (
               <p className="text-muted-tf">{t.empty.noProducts}</p>
@@ -57,8 +59,8 @@ export function DashboardPage({ stats, recentOrders, lowStockProducts }: Dashboa
               </div>
             ))}
           </CardSection>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </AdminLayout>
   );
 }

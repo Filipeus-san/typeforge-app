@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from 'react-bootstrap/Form';
 import { FormGroup } from './FormGroup';
 import type { SelectOption } from '../../types';
 
@@ -27,17 +28,28 @@ export function Select({
   className,
   onChange,
 }: SelectProps) {
-  const classes = [filter ? 'filter-select' : 'form-control', className].filter(Boolean).join(' ');
+  if (filter) {
+    const classes = ['filter-select', className].filter(Boolean).join(' ');
+    return (
+      <select name={name} disabled={disabled} required={required} className={classes} onChange={onChange} defaultValue={value ?? ''}>
+        {placeholder && <option value="" disabled>{placeholder}</option>}
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+    );
+  }
+
   const select = (
-    <select name={name} disabled={disabled} required={required} className={classes} onChange={onChange} defaultValue={value ?? ''}>
+    <Form.Select name={name} disabled={disabled} required={required} className={className} onChange={onChange as any} defaultValue={value ?? ''}>
       {placeholder && <option value="" disabled>{placeholder}</option>}
       {options.map((opt) => (
         <option key={opt.value} value={opt.value}>{opt.label}</option>
       ))}
-    </select>
+    </Form.Select>
   );
 
-  if (label && !filter) {
+  if (label) {
     return <FormGroup label={label} required={required}>{select}</FormGroup>;
   }
   return select;

@@ -1,4 +1,5 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
 import { useTheme } from '../../context/ThemeContext';
 import { formatDate } from '../../utils';
 import { useT } from '../../i18n';
@@ -194,7 +195,7 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
 
       {/* Navbar */}
       <nav className="article-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -213,12 +214,12 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
               <i className="bi bi-sun" />
             </button>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Article header */}
       <header className="article-header">
-        <div className="container">
+        <Container>
           {category && <span className="category-badge">{category}</span>}
           <h1>
             <span className="text-gradient">{title}</span>
@@ -243,7 +244,7 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
               </span>
             )}
           </div>
-        </div>
+        </Container>
       </header>
 
       {/* Featured image */}
@@ -254,27 +255,27 @@ export function ArticlePage({ title, content, category, date, author, readTime, 
       )}
 
       {/* Content */}
-      <section className="container">
+      <Container as="section">
         <div className="article-content-card">
           <div
             className="article-body"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
-      </section>
+      </Container>
 
       {/* Back link */}
-      <div className="container text-center mb-4">
+      <Container className="text-center mb-4">
         <a href="/blog" className="btn-outline-tf">
           <i className="bi bi-arrow-left me-2" />{t.actions.backToList}
         </a>
-      </div>
+      </Container>
 
       {/* Footer */}
       <footer className="article-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

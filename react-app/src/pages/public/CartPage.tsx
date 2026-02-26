@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -262,7 +265,7 @@ export function CartPage({ items }: CartProps) {
 
       {/* Navbar */}
       <nav className="cart-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -283,12 +286,12 @@ export function CartPage({ items }: CartProps) {
               {totalItems > 0 && <span className="cart-count-badge">{totalItems}</span>}
             </a>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Cart content */}
       <div className="cart-content">
-        <div className="container">
+        <Container>
           <div className="cart-header">
             <h1><i className="bi bi-cart3 me-3" />{t.headings.cart}</h1>
             <span className="item-count">{totalItems} položek</span>
@@ -304,8 +307,8 @@ export function CartPage({ items }: CartProps) {
               </a>
             </div>
           ) : (
-            <div className="row g-4">
-              <div className="col-lg-8">
+            <Row className="g-4">
+              <Col lg={8}>
                 {items.map((item, idx) => {
                   const price = Number(item.productPrice);
                   const qty = Number(item.quantity);
@@ -341,9 +344,9 @@ export function CartPage({ items }: CartProps) {
                     </div>
                   );
                 })}
-              </div>
+              </Col>
 
-              <div className="col-lg-4">
+              <Col lg={4}>
                 <div className="cart-summary">
                   <h5>{t.headings.orderSummary}</h5>
                   <div className="summary-row">
@@ -367,17 +370,17 @@ export function CartPage({ items }: CartProps) {
                     </a>
                   </div>
                 </div>
-              </div>
-            </div>
+              </Col>
+            </Row>
           )}
-        </div>
+        </Container>
       </div>
 
       {/* Footer */}
       <footer className="cart-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

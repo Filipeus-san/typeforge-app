@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from 'react-bootstrap/Form';
 import { FormGroup } from './FormGroup';
 
 interface InputProps {
@@ -30,9 +31,8 @@ export function Input({
   className,
   onChange,
 }: InputProps) {
-  const classes = ['form-control', className].filter(Boolean).join(' ');
   const input = (
-    <input
+    <Form.Control
       type={type}
       name={name}
       value={value}
@@ -42,8 +42,8 @@ export function Input({
       required={required}
       step={step}
       min={min}
-      className={classes}
-      onChange={onChange}
+      className={className}
+      onChange={onChange as any}
     />
   );
 

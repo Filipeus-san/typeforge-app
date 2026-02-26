@@ -1,4 +1,6 @@
 import React from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { CardSection } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -20,8 +22,8 @@ export function OrderDetailPage({ order, items }: OrderDetailProps) {
   return (
     <AdminLayout title={`${t.headings.admin} ${order.orderNumber}`} activePage="orders"
       headerActions={<Button href={`/admin/orders/edit?id=${order.id}`} variant="outline" size="sm" icon="pencil">{t.actions.edit}</Button>}>
-      <div className="row g-4">
-        <div className="col-md-8">
+      <Row className="g-4">
+        <Col md={8}>
           <CardSection title={t.detail.sections.items}>
             <table className="data-table">
               <thead><tr><th>{t.columns.product}</th><th style={{textAlign:'center'}}>{t.columns.quantity}</th><th style={{textAlign:'right'}}>{t.columns.pricePerUnit}</th><th style={{textAlign:'right'}}>{t.columns.total}</th></tr></thead>
@@ -41,8 +43,8 @@ export function OrderDetailPage({ order, items }: OrderDetailProps) {
             </div>
           </CardSection>
           {order.notes && <CardSection title={t.detail.sections.notes}><p>{order.notes}</p></CardSection>}
-        </div>
-        <div className="col-md-4">
+        </Col>
+        <Col md={4}>
           <CardSection title={t.detail.sections.info}>
             <div className="mb-3"><strong>{t.detail.labels.status}:</strong> <Badge variant={getOrderStatusVariant(order.status) as any}>{getOrderStatusLabel(order.status)}</Badge></div>
             <div className="mb-3"><strong>{t.detail.labels.createdAt}:</strong> {formatDate(order.createdAt)}</div>
@@ -51,8 +53,8 @@ export function OrderDetailPage({ order, items }: OrderDetailProps) {
           </CardSection>
           {order.shippingAddress && <CardSection title={t.detail.sections.shippingAddress}><p>{order.shippingAddress}</p></CardSection>}
           {order.billingAddress && <CardSection title="Fakturacni adresa"><p>{order.billingAddress}</p></CardSection>}
-        </div>
-      </div>
+        </Col>
+      </Row>
     </AdminLayout>
   );
 }

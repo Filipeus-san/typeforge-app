@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 import { useTheme } from '../../context/ThemeContext';
 import { formatPrice } from '../../utils';
 import { useT } from '../../i18n';
@@ -339,7 +343,7 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
 
       {/* Navbar */}
       <nav className="checkout-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -359,12 +363,12 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
               <i className="bi bi-sun" />
             </button>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Progress */}
       <div className="checkout-progress">
-        <div className="container">
+        <Container>
           <div className="progress-steps">
             <div className="progress-step completed">
               <div className="step-num"><i className="bi bi-check" /></div>
@@ -386,14 +390,14 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
               <span>{t.checkout.steps.done}</span>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Content */}
       <div className="checkout-content">
-        <div className="container">
-          <div className="row g-4">
-            <div className="col-lg-8">
+        <Container>
+          <Row className="g-4">
+            <Col lg={8}>
               <form method="post" action="/checkout/review">
                 {/* Payment methods */}
                 <div className="checkout-section">
@@ -419,24 +423,24 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                   {/* Card form */}
                   {selectedPayment === 'card' && (
                     <div className="card-form">
-                      <div className="row g-3">
-                        <div className="col-12">
+                      <Row className="g-3">
+                        <Col xs={12}>
                           <label className="form-label" htmlFor="cardNumber">{t.checkout.payment.cardNumber}</label>
-                          <input type="text" className="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" />
-                        </div>
-                        <div className="col-md-4">
+                          <Form.Control type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" />
+                        </Col>
+                        <Col md={4}>
                           <label className="form-label" htmlFor="cardExpiry">{t.checkout.payment.cardExpiry}</label>
-                          <input type="text" className="form-control" id="cardExpiry" name="cardExpiry" placeholder="MM/RR" />
-                        </div>
-                        <div className="col-md-4">
+                          <Form.Control type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/RR" />
+                        </Col>
+                        <Col md={4}>
                           <label className="form-label" htmlFor="cardCvv">{t.checkout.payment.cardCvv}</label>
-                          <input type="text" className="form-control" id="cardCvv" name="cardCvv" placeholder="123" />
-                        </div>
-                        <div className="col-md-4">
+                          <Form.Control type="text" id="cardCvv" name="cardCvv" placeholder="123" />
+                        </Col>
+                        <Col md={4}>
                           <label className="form-label" htmlFor="cardName">{t.checkout.payment.cardName}</label>
-                          <input type="text" className="form-control" id="cardName" name="cardName" placeholder="Jan Novák" />
-                        </div>
-                      </div>
+                          <Form.Control type="text" id="cardName" name="cardName" placeholder="Jan Novák" />
+                        </Col>
+                      </Row>
                     </div>
                   )}
                 </div>
@@ -458,32 +462,32 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                   </div>
 
                   {!sameAsBilling && (
-                    <div className="row g-3 mt-1">
-                      <div className="col-md-6">
+                    <Row className="g-3 mt-1">
+                      <Col md={6}>
                         <label className="form-label" htmlFor="company">{t.checkout.payment.companyName}</label>
-                        <input type="text" className="form-control" id="company" name="company" placeholder="Název firmy" />
-                      </div>
-                      <div className="col-md-3">
+                        <Form.Control type="text" id="company" name="company" placeholder="Název firmy" />
+                      </Col>
+                      <Col md={3}>
                         <label className="form-label" htmlFor="ico">{t.checkout.payment.ico}</label>
-                        <input type="text" className="form-control" id="ico" name="ico" placeholder="12345678" />
-                      </div>
-                      <div className="col-md-3">
+                        <Form.Control type="text" id="ico" name="ico" placeholder="12345678" />
+                      </Col>
+                      <Col md={3}>
                         <label className="form-label" htmlFor="dic">{t.checkout.payment.dic}</label>
-                        <input type="text" className="form-control" id="dic" name="dic" placeholder="CZ12345678" />
-                      </div>
-                      <div className="col-12">
+                        <Form.Control type="text" id="dic" name="dic" placeholder="CZ12345678" />
+                      </Col>
+                      <Col xs={12}>
                         <label className="form-label" htmlFor="billingStreet">Ulice a číslo popisné</label>
-                        <input type="text" className="form-control" id="billingStreet" name="billingStreet" placeholder="Hlavní 123" />
-                      </div>
-                      <div className="col-md-6">
+                        <Form.Control type="text" id="billingStreet" name="billingStreet" placeholder="Hlavní 123" />
+                      </Col>
+                      <Col md={6}>
                         <label className="form-label" htmlFor="billingCity">Město</label>
-                        <input type="text" className="form-control" id="billingCity" name="billingCity" placeholder="Praha" />
-                      </div>
-                      <div className="col-md-3">
+                        <Form.Control type="text" id="billingCity" name="billingCity" placeholder="Praha" />
+                      </Col>
+                      <Col md={3}>
                         <label className="form-label" htmlFor="billingZip">PSČ</label>
-                        <input type="text" className="form-control" id="billingZip" name="billingZip" placeholder="110 00" />
-                      </div>
-                      <div className="col-md-3">
+                        <Form.Control type="text" id="billingZip" name="billingZip" placeholder="110 00" />
+                      </Col>
+                      <Col md={3}>
                         <label className="form-label" htmlFor="billingCountry">Stát</label>
                         <select className="form-select" id="billingCountry" name="billingCountry">
                           <option value="CZ">Česká republika</option>
@@ -492,8 +496,8 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                           <option value="AT">Rakousko</option>
                           <option value="PL">Polsko</option>
                         </select>
-                      </div>
-                    </div>
+                      </Col>
+                    </Row>
                   )}
                 </div>
 
@@ -509,10 +513,10 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                   </button>
                 </div>
               </form>
-            </div>
+            </Col>
 
             {/* Order summary */}
-            <div className="col-lg-4">
+            <Col lg={4}>
               <div className="order-summary-sidebar">
                 <h5>{t.headings.yourOrder}</h5>
                 {items.map((item, idx) => (
@@ -546,9 +550,9 @@ export function CheckoutPaymentPage({ items }: CheckoutPaymentProps) {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </div>
   );

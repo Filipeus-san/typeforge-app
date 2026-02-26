@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { useTheme } from '../../context/ThemeContext';
 import { useT } from '../../i18n';
 
@@ -243,7 +246,7 @@ export function LandingPage({ userName }: LandingProps) {
 
       {/* Navbar */}
       <nav className="landing-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -270,12 +273,12 @@ export function LandingPage({ userName }: LandingProps) {
               <a href="/login" className="btn-primary-tf btn-sm">Přihlásit</a>
             )}
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Hero */}
       <section className="landing-hero">
-        <div className="container">
+        <Container>
           <span className="hero-badge">
             <i className="bi bi-stars me-1" />
             Lorem ipsum dolor sit amet
@@ -301,14 +304,14 @@ export function LandingPage({ userName }: LandingProps) {
             <span>npx create-typeforge-app my-project</span>
             <span className="cursor-blink" />
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Connector */}
       <section className="landing-connector" id="connector">
-        <div className="container">
-          <div className="row align-items-center g-5">
-            <div className="col-lg-6">
+        <Container>
+          <Row className="align-items-center g-5">
+            <Col lg={6}>
               <div className="section-label">
                 <i className="bi bi-plug" />
                 MCP Connector
@@ -326,19 +329,19 @@ export function LandingPage({ userName }: LandingProps) {
                   </span>
                 ))}
               </div>
-            </div>
-            <div className="col-lg-6">
+            </Col>
+            <Col lg={6}>
               <div className="landing-code-block">
                 <pre>{mcpConfigJson}</pre>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </section>
 
       {/* Features */}
       <section className="landing-features" id="features">
-        <div className="container">
+        <Container>
           <div className="text-center mb-5">
             <div className="section-label justify-content-center">
               <i className="bi bi-grid" />
@@ -347,9 +350,9 @@ export function LandingPage({ userName }: LandingProps) {
             <h2 className="fw-bold">Vše co potřebujete</h2>
             <p className="text-muted-tf">Kompletní sada nástrojů pro moderní webový vývoj.</p>
           </div>
-          <div className="row g-4">
+          <Row className="g-4">
             {features.map((f) => (
-              <div key={f.icon} className="col-md-6 col-lg-4">
+              <Col key={f.icon} md={6} lg={4}>
                 <div className="feature-card">
                   <div className="feature-icon">
                     <i className={`bi bi-${f.icon}`} />
@@ -357,15 +360,15 @@ export function LandingPage({ userName }: LandingProps) {
                   <h5>{f.title}</h5>
                   <p>{f.desc}</p>
                 </div>
-              </div>
+              </Col>
             ))}
-          </div>
-        </div>
+          </Row>
+        </Container>
       </section>
 
       {/* How it works */}
       <section className="landing-how-it-works" id="how-it-works">
-        <div className="container">
+        <Container>
           <div className="text-center mb-5">
             <div className="section-label justify-content-center">
               <i className="bi bi-list-ol" />
@@ -373,22 +376,22 @@ export function LandingPage({ userName }: LandingProps) {
             </div>
             <h2 className="fw-bold">Tři jednoduché kroky</h2>
           </div>
-          <div className="row g-4">
+          <Row className="g-4">
             {steps.map((s, i) => (
-              <div key={i} className="col-md-4">
+              <Col key={i} md={4}>
                 <div className="step-card">
                   <div className="step-number">{i + 1}</div>
                   <h5>{s.title}</h5>
                   <p>{s.desc}</p>
                 </div>
-              </div>
+              </Col>
             ))}
-          </div>
-        </div>
+          </Row>
+        </Container>
       </section>
 
       {/* CTA */}
-      <section className="container">
+      <Container as="section">
         <div className="landing-cta">
           <h2>Připraveni začít?</h2>
           <p>Vytvořte si účet zdarma a začněte stavět během pár minut.</p>
@@ -401,13 +404,13 @@ export function LandingPage({ userName }: LandingProps) {
             </a>
           </div>
         </div>
-      </section>
+      </Container>
 
       {/* Footer */}
       <footer className="landing-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

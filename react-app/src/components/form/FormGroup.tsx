@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from 'react-bootstrap/Form';
 
 interface FormGroupProps {
   children: React.ReactNode;
@@ -14,9 +15,9 @@ export function FormGroup({ children, label, required, error, hint, className }:
   return (
     <div className={classes}>
       {label && (
-        <label className="form-label">
+        <Form.Label>
           {label}{required && <span className="text-danger ms-1">*</span>}
-        </label>
+        </Form.Label>
       )}
       {children}
       {error && <div className="form-error text-danger small mt-1">{error}</div>}

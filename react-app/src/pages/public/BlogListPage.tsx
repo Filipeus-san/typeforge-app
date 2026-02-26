@@ -1,4 +1,5 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
 import { useTheme } from '../../context/ThemeContext';
 import { formatDate } from '../../utils';
 import { useT } from '../../i18n';
@@ -195,7 +196,7 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
 
       {/* Navbar */}
       <nav className="blog-navbar">
-        <div className="container d-flex align-items-center justify-content-between">
+        <Container className="d-flex align-items-center justify-content-between">
           <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
             <i className="bi bi-braces-asterisk text-gradient" />
             <span className="text-gradient fw-bold fs-5">TypeForge</span>
@@ -214,12 +215,12 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
               <i className="bi bi-sun" />
             </button>
           </div>
-        </div>
+        </Container>
       </nav>
 
       {/* Header */}
       <section className="blog-header">
-        <div className="container">
+        <Container>
           <span className="hero-badge">
             <i className="bi bi-newspaper me-1" />
             Blog
@@ -228,11 +229,11 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
             {t.public.newsAndArticles} <span className="text-gradient">{t.public.articles}</span>
           </h1>
           <p>{t.public.subtitle}</p>
-        </div>
+        </Container>
       </section>
 
       {/* Blog grid */}
-      <section className="container">
+      <Container as="section">
         {posts.length === 0 ? (
           <div className="blog-empty">
             <i className="bi bi-journal-x" />
@@ -277,13 +278,13 @@ export function BlogListPage({ posts }: PublicBlogListProps) {
             ))}
           </div>
         )}
-      </section>
+      </Container>
 
       {/* Footer */}
       <footer className="blog-footer">
-        <div className="container">
+        <Container>
           <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

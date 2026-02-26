@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
+import Form from 'react-bootstrap/Form';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { CardSection } from '../../components/ui/Card';
 import { Icon } from '../../components/ui/Icon';
@@ -121,18 +125,17 @@ export function OrderFormPage({
 
   return (
     <AdminLayout title={isEdit ? t.actions.edit : t.headings.create} activePage="orders">
-      {error && <div className="alert alert-danger mb-4">{error}</div>}
+      {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
       <form method="post">
         {orderId && <input type="hidden" name="id" value={orderId} />}
 
-        <div className="row g-4">
-          <div className="col-lg-8">
+        <Row className="g-4">
+          <Col lg={8}>
             {/* Customer Section */}
             <CardSection title={t.form.sections.customer}>
               <div className="mb-3">
                 <FormGroup label={t.form.labels.selectCustomer}>
-                  <select
-                    className="form-control"
+                  <Form.Select
                     onChange={handleCustomerSelect}
                     defaultValue=""
                   >
@@ -140,60 +143,58 @@ export function OrderFormPage({
                     {customerOptions.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
-                  </select>
+                  </Form.Select>
                 </FormGroup>
               </div>
               <input type="hidden" name="customer_id" value={formValues.customer_id ?? ''} />
-              <div className="row g-3">
-                <div className="col-md-6">
+              <Row className="g-3">
+                <Col md={6}>
                   <FormGroup label={t.form.labels.customerName} required>
-                    <input
+                    <Form.Control
                       type="text"
                       name="customer_name"
-                      className="form-control"
                       required
                       value={formValues.customer_name ?? ''}
                       onChange={handleFieldChange('customer_name')}
                     />
                   </FormGroup>
-                </div>
-                <div className="col-md-6">
+                </Col>
+                <Col md={6}>
                   <FormGroup label={t.form.labels.email} required>
-                    <input
+                    <Form.Control
                       type="email"
                       name="customer_email"
-                      className="form-control"
                       required
                       value={formValues.customer_email ?? ''}
                       onChange={handleFieldChange('customer_email')}
                     />
                   </FormGroup>
-                </div>
-              </div>
-              <div className="row g-3 mt-1">
-                <div className="col-md-6">
+                </Col>
+              </Row>
+              <Row className="g-3 mt-1">
+                <Col md={6}>
                   <FormGroup label={t.form.labels.shippingAddress}>
-                    <textarea
+                    <Form.Control
+                      as="textarea"
                       name="shipping_address"
-                      className="form-control"
                       rows={2}
                       value={formValues.shipping_address ?? ''}
                       onChange={handleFieldChange('shipping_address')}
                     />
                   </FormGroup>
-                </div>
-                <div className="col-md-6">
+                </Col>
+                <Col md={6}>
                   <FormGroup label="Fakturacni adresa">
-                    <textarea
+                    <Form.Control
+                      as="textarea"
                       name="billing_address"
-                      className="form-control"
                       rows={2}
                       value={formValues.billing_address ?? ''}
                       onChange={handleFieldChange('billing_address')}
                     />
                   </FormGroup>
-                </div>
-              </div>
+                </Col>
+              </Row>
             </CardSection>
 
             {/* Items Section */}
@@ -215,8 +216,7 @@ export function OrderFormPage({
                     return (
                       <tr key={idx}>
                         <td>
-                          <select
-                            className="form-control"
+                          <Form.Select
                             value={item.productId}
                             onChange={(e) => handleProductSelect(idx, e.target.value)}
                           >
@@ -224,13 +224,12 @@ export function OrderFormPage({
                             {productOptions.map((o) => (
                               <option key={o.value} value={o.value}>{o.label}</option>
                             ))}
-                          </select>
+                          </Form.Select>
                           <input type="hidden" name={`item_product_id_${idx}`} value={item.productId} />
                         </td>
                         <td>
-                          <input
+                          <Form.Control
                             type="text"
-                            className="form-control"
                             placeholder={t.form.labels.itemName}
                             value={item.productName}
                             onChange={(e) => handleItemChange(idx, 'productName', e.target.value)}
@@ -238,9 +237,8 @@ export function OrderFormPage({
                           <input type="hidden" name={`item_name_${idx}`} value={item.productName} />
                         </td>
                         <td>
-                          <input
+                          <Form.Control
                             type="number"
-                            className="form-control"
                             min="1"
                             style={{ textAlign: 'center' }}
                             value={item.quantity}
@@ -249,9 +247,8 @@ export function OrderFormPage({
                           <input type="hidden" name={`item_qty_${idx}`} value={item.quantity} />
                         </td>
                         <td>
-                          <input
+                          <Form.Control
                             type="number"
-                            className="form-control"
                             step="0.01"
                             min="0"
                             style={{ textAlign: 'right' }}
@@ -296,18 +293,18 @@ export function OrderFormPage({
             {/* Notes Section */}
             <CardSection title={t.form.sections.notes}>
               <FormGroup label={t.form.labels.notesPlaceholder}>
-                <textarea
+                <Form.Control
+                  as="textarea"
                   name="notes"
-                  className="form-control"
                   rows={3}
                   value={formValues.notes ?? ''}
                   onChange={handleFieldChange('notes')}
                 />
               </FormGroup>
             </CardSection>
-          </div>
+          </Col>
 
-          <div className="col-lg-4">
+          <Col lg={4}>
             <CardSection title={t.columns.status}>
               <FormGroup label={t.form.sections.orderStatus}>
                 <Select
@@ -327,8 +324,8 @@ export function OrderFormPage({
                 <a href="/admin/orders" className="btn btn-outline-tf btn-sm text-center">{t.actions.backToList}</a>
               </div>
             </CardSection>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </form>
     </AdminLayout>
   );
