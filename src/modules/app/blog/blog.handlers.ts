@@ -1,14 +1,12 @@
-import { getHtmlTemplate } from "../../../template";
-import { AdminLayout, CardSection, Select, Badge, Icon, map } from "../../../components";
-import { getPayloudData, checkCsrfToken, link } from "../../../utils";
+import { getReactPageTemplate } from "../../../react";
+import { getPayloudData, checkCsrfToken } from "../../../utils";
 import { transformValidate, ValidationError } from "../../../validator";
 import { UserSession, requireAdmin, generateSlug } from "../shared";
 import { DbBlogPost } from "./blog.types";
 import { BlogPostForm } from "./blog.validation";
 import { findPostBySlugWithAuthor, findAllPostsWithAuthor, findPostById, findPostBySlug, findPostBySlugExcluding, insertPost, updatePost, deletePost } from "./blog.repository";
-import { escapeHtmlBlog, formatBlogDate } from "./blog.utils";
-import { getArticlePageContent, getBlogPageContent, getBlogFormContent } from "./blog.templates";
-import { BLOG_STATUS_FILTER_OPTIONS, DEFAULT_READ_TIME } from "./blog.const";
+import { escapeHtmlBlog } from "./blog.utils";
+import { DEFAULT_READ_TIME } from "./blog.const";
 import { BLOG_T } from "./blog.translation";
 
 // =============================================================================
@@ -29,20 +27,45 @@ export function renderArticle(request: Request, response: Response): Response {
             const featuredImageUrl = (post.featured_image !== null && post.featured_image !== undefined && post.featured_image !== '')
                 ? storageGetUrl(post.featured_image)
                 : undefined;
-            response.content = getHtmlTemplate(
+            response.content = getReactPageTemplate(
                 escapeHtmlBlog(post.title) + " — TypeForge",
-                getArticlePageContent(post.title, post.content, post.category, formatBlogDate(post.created_at), authorName, String(post.read_time), featuredImageUrl)
+                "Article",
+                {
+                    title: post.title,
+                    content: post.content,
+                    category: post.category,
+                    date: post.created_at,
+                    author: authorName,
+                    readTime: String(post.read_time),
+                    featuredImageUrl: featuredImageUrl,
+                }
             );
             return response;
         }
     }
 
-    response.content = getHtmlTemplate(BLOG_T.titles.article, getArticlePageContent());
+    response.content = getReactPageTemplate(BLOG_T.titles.article, "Article", {
+        title: "Článek nenalezen",
+        content: "<p>Požadovaný článek nebyl nalezen.</p>",
+    });
     return response;
 }
 
 export function renderBlog(request: Request, response: Response): Response {
-    response.content = getHtmlTemplate(BLOG_T.titles.public, getBlogPageContent());
+    const posts = findAllPostsWithAuthor();
+    const publishedPosts = posts.filter(p => p.status === 'published');
+    response.content = getReactPageTemplate(BLOG_T.titles.public, "BlogList", {
+        posts: publishedPosts.map(p => ({
+            slug: p.slug,
+            title: p.title,
+            excerpt: p.excerpt,
+            category: p.category,
+            authorName: p.author_first_name + ' ' + p.author_last_name,
+            createdAt: p.created_at,
+            readTime: String(p.read_time),
+            featuredImage: p.featured_image ?? '',
+        })),
+    });
     return response;
 }
 
@@ -62,45 +85,18 @@ export function renderAdminBlog(request: Request, response: Response): Response 
         ? posts.filter(p => p.status === statusFilter)
         : posts;
 
-    response.content = getHtmlTemplate(BLOG_T.titles.admin, AdminLayout({
-        title: BLOG_T.headings.admin,
-        activePage: "blog",
-        children: `
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="filter-bar mb-0">
-                    ${Select({ filter: true, options: BLOG_STATUS_FILTER_OPTIONS.map(o => ({ ...o, selected: statusFilter === o.value })) })}
-                </div>
-                <a href="/admin/blog/create" class="btn-add">
-                    ${Icon({ name: 'plus-lg' })} ${BLOG_T.actions.newArticle}
-                </a>
-            </div>
-            ${CardSection({
-                children: `
-                    <table class="data-table">
-                        <thead><tr><th>${BLOG_T.columns.name}</th><th>${BLOG_T.columns.author}</th><th>${BLOG_T.columns.category}</th><th>${BLOG_T.columns.status}</th><th>${BLOG_T.columns.date}</th><th>${BLOG_T.columns.actions}</th></tr></thead>
-                        <tbody>
-                            ${filteredPosts.length === 0
-                                ? `<tr><td colspan="6" class="text-center text-muted-tf py-4">${BLOG_T.empty.articles}</td></tr>`
-                                : map(filteredPosts, (p) => `
-                                <tr>
-                                    <td><strong>${escapeHtmlBlog(p.title)}</strong></td>
-                                    <td>${escapeHtmlBlog(p.author_first_name + ' ' + p.author_last_name)}</td>
-                                    <td>${escapeHtmlBlog(p.category)}</td>
-                                    <td>${Badge({ children: p.status === 'published' ? BLOG_T.statuses.published : BLOG_T.statuses.draft, variant: p.status === 'published' ? 'success' : 'warning' })}</td>
-                                    <td>${formatBlogDate(p.created_at)}</td>
-                                    <td>
-                                        <a href="/admin/blog/edit?id=${p.id}" class="btn-action" title="${BLOG_T.actions.edit}">${Icon({ name: 'pencil' })}</a>
-                                        <a href="/article?slug=${p.slug}" class="btn-action" title="${BLOG_T.actions.view}" target="_blank">${Icon({ name: 'eye' })}</a>
-                                        <a href="${link('/admin/blog/delete', { id: String(p.id) }, request, 'action')}" class="btn-action danger" title="${BLOG_T.actions.delete}" x-data @click.prevent="if(confirm('${BLOG_T.confirm.deleteArticle}')) window.location.href=$el.href">${Icon({ name: 'trash' })}</a>
-                                    </td>
-                                </tr>
-                            `)}
-                        </tbody>
-                    </table>
-                `
-            })}
-        `
-    }));
+    response.content = getReactPageTemplate(BLOG_T.titles.admin, "AdminBlogList", {
+        posts: filteredPosts.map(p => ({
+            id: String(p.id),
+            title: p.title,
+            slug: p.slug,
+            authorName: p.author_first_name + ' ' + p.author_last_name,
+            category: p.category,
+            status: p.status,
+            createdAt: p.created_at,
+        })),
+        statusFilter,
+    });
     return response;
 }
 
@@ -116,22 +112,19 @@ export function renderAdminBlogCreate(request: Request, response: Response): Res
         return handleBlogCreate(request, response, auth.session);
     }
 
-    response.content = getHtmlTemplate(BLOG_T.titles.create, AdminLayout({
-        title: BLOG_T.headings.create,
-        activePage: "blog",
-        children: getBlogFormContent(request)
-    }));
+    response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+        isEdit: false,
+    });
     return response;
 }
 
 function handleBlogCreate(request: Request, response: Response, session: UserSession): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getHtmlTemplate(BLOG_T.titles.create, AdminLayout({
-            title: BLOG_T.headings.create,
-            activePage: "blog",
-            children: getBlogFormContent(request, undefined, BLOG_T.errors.invalidRequest)
-        }));
+        response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+            error: BLOG_T.errors.invalidRequest,
+            isEdit: false,
+        });
         return response;
     }
 
@@ -142,11 +135,11 @@ function handleBlogCreate(request: Request, response: Response, session: UserSes
 
         const existing = findPostBySlug(slug);
         if (existing) {
-            response.content = getHtmlTemplate(BLOG_T.titles.create, AdminLayout({
-                title: BLOG_T.headings.create,
-                activePage: "blog",
-                children: getBlogFormContent(request, raw, BLOG_T.errors.slugExists)
-            }));
+            response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+                values: raw,
+                error: BLOG_T.errors.slugExists,
+                isEdit: false,
+            });
             return response;
         }
 
@@ -158,18 +151,17 @@ function handleBlogCreate(request: Request, response: Response, session: UserSes
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? BLOG_T.errors.validationError;
-            response.content = getHtmlTemplate(BLOG_T.titles.create, AdminLayout({
-                title: BLOG_T.headings.create,
-                activePage: "blog",
-                children: getBlogFormContent(request, raw, firstError)
-            }));
+            response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+                values: raw,
+                error: firstError,
+                isEdit: false,
+            });
             return response;
         }
-        response.content = getHtmlTemplate(BLOG_T.titles.create, AdminLayout({
-            title: BLOG_T.headings.create,
-            activePage: "blog",
-            children: getBlogFormContent(request, undefined, BLOG_T.errors.genericError)
-        }));
+        response.content = getReactPageTemplate(BLOG_T.titles.create, "AdminBlogForm", {
+            error: BLOG_T.errors.genericError,
+            isEdit: false,
+        });
         return response;
     }
 }
@@ -213,11 +205,11 @@ export function renderAdminBlogEdit(request: Request, response: Response): Respo
         featured_image: post.featured_image ?? ''
     };
 
-    response.content = getHtmlTemplate(BLOG_T.titles.edit, AdminLayout({
-        title: BLOG_T.headings.edit,
-        activePage: "blog",
-        children: getBlogFormContent(request, values, undefined, post.id)
-    }));
+    response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+        values,
+        isEdit: true,
+        postId: String(post.id),
+    });
     return response;
 }
 
@@ -236,11 +228,12 @@ function handleBlogEdit(request: Request, response: Response, post: DbBlogPost):
 
         const existing = findPostBySlugExcluding(slug, post.id);
         if (existing) {
-            response.content = getHtmlTemplate(BLOG_T.titles.edit, AdminLayout({
-                title: BLOG_T.headings.edit,
-                activePage: "blog",
-                children: getBlogFormContent(request, raw, BLOG_T.errors.slugExists, post.id)
-            }));
+            response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+                values: raw,
+                error: BLOG_T.errors.slugExists,
+                isEdit: true,
+                postId: String(post.id),
+            });
             return response;
         }
 
@@ -252,18 +245,19 @@ function handleBlogEdit(request: Request, response: Response, post: DbBlogPost):
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? BLOG_T.errors.validationError;
-            response.content = getHtmlTemplate(BLOG_T.titles.edit, AdminLayout({
-                title: BLOG_T.headings.edit,
-                activePage: "blog",
-                children: getBlogFormContent(request, raw, firstError, post.id)
-            }));
+            response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+                values: raw,
+                error: firstError,
+                isEdit: true,
+                postId: String(post.id),
+            });
             return response;
         }
-        response.content = getHtmlTemplate(BLOG_T.titles.edit, AdminLayout({
-            title: BLOG_T.headings.edit,
-            activePage: "blog",
-            children: getBlogFormContent(request, undefined, BLOG_T.errors.genericError, post.id)
-        }));
+        response.content = getReactPageTemplate(BLOG_T.titles.edit, "AdminBlogForm", {
+            error: BLOG_T.errors.genericError,
+            isEdit: true,
+            postId: String(post.id),
+        });
         return response;
     }
 }

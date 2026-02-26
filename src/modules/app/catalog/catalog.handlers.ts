@@ -1,10 +1,8 @@
-import { getHtmlTemplate } from "../../../template";
-import { AdminLayout, AdminDataList, Badge, Avatar, escapeHtml } from "../../../components";
+import { getReactPageTemplate } from "../../../react";
 import { getPayloudData } from "../../../utils";
 import { transformValidate, ValidationError } from "../../../validator";
 import { DbProduct, DbCategory, requireAdmin, formatPrice, getProductStatusLabel, getProductStatusVariant, generateSlug } from "../shared";
 import { ProductForm, CategoryForm } from "./catalog.validation";
-import { getProductFormContent, getCategoryFormContent } from "./catalog.templates";
 import { PRODUCT_STATUS_FILTER_OPTIONS, CATEGORY_STATUS_FILTER_OPTIONS, DEFAULT_PRODUCT_ICON, DEFAULT_CATEGORY_ICON } from "./catalog.const";
 import {
     findAllProductsWithCategory, findActiveCategories, findProductById, insertProduct, updateProduct, deleteProduct,
@@ -46,30 +44,12 @@ export function renderAdminProducts(request: Request, response: Response): Respo
         status: p.status,
     }));
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.products, AdminLayout({
-        title: CATALOG_T.headings.products,
-        activePage: "products",
-        children: AdminDataList({
-            columns: [
-                { key: 'name', label: CATALOG_T.columns.product, render: (val, row) => `<div class="d-flex align-items-center gap-2">${Avatar({ icon: row.icon || DEFAULT_PRODUCT_ICON })} <strong>${escapeHtml(val)}</strong></div>` },
-                { key: 'category_name', label: CATALOG_T.columns.category, render: (val) => escapeHtml(val || '-') },
-                { key: 'price', label: CATALOG_T.columns.price, render: (val) => formatPrice(Number(val)) },
-                { key: 'stock', label: CATALOG_T.columns.stock },
-                { key: 'status', label: CATALOG_T.columns.status, render: (val) => Badge({ children: getProductStatusLabel(val), variant: getProductStatusVariant(val) as any }) },
-            ],
-            rows,
-            actions: [
-                { icon: 'pencil', href: (row) => `/admin/products/edit?id=${row.id}`, title: CATALOG_T.actions.edit },
-                { icon: 'trash', href: (row) => `/admin/products/delete?id=${row.id}`, variant: 'danger', title: CATALOG_T.actions.delete, confirm: CATALOG_T.confirm.deleteProduct },
-            ],
-            filters: [
-                { name: 'category', options: categories.map(c => ({ value: String(c.id), label: c.name })), value: categoryFilter, placeholder: CATALOG_T.filters.allCategories },
-                { name: 'status', options: PRODUCT_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: CATALOG_T.filters.allStatuses },
-            ],
-            addButton: { label: CATALOG_T.actions.addProduct, href: '/admin/products/create' },
-            emptyMessage: CATALOG_T.empty.products,
-        }),
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.products, "AdminProductList", {
+        products: rows,
+        categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+        statusFilter,
+        categoryFilter,
+    });
     return response;
 }
 
@@ -83,22 +63,22 @@ export function renderAdminProductCreate(request: Request, response: Response): 
         return handleProductCreate(request, response, categories);
     }
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.productCreate, AdminLayout({
-        title: CATALOG_T.headings.productCreate,
-        activePage: "products",
-        children: getProductFormContent(request, categories, { status: 'active', icon: DEFAULT_PRODUCT_ICON, stock: '0', price: '0' })
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+        categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+        values: { status: 'active', icon: DEFAULT_PRODUCT_ICON, stock: '0', price: '0' },
+        isEdit: false,
+    });
     return response;
 }
 
 function handleProductCreate(request: Request, response: Response, categories: DbCategory[]): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getHtmlTemplate(CATALOG_T.titles.productCreate, AdminLayout({
-            title: CATALOG_T.headings.productCreate,
-            activePage: "products",
-            children: getProductFormContent(request, categories, undefined, CATALOG_T.errors.invalidRequest)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+            categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+            error: CATALOG_T.errors.invalidRequest,
+            isEdit: false,
+        });
         return response;
     }
 
@@ -127,18 +107,20 @@ function handleProductCreate(request: Request, response: Response, categories: D
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getHtmlTemplate(CATALOG_T.titles.productCreate, AdminLayout({
-                title: CATALOG_T.headings.productCreate,
-                activePage: "products",
-                children: getProductFormContent(request, categories, raw, firstError)
-            }));
+            response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+                categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+                values: raw,
+                error: firstError,
+                isEdit: false,
+            });
             return response;
         }
-        response.content = getHtmlTemplate(CATALOG_T.titles.productCreate, AdminLayout({
-            title: CATALOG_T.headings.productCreate,
-            activePage: "products",
-            children: getProductFormContent(request, categories, raw, CATALOG_T.errors.genericError)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.productCreate, "AdminProductForm", {
+            categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+            values: raw,
+            error: CATALOG_T.errors.genericError,
+            isEdit: false,
+        });
         return response;
     }
 }
@@ -184,22 +166,23 @@ export function renderAdminProductEdit(request: Request, response: Response): Re
         featured_image: product.featured_image || ''
     };
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.productEdit, AdminLayout({
-        title: CATALOG_T.headings.productEdit,
-        activePage: "products",
-        children: getProductFormContent(request, categories, formData, undefined, true, galleryImages)
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+        categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+        values: formData,
+        isEdit: true,
+        galleryImages: galleryImages.map(img => img.storage_path),
+    });
     return response;
 }
 
 function handleProductEdit(request: Request, response: Response, product: DbProduct, categories: DbCategory[]): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getHtmlTemplate(CATALOG_T.titles.productEdit, AdminLayout({
-            title: CATALOG_T.headings.productEdit,
-            activePage: "products",
-            children: getProductFormContent(request, categories, undefined, CATALOG_T.errors.invalidRequest, true)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+            categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+            error: CATALOG_T.errors.invalidRequest,
+            isEdit: true,
+        });
         return response;
     }
 
@@ -227,18 +210,20 @@ function handleProductEdit(request: Request, response: Response, product: DbProd
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getHtmlTemplate(CATALOG_T.titles.productEdit, AdminLayout({
-                title: CATALOG_T.headings.productEdit,
-                activePage: "products",
-                children: getProductFormContent(request, categories, raw, firstError, true)
-            }));
+            response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+                categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+                values: raw,
+                error: firstError,
+                isEdit: true,
+            });
             return response;
         }
-        response.content = getHtmlTemplate(CATALOG_T.titles.productEdit, AdminLayout({
-            title: CATALOG_T.headings.productEdit,
-            activePage: "products",
-            children: getProductFormContent(request, categories, raw, CATALOG_T.errors.genericError, true)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.productEdit, "AdminProductForm", {
+            categories: categories.map(c => ({ value: String(c.id), label: c.name })),
+            values: raw,
+            error: CATALOG_T.errors.genericError,
+            isEdit: true,
+        });
         return response;
     }
 }
@@ -283,28 +268,10 @@ export function renderAdminCategories(request: Request, response: Response): Res
         status: c.status,
     }));
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.categories, AdminLayout({
-        title: CATALOG_T.headings.categories,
-        activePage: "categories",
-        children: AdminDataList({
-            columns: [
-                { key: 'name', label: CATALOG_T.columns.category, render: (val, row) => `<div class="d-flex align-items-center gap-2">${Avatar({ icon: row.icon || DEFAULT_CATEGORY_ICON })} <strong>${escapeHtml(val)}</strong></div>` },
-                { key: 'description', label: CATALOG_T.columns.description, render: (val) => escapeHtml(val || '-') },
-                { key: 'product_count', label: CATALOG_T.columns.productCount },
-                { key: 'status', label: CATALOG_T.columns.status, render: (val) => Badge({ children: val === 'active' ? CATALOG_T.statuses.active : CATALOG_T.statuses.hidden, variant: val === 'active' ? 'success' : 'warning' }) },
-            ],
-            rows,
-            actions: [
-                { icon: 'pencil', href: (row) => `/admin/categories/edit?id=${row.id}`, title: CATALOG_T.actions.edit },
-                { icon: 'trash', href: (row) => `/admin/categories/delete?id=${row.id}`, variant: 'danger', title: CATALOG_T.actions.delete, confirm: CATALOG_T.confirm.deleteCategory },
-            ],
-            filters: [
-                { name: 'status', options: CATEGORY_STATUS_FILTER_OPTIONS, value: statusFilter, placeholder: CATALOG_T.filters.allStatuses },
-            ],
-            addButton: { label: CATALOG_T.actions.addCategory, href: '/admin/categories/create' },
-            emptyMessage: CATALOG_T.empty.categories,
-        }),
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.categories, "AdminCategoryList", {
+        categories: rows,
+        statusFilter,
+    });
     return response;
 }
 
@@ -316,22 +283,20 @@ export function renderAdminCategoryCreate(request: Request, response: Response):
         return handleCategoryCreate(request, response);
     }
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.categoryCreate, AdminLayout({
-        title: CATALOG_T.headings.categoryCreate,
-        activePage: "categories",
-        children: getCategoryFormContent(request, { status: 'active', icon: DEFAULT_CATEGORY_ICON, sort_order: '0' })
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+        values: { status: 'active', icon: DEFAULT_CATEGORY_ICON, sort_order: '0' },
+        isEdit: false,
+    });
     return response;
 }
 
 function handleCategoryCreate(request: Request, response: Response): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getHtmlTemplate(CATALOG_T.titles.categoryCreate, AdminLayout({
-            title: CATALOG_T.headings.categoryCreate,
-            activePage: "categories",
-            children: getCategoryFormContent(request, undefined, CATALOG_T.errors.invalidRequest)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+            error: CATALOG_T.errors.invalidRequest,
+            isEdit: false,
+        });
         return response;
     }
 
@@ -349,18 +314,18 @@ function handleCategoryCreate(request: Request, response: Response): Response {
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getHtmlTemplate(CATALOG_T.titles.categoryCreate, AdminLayout({
-                title: CATALOG_T.headings.categoryCreate,
-                activePage: "categories",
-                children: getCategoryFormContent(request, raw, firstError)
-            }));
+            response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+                values: raw,
+                error: firstError,
+                isEdit: false,
+            });
             return response;
         }
-        response.content = getHtmlTemplate(CATALOG_T.titles.categoryCreate, AdminLayout({
-            title: CATALOG_T.headings.categoryCreate,
-            activePage: "categories",
-            children: getCategoryFormContent(request, raw, CATALOG_T.errors.genericError)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.categoryCreate, "AdminCategoryForm", {
+            values: raw,
+            error: CATALOG_T.errors.genericError,
+            isEdit: false,
+        });
         return response;
     }
 }
@@ -399,22 +364,20 @@ export function renderAdminCategoryEdit(request: Request, response: Response): R
         featured_image: category.featured_image || ''
     };
 
-    response.content = getHtmlTemplate(CATALOG_T.titles.categoryEdit, AdminLayout({
-        title: CATALOG_T.headings.categoryEdit,
-        activePage: "categories",
-        children: getCategoryFormContent(request, formData, undefined, true)
-    }));
+    response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+        values: formData,
+        isEdit: true,
+    });
     return response;
 }
 
 function handleCategoryEdit(request: Request, response: Response, category: DbCategory): Response {
     const raw = getPayloudData<Record<string, string>>(request);
     if (!raw) {
-        response.content = getHtmlTemplate(CATALOG_T.titles.categoryEdit, AdminLayout({
-            title: CATALOG_T.headings.categoryEdit,
-            activePage: "categories",
-            children: getCategoryFormContent(request, undefined, CATALOG_T.errors.invalidRequest, true)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+            error: CATALOG_T.errors.invalidRequest,
+            isEdit: true,
+        });
         return response;
     }
 
@@ -432,18 +395,18 @@ function handleCategoryEdit(request: Request, response: Response, category: DbCa
     } catch (error) {
         if (error instanceof ValidationError) {
             const firstError = Object.values(error.errors)[0]?.[0] ?? CATALOG_T.errors.validationError;
-            response.content = getHtmlTemplate(CATALOG_T.titles.categoryEdit, AdminLayout({
-                title: CATALOG_T.headings.categoryEdit,
-                activePage: "categories",
-                children: getCategoryFormContent(request, raw, firstError, true)
-            }));
+            response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+                values: raw,
+                error: firstError,
+                isEdit: true,
+            });
             return response;
         }
-        response.content = getHtmlTemplate(CATALOG_T.titles.categoryEdit, AdminLayout({
-            title: CATALOG_T.headings.categoryEdit,
-            activePage: "categories",
-            children: getCategoryFormContent(request, raw, CATALOG_T.errors.genericError, true)
-        }));
+        response.content = getReactPageTemplate(CATALOG_T.titles.categoryEdit, "AdminCategoryForm", {
+            values: raw,
+            error: CATALOG_T.errors.genericError,
+            isEdit: true,
+        });
         return response;
     }
 }

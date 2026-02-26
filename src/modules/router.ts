@@ -1,4 +1,4 @@
-import { renderIndex, renderLogin, renderRegister, handleLogout, renderArticle, renderBlog, renderEshop, renderProduct, renderCategory, renderCart, handleCartAdd, handleCartUpdate, handleCartRemove, renderCheckout, renderCheckoutPayment, renderCheckoutReview, renderCheckoutConfirmation, renderAdmin, renderAdminAnalytics, renderAdminOrders, renderAdminOrderDetail, renderAdminOrderCreate, renderAdminOrderEdit, renderAdminProducts, renderAdminProductCreate, renderAdminProductEdit, handleAdminProductDelete, renderAdminCategories, renderAdminCategoryCreate, renderAdminCategoryEdit, handleAdminCategoryDelete, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDelete } from "./app";
+import { renderIndex, renderLogin, renderRegister, handleLogout, renderArticle, renderBlog, renderEshop, renderProduct, renderCategory, renderCart, handleCartAdd, handleCartUpdate, handleCartRemove, renderCheckout, renderCheckoutPayment, renderCheckoutReview, renderCheckoutConfirmation, renderAdmin, renderAdminAnalytics, renderAdminOrders, renderAdminOrderDetail, renderAdminOrderCreate, renderAdminOrderEdit, renderAdminProducts, renderAdminProductCreate, renderAdminProductEdit, handleAdminProductDelete, renderAdminCategories, renderAdminCategoryCreate, renderAdminCategoryEdit, handleAdminCategoryDelete, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDelete, serveReactBundleJs, serveReactBundleCss } from "./app";
 import { RouterPaths } from "./types";
 
 // Router
@@ -193,6 +193,16 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
             path: "/admin/blog/delete",
             route: handleAdminBlogDelete,
             type: "action"
+        },
+        {
+            path: "/assets/react-bundle.js",
+            route: serveReactBundleJs,
+            type: "render"
+        },
+        {
+            path: "/assets/react-bundle.css",
+            route: serveReactBundleCss,
+            type: "render"
         },
     ];
 }

@@ -1,0 +1,13 @@
+export { DashboardPage } from './DashboardPage';
+export { AnalyticsPage } from './AnalyticsPage';
+export { ProductListPage } from './ProductListPage';
+export { ProductFormPage } from './ProductFormPage';
+export { CategoryListPage } from './CategoryListPage';
+export { CategoryFormPage } from './CategoryFormPage';
+export { OrderListPage } from './OrderListPage';
+export { OrderDetailPage } from './OrderDetailPage';
+export { OrderFormPage } from './OrderFormPage';
+export { BlogListPage as AdminBlogListPage } from './BlogListPage';
+export { BlogFormPage } from './BlogFormPage';
+export { MediaPage } from './MediaPage';
+export { CustomerListPage } from './CustomerListPage';

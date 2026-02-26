@@ -1,6 +1,5 @@
-import { getHtmlTemplate } from "../../../template";
+import { getReactPageTemplate } from "../../../react";
 import { DbProductWithCategory, DbCategory } from "../shared";
-import { getEshopPageContent, getProductPageContent, getCategoryPageContent } from "./shop.templates";
 import { findFeaturedProducts, findActiveCategoriesWithCount, findProductBySlug, findProductById, findActiveCategoryBySlug, findActiveProductsByCategory, findAllActiveProducts } from "./shop.repository";
 import { findProductImages } from "../catalog/catalog.repository";
 import { SHOP_T } from "./shop.translation";
@@ -8,7 +7,28 @@ import { SHOP_T } from "./shop.translation";
 export function renderEshop(request: Request, response: Response): Response {
     const products = findFeaturedProducts();
     const categories = findActiveCategoriesWithCount();
-    response.content = getHtmlTemplate(SHOP_T.titles.eshop, getEshopPageContent(products, categories));
+    response.content = getReactPageTemplate(SHOP_T.titles.eshop, "Eshop", {
+        products: products.map(p => ({
+            id: String(p.id),
+            name: p.name,
+            slug: p.slug,
+            price: String(p.price),
+            oldPrice: p.old_price ? String(p.old_price) : undefined,
+            shortDescription: p.short_description || '',
+            icon: p.icon || 'box',
+            featuredImage: p.featured_image || '',
+            categoryName: p.category_name || '',
+        })),
+        categories: categories.map(c => ({
+            id: String(c.id),
+            name: c.name,
+            slug: c.slug,
+            description: c.description || '',
+            icon: c.icon || 'grid',
+            productCount: String(c.product_count || 0),
+            featuredImage: c.featured_image || '',
+        })),
+    });
     return response;
 }
 
@@ -29,7 +49,22 @@ export function renderProduct(request: Request, response: Response): Response {
     }
 
     const galleryImages = findProductImages(product.id);
-    response.content = getHtmlTemplate(`${product.name} ${SHOP_T.titles.product}`, getProductPageContent(product, galleryImages));
+    response.content = getReactPageTemplate(`${product.name} ${SHOP_T.titles.product}`, "Product", {
+        product: {
+            id: String(product.id),
+            name: product.name,
+            slug: product.slug,
+            description: product.description || '',
+            shortDescription: product.short_description || '',
+            price: String(product.price),
+            oldPrice: product.old_price ? String(product.old_price) : undefined,
+            stock: String(product.stock),
+            icon: product.icon || 'box',
+            featuredImage: product.featured_image || '',
+            categoryName: product.category_name || '',
+        },
+        galleryImages: galleryImages.map(img => img.storage_path),
+    });
     return response;
 }
 
@@ -51,6 +86,26 @@ export function renderCategory(request: Request, response: Response): Response {
     }
 
     const title = category ? category.name : SHOP_T.headings.allProducts;
-    response.content = getHtmlTemplate(`${title} ${SHOP_T.titles.category}`, getCategoryPageContent(title, category, categoryProducts));
+    response.content = getReactPageTemplate(`${title} ${SHOP_T.titles.category}`, "Category", {
+        title,
+        category: category ? {
+            name: category.name,
+            slug: category.slug,
+            description: category.description || '',
+            icon: category.icon || 'grid',
+            featuredImage: category.featured_image || '',
+        } : undefined,
+        products: categoryProducts.map(p => ({
+            id: String(p.id),
+            name: p.name,
+            slug: p.slug,
+            price: String(p.price),
+            oldPrice: p.old_price ? String(p.old_price) : undefined,
+            shortDescription: p.short_description || '',
+            icon: p.icon || 'box',
+            featuredImage: p.featured_image || '',
+            categoryName: p.category_name || '',
+        })),
+    });
     return response;
 }

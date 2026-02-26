@@ -1,12 +1,5 @@
-import { getHtmlTemplate } from "../../../template";
+import { getReactPageTemplate } from "../../../react";
 import { getCookie, setCookie, getPayloudData } from "../../../utils";
-import {
-    getCartPageContent,
-    getCheckoutShippingContent,
-    getCheckoutPaymentContent,
-    getCheckoutReviewContent,
-    getCheckoutConfirmationContent,
-} from "./cart.templates";
 import { findCartItems, addCartItem, updateCartItemQuantity, removeCartItem, getCartItemCount } from "./cart.repository";
 import { CART_T } from "./cart.translation";
 
@@ -27,7 +20,18 @@ export function renderCart(request: Request, response: Response): Response {
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getHtmlTemplate(CART_T.titles.cart, getCartPageContent(items));
+    response.content = getReactPageTemplate(CART_T.titles.cart, "Cart", {
+        items: items.map(item => ({
+            productId: String(item.product_id),
+            productName: item.product_name,
+            productPrice: String(item.product_price),
+            productOldPrice: item.product_old_price ? String(item.product_old_price) : undefined,
+            quantity: String(item.quantity),
+            productIcon: item.product_icon || '',
+            productFeaturedImage: item.product_featured_image || '',
+            categoryName: item.category_name || '',
+        })),
+    });
     return response;
 }
 
@@ -103,7 +107,15 @@ export function renderCheckout(request: Request, response: Response): Response {
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getHtmlTemplate(CART_T.titles.checkoutShipping, getCheckoutShippingContent(items));
+    response.content = getReactPageTemplate(CART_T.titles.checkoutShipping, "CheckoutShipping", {
+        items: items.map(item => ({
+            productName: item.product_name,
+            quantity: String(item.quantity),
+            productPrice: String(item.product_price),
+            productIcon: item.product_icon || '',
+            productFeaturedImage: item.product_featured_image || '',
+        })),
+    });
     return response;
 }
 
@@ -112,7 +124,15 @@ export function renderCheckoutPayment(request: Request, response: Response): Res
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getHtmlTemplate(CART_T.titles.checkoutPayment, getCheckoutPaymentContent(items));
+    response.content = getReactPageTemplate(CART_T.titles.checkoutPayment, "CheckoutPayment", {
+        items: items.map(item => ({
+            productName: item.product_name,
+            quantity: String(item.quantity),
+            productPrice: String(item.product_price),
+            productIcon: item.product_icon || '',
+            productFeaturedImage: item.product_featured_image || '',
+        })),
+    });
     return response;
 }
 
@@ -121,12 +141,20 @@ export function renderCheckoutReview(request: Request, response: Response): Resp
     const cart = getCartSessionId(request, response);
     response = cart.response;
     const items = findCartItems(cart.sessionId);
-    response.content = getHtmlTemplate(CART_T.titles.checkoutReview, getCheckoutReviewContent(items));
+    response.content = getReactPageTemplate(CART_T.titles.checkoutReview, "CheckoutReview", {
+        items: items.map(item => ({
+            productName: item.product_name,
+            quantity: String(item.quantity),
+            productPrice: String(item.product_price),
+            productIcon: item.product_icon || '',
+            productFeaturedImage: item.product_featured_image || '',
+        })),
+    });
     return response;
 }
 
 // CHECKOUT STEP 4: Confirmation
 export function renderCheckoutConfirmation(request: Request, response: Response): Response {
-    response.content = getHtmlTemplate(CART_T.titles.checkoutConfirmation, getCheckoutConfirmationContent());
+    response.content = getReactPageTemplate(CART_T.titles.checkoutConfirmation, "CheckoutConfirmation", {});
     return response;
 }

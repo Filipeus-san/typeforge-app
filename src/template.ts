@@ -1,21 +1,15 @@
-export function getHtmlTemplate(title: string, content: string) {
-    return `<!DOCTYPE html>
-<html lang="cs" data-bs-theme="dark" data-tf-theme="dark">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title}</title>
-    <link rel="icon" href="data:;base64,=">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script>
+export function getThemeDetectScript(): string {
+    return `<script>
         (function() {
             var theme = localStorage.getItem('tf-theme') || 'dark';
             document.documentElement.setAttribute('data-bs-theme', theme);
             document.documentElement.setAttribute('data-tf-theme', theme);
         })();
-    </script>
-    <style>
+    </script>`;
+}
+
+export function getThemeStyles(): string {
+    return `<style>
         /* Dark theme (default) */
         :root, [data-tf-theme="dark"] {
             --tf-primary: #7c5cfc;
@@ -159,7 +153,21 @@ export function getHtmlTemplate(title: string, content: string) {
         [data-tf-theme="light"] .navbar-tf .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(26, 26, 46, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
-    </style>
+    </style>`;
+}
+
+export function getHtmlTemplate(title: string, content: string) {
+    return `<!DOCTYPE html>
+<html lang="cs" data-bs-theme="dark" data-tf-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${title}</title>
+    <link rel="icon" href="data:;base64,=">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    ${getThemeDetectScript()}
+    ${getThemeStyles()}
 </head>
 <body x-data>
 ${content}

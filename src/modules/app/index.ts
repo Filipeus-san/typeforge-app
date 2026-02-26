@@ -7,3 +7,4 @@ export * from './dashboard';
 export * from './orders';
 export * from './catalog';
 export * from './media';
+export * from './assets';

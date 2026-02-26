@@ -1,1 +1,5 @@
-export const reactBuild = { reactBundle:  "index-HkoChyV2.js" }
+export const reactBuild = {
+    reactBundle: "react-bundle.js",
+    reactCss: "react-bundle.css",
+    assetsBaseUrl: "/assets/",
+};
