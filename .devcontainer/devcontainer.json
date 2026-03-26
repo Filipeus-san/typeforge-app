@@ -5,16 +5,25 @@
   "postStartCommand": ".devcontainer/post-start.sh",
   "postAttachCommand": ".devcontainer/post-attach.sh",
   "secrets": {
-    "CLAUDE_AUTH_JSON": {
-      "description": "Claude Code OAuth tokens (base64 encoded JSON with accessToken, refreshToken, expiresAt). Automatically managed by TypeForge hosting.",
-      "documentationUrl": "https://code.claude.com/docs/en/authentication"
-    },
     "TYPEFORGE_MCP_API_TOKEN": {
       "description": "TypeForge MCP API token (format: tfk_...). Automatically managed by TypeForge hosting."
     }
   },
-  "forwardPorts": [3000, 3005, 5432, 8081],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code"
+      ],
+      "settings": {
+        
+      }
+    }
+  },
+  "forwardPorts": [8080],
   "portsAttributes": {
-    "3005": { "label": "vibe-kanban", "visibility": "private", "onAutoForward": "notify" }
+    "8080": {
+      "label": "App",
+      "visibility": "public"
+    }
   }
 }

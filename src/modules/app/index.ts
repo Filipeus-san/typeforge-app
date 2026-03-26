@@ -1,10 +1,8 @@
-// Domain controllers
+// Landing page handler
+export * from './landing';
 export * from './auth';
 export * from './blog';
-export * from './shop';
-export * from './cart';
-export * from './dashboard';
-export * from './orders';
-export * from './catalog';
-export * from './media';
-export * from './assets';
+export * from './users';
+export * from './pages';
+export * from './redirects';
+export * from './api';

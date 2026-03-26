@@ -5,4 +5,6 @@ dist
 deploy-local.sh
 .playwright-mcp/
 .vscode/
-screenshot*.png
+.claude/
+.env
+.tlycode-settings.json

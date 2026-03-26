@@ -1,389 +1,131 @@
-# Architektura TypeForge
+# Architecture
 
-## Struktura projektu
+## Hybrid React Model
 
-```
-typeforge-app/
-├── src/
-│   ├── main.ts                    # Vstupní bod — config(), init(), main()
-│   ├── global.d.ts                # Deklarace runtime API (@noSelf)
-│   ├── global.types.ts            # Globální typy (Request, Response, Config)
-│   ├── config.ts                  # Konfigurace (DB, Redis, sessions, migrace)
-│   ├── utils.ts                   # Session management, CSRF, helpers
-│   ├── validator.ts               # Decorator-based validační systém
-│   ├── template.ts                # HTML šablona wrapper
-│   ├── migration-runner.ts        # Runner databázových migrací
-│   ├── react-build.ts             # React bundle konfigurace
-│   │
-│   ├── migrations/                # Databázové migrace (001–014)
-│   │   ├── index.ts
-│   │   ├── 001_create_users.ts
-│   │   ├── ...
-│   │   └── 014_create_media.ts
-│   │
-│   ├── components/                # Komponentová knihovna
-│   │   ├── types.ts               # Typy komponent (Component<P>, BaseProps)
-│   │   ├── helpers.ts             # cx, map, when, attrs, escapeHtml
-│   │   ├── index.ts               # Barrel export všech komponent
-│   │   ├── ui/                    # Button, Card, Badge, Icon, Form, Avatar, ThemeToggle
-│   │   ├── data/                  # AdminDataList, AdminForm, DataTable, Pagination, FilterBar, StatCard
-│   │   ├── layout/                # AdminLayout, AdminSidebar, Navbar, Footer, PageWrapper
-│   │   ├── shop/                  # ProductCard, CategoryCard
-│   │   └── blocks/                # Hero
-│   │
-│   └── modules/
-│       ├── router.ts              # Definice rout (50+ routes)
-│       ├── router.types.ts        # Union typy cest
-│       ├── types.ts               # RouterPaths type s prefix support
-│       └── app/                   # Doménové moduly
-│           ├── index.ts           # Barrel export všech modulů
-│           ├── shared.ts          # Sdílené typy, utility, auth helpers
-│           ├── shared.const.ts    # Sdílené konstanty (statusy, varianty)
-│           │
-│           ├── auth/              # Autentizace (login, register, logout)
-│           ├── dashboard/         # Admin dashboard & analytika
-│           ├── catalog/           # Produkty & kategorie
-│           ├── customers/         # Zákazníci
-│           ├── orders/            # Objednávky
-│           ├── warehouse/         # Sklad & zásoby
-│           ├── blog/              # Blog příspěvky
-│           ├── media/             # Média/soubory
-│           ├── admin-misc/        # Nastavení, stránky, uživatelé
-│           ├── shop/              # Veřejný e-shop
-│           ├── cart/              # Nákupní košík
-│           └── notfound/          # 404 stránka
-│
-├── dist/
-│   └── bundle.lua                 # Kompilovaný Lua bundle
-│
-├── scripts/
-│   └── deploy.sh                  # Deployment script
-│
-├── Docs/                          # Dokumentace
-├── package.json
-├── tsconfig.json                  # TypeScript + TSTL konfigurace
-└── CLAUDE.md                      # Instrukce pro AI agenta
-```
+TypeForge uses a hybrid server-rendered React architecture:
 
-## Doménový modul — struktura souborů
+1. **Server (TSTL/Lua)** handles HTTP requests, routing, authentication, database queries, validation
+2. **React (client-side)** handles all UI rendering
 
-Každý doménový modul v `src/modules/app/[module]/` dodržuje konzistentní konvenci:
+The server does **not** return HTML templates — it serializes data as JSON props and generates a minimal HTML page that loads React from CDN + an embedded app bundle.
 
-| Soubor | Účel | Povinný |
-|--------|------|---------|
-| `index.ts` | Barrel export — pouze re-exportuje handlery | Ano |
-| `[module].handlers.ts` | HTTP request handlery (route funkce) | Ano |
-| `[module].repository.ts` | SQL dotazy (všechna volání `sqlQuery`) | Když je potřeba DB |
-| `[module].templates.ts` | HTML template buildery (AdminForm/AdminDataList) | Když má formuláře |
-| `[module].types.ts` | Doménové TypeScript typy | Když má vlastní typy |
-| `[module].const.ts` | Konstanty (status labels, filter options, defaults) | Když má konstanty |
-| `[module].utils.ts` | Doménové helper funkce | Když má util funkce |
-| `[module].validation.ts` | Validační třídy s dekorátory | Když má formuláře |
-
-**Příklad plného modulu (catalog/):**
-```
-catalog/
-├── index.ts                   # export * from './catalog.handlers'
-├── catalog.handlers.ts        # renderAdminProducts, renderAdminProductCreate, ...
-├── catalog.repository.ts      # findAllProducts, findProductById, insertProduct, ...
-├── catalog.templates.ts       # getProductFormContent, getCategoryFormContent
-├── catalog.const.ts           # PRODUCT_STATUS_FILTER_OPTIONS, DEFAULT_PRODUCT_ICON
-└── catalog.validation.ts      # ProductForm, CategoryForm třídy
-```
-
-**Příklad minimálního modulu (cart/):**
-```
-cart/
-├── index.ts
-├── cart.handlers.ts
-└── cart.templates.ts
-```
-
-## Kompilační pipeline
-
-### Tok dat
+### Request Flow
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   TypeScript    │────▶│  TSTL Compiler  │────▶│   Lua Bundle    │
-│    (src/*.ts)   │     │                 │     │ (dist/bundle)   │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                        │
-                                                        ▼
-                                               ┌─────────────────┐
-                                               │  Lua JIT        │
-                                               │  Hosting        │
-                                               │  Runtime        │
-                                               └─────────────────┘
+Browser → HTTP Request → Lua Runtime → Route Handler
+  → Handler fetches data from DB (repository functions)
+  → Handler calls getReactPageTemplate(title, componentName, props)
+  → Returns full HTML page with:
+      - React 18 from CDN (unpkg)
+      - App CSS bundle
+      - App JS bundle (embedded IIFE)
+      - <script>window.__REACT_RENDER__(componentName, props, containerId)</script>
+  → Browser loads React, mounts component with props
+  → Component renders UI using translations from i18n
 ```
 
-### TSTL konfigurace (tsconfig.json)
+### Key Characteristics
 
-```json
-{
-  "compilerOptions": {
-    "target": "ESNext",
-    "strict": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "tstl": {
-    "luaTarget": "JIT",
-    "luaLibImport": "require-minimal",
-    "luaBundle": "./bundle.lua",
-    "luaBundleEntry": "src/main.ts"
-  }
-}
+- **No client-side routing** — every page navigation is a full HTTP request
+- **No client-side data fetching** — all data arrives as serialized props
+- **Forms submit via HTTP POST** — standard form submission, no SPA behavior
+- **React is for rendering only** — business logic stays on the server
+
+## Compilation Pipeline
+
+```
+src/                    → TSTL compiler → dist/bundle.lua → Lua JIT runtime (Cloud Run)
+react-app/src/          → Vite build    → dist/index-[hash].js
+dist/index-[hash].js    → embed script  → src/react-bundle-content.ts → included in TSTL build
 ```
 
-## Runtime model
+### Build Steps
 
-### Vstupní body
+1. `cd react-app && npm run build` — Vite builds React app as IIFE with external React/ReactDOM
+2. Embed script reads `react-app/dist/` output and writes `src/react-bundle-content.ts`
+3. `npm run build` (or `npx tstl`) — compiles all TypeScript (including embedded bundle) to `dist/bundle.lua`
+4. Deploy `dist/bundle.lua` to Cloud Run
 
-Hosting runtime volá tři exportované funkce z `main.ts`:
+## Project Structure
+
+### Server-side (`src/`)
+
+```
+src/
+├── main.ts                    # Entry point — config(), init(), main()
+├── global.d.ts                # Runtime API declarations (@noSelf)
+├── global.types.ts            # Global types (Request, Response, Config)
+├── config.ts                  # App configuration
+├── utils.ts                   # Sessions, CSRF, helpers
+├── validator.ts               # Decorator-based validation
+├── template.ts                # HTML template + theme detection
+├── react.ts                   # getReactPageTemplate(), renderReactComponent()
+├── react-build.ts             # Asset paths config
+├── react-bundle-content.ts    # Auto-generated embedded React bundle
+├── shared-keys.ts             # Shared constants (TSTL + React)
+├── migration-runner.ts        # Database migration runner
+├── migrations/                # SQL migrations (001–019)
+└── modules/
+    ├── router.ts              # Route definitions
+    ├── router.types.ts        # Route path union types
+    ├── types.ts               # RouterPaths type
+    └── app/                   # Domain modules
+        ├── shared.ts          # DB types, auth helpers
+        ├── shared.const.ts    # Re-exports from shared-keys
+        ├── assets/            # Static asset serving
+        ├── auth/              # Login, register, logout
+        ├── dashboard/         # Admin dashboard
+        ├── catalog/           # Products & categories
+        ├── orders/            # Order management
+        ├── blog/              # Blog posts
+        ├── media/             # File management
+        ├── shop/              # Public storefront
+        └── cart/              # Shopping cart & checkout
+```
+
+### Client-side (`react-app/src/`)
+
+```
+react-app/src/
+├── main.tsx               # Entry point (window.__REACT_RENDER__)
+├── registry.ts            # Component name → React component map (26 components)
+├── types.ts               # TypeScript types
+├── utils.ts               # Formatters, status helpers
+├── context/ThemeContext.tsx
+├── i18n/                  # Czech translations (useT hook)
+├── components/            # Reusable UI components
+│   ├── ui/                # Button, Badge, Card, Icon, Avatar, ThemeToggle
+│   ├── form/              # Input, Textarea, Select, FormGroup, SearchInput, Toggle
+│   ├── data/              # AdminDataList, AdminForm, DataTable, FilterBar, Pagination
+│   ├── layout/            # AdminLayout, AdminSidebar, Navbar, Footer
+│   ├── shop/              # ProductCard, CategoryCard
+│   └── blocks/            # Hero
+├── pages/admin/           # 13 admin page components
+├── pages/public/          # 13 public page components
+└── styles/admin.css       # App styles
+```
+
+## Domain Module Convention
+
+Each module in `src/modules/app/[module]/`:
+
+| File | Purpose |
+|------|---------|
+| `index.ts` | Barrel export (handlers only) |
+| `[module].handlers.ts` | HTTP request handlers |
+| `[module].repository.ts` | Database queries |
+| `[module].validation.ts` | Form validation classes |
+| `[module].types.ts` | Domain-specific types |
+| `[module].const.ts` | Constants (re-exports from shared-keys) |
+| `[module].utils.ts` | Utility functions |
+
+## Shared Constants Bridge (`src/shared-keys.ts`)
+
+Single source of truth for status types, labels, badge variants, and filter options. Imported by both TSTL (`import from "../../shared-keys"`) and React (`import from '@shared'` via Vite alias).
 
 ```typescript
-/** @noSelf */
-export function config() {
-    return getAppConfig();
-}
-
-/** @noSelf */
-export function init() {
-    const appConfig = getAppConfig();
-    if (appConfig.postgresql.enable && appConfig.migrations) {
-        runMigrations(appConfig.migrations);
-    }
-}
-
-/** @noSelf */
-export function main(request: Request): Response {
-    const routerList = getRouter();
-    let response: Response = {
-        headers: {},
-        content: "",
-        contentType: "text/html",
-        status: 200
-    };
-
-    let find = routerList.find(element => element.path == request.path);
-    if (find) {
-        return find.route(request, response);
-    }
-    return renderNotFound(request, response);
-}
+export type ProductStatus = 'active' | 'inactive' | 'soldout';
+export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = { ... };
+export const PRODUCT_STATUS_VARIANTS: Record<ProductStatus, 'success' | 'warning' | 'danger'> = { ... };
+export const PRODUCT_STATUS_FILTER_OPTIONS: { value: ProductStatus; label: string }[] = [ ... ];
 ```
-
-### Request objekt
-
-```typescript
-interface Request {
-    path: string                      // URL cesta (např. "/admin/products")
-    method: HttpMethod                // "get" | "post" | "put" | "delete" | "patch"
-    headers: Record<string, string>   // HTTP hlavičky
-    payload?: string                  // Tělo requestu (POST data)
-    query: string                     // Query string
-    url: string                       // Kompletní URL
-    files: Record<string, string[]>   // Nahrané soubory (cesty k temp souborům)
-    clientIP: string                  // IP adresa klienta
-    host: string                      // Host hlavička
-    fullUrl: string                   // Plná URL včetně query
-}
-```
-
-### Response objekt
-
-```typescript
-interface Response {
-    content: string                   // Obsah odpovědi (HTML/JSON)
-    contentType: ContentType          // MIME typ ("text/html", "application/json")
-    status: HttpStatusCode            // HTTP status kód (200, 302, 404, ...)
-    headers: Record<string, string>   // Response hlavičky
-}
-```
-
-## Konfigurační systém
-
-### Config objekt
-
-```typescript
-// src/config.ts
-export function getAppConfig(): Config {
-    return {
-        microCache: {
-            maxEntries: 100,       // Max položek v cache
-            ttl: 25                // Time-to-live v ms
-        },
-        postgresql: {
-            enable: true,          // Povolit PostgreSQL
-            url: getConfig("DATABASE_URL") ?? ""
-        },
-        redis: {
-            enable: false,         // Povolit Redis
-            url: getConfig("REDIS_URL") ?? ""
-        },
-        session: {
-            secret: getConfig("SESSION_SECRET") ?? "default-dev-secret",
-            ttlMinutes: 15,        // Token expiruje po 15 min
-            cookieName: "session_token",
-            refreshThresholdMinutes: 5  // Auto-refresh < 5 min
-        },
-        uploadTempDir: "/tmp",
-        maxUploadFileSize: 10 * 1024 * 1024,  // 10 MB
-        migrations                // Pole migrací z migrations/index.ts
-    }
-}
-```
-
-## Vrstvy aplikace
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                       Template                               │
-│                  (HTML wrapper, styly)                       │
-├─────────────────────────────────────────────────────────────┤
-│                      Components                              │
-│       (AdminDataList, AdminForm, UI, Layout, Shop)          │
-├─────────────────────────────────────────────────────────────┤
-│                      Handlers                                │
-│           (Route handlery v .handlers.ts)                    │
-├─────────────────────────────────────────────────────────────┤
-│              Templates          Constants                    │
-│          (.templates.ts)      (.const.ts)                   │
-├─────────────────────────────────────────────────────────────┤
-│             Repository          Validation                   │
-│          (.repository.ts)   (.validation.ts)                │
-├─────────────────────────────────────────────────────────────┤
-│                        Router                                │
-│              (Mapování cest na handlery)                     │
-├─────────────────────────────────────────────────────────────┤
-│                    Shared / Utils                             │
-│         (Sdílené typy, session, CSRF, helpers)              │
-├─────────────────────────────────────────────────────────────┤
-│                     Runtime API                              │
-│        (File I/O, HTTP, SQL, Redis, Crypto, ...)            │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Životní cyklus requestu
-
-```
-1. HTTP Request příchází do Lua JIT runtime
-                    │
-                    ▼
-2. MicroCache lookup (GET požadavky)
-   ├── Cache hit → Vrátit cached response
-   └── Cache miss → Pokračovat
-                    │
-                    ▼
-3. Runtime volá main(request) funkci
-                    │
-                    ▼
-4. Router hledá odpovídající cestu
-                    │
-                    ▼
-5. Handler zpracovává request
-   ├── requireAdmin() — autorizace
-   ├── Repository — SQL dotazy
-   ├── Validation — validace formulářů
-   ├── Templates — sestavení HTML
-   └── Components — UI rendering
-                    │
-                    ▼
-6. Handler vrací Response objekt
-                    │
-                    ▼
-7. Runtime odesílá HTTP response
-```
-
-## Sdílené typy (shared.ts)
-
-Soubor `src/modules/app/shared.ts` obsahuje typy a helper funkce používané napříč moduly:
-
-### Databázové typy
-
-```typescript
-interface UserSession {
-    user: {
-        id: number; email: string;
-        firstName: string; lastName: string;
-        isAdmin: boolean; token: string;  // CSRF token
-    };
-}
-
-interface DbUser       { id, first_name, last_name, email, password_hash, is_admin, created_at }
-interface DbProduct    { id, name, slug, description, short_description, category_id, price, old_price, icon, stock, status, created_at, updated_at }
-interface DbCategory   { id, name, slug, description, icon, status, sort_order, created_at, updated_at }
-interface DbOrder      { id, order_number, customer_id, customer_name, customer_email, status, total_amount, shipping_address, billing_address, notes, created_at, updated_at }
-interface DbOrderItem  { id, order_id, product_id, product_name, quantity, unit_price, total_price }
-interface DbCustomer   { id, first_name, last_name, email, phone, company, shipping_address, billing_address, notes, status, created_at, updated_at }
-```
-
-### Helper funkce
-
-```typescript
-requireAdmin(request, response)      // Ověří admin přístup, vrací { session, response } | null
-generateSlug(text)                   // Generuje URL slug z textu (s českou diakritikou)
-formatPrice(amount)                  // Formátuje cenu (např. "1 234,50 Kč")
-formatOrderDate(dateStr)             // Formátuje datum z DB
-generateOrderNumber()                // Generuje číslo objednávky
-getProductStatusLabel(status)        // Vrací český label pro status
-getProductStatusVariant(status)      // Vrací Badge variantu pro status
-getOrderStatusLabel(status)          // Vrací český label pro status objednávky
-getOrderStatusVariant(status)        // Vrací Badge variantu pro status objednávky
-getCustomerInitials(fullName)        // Vrací iniciály
-escapeJsString(str)                  // Escapuje string pro JS
-replaceAll(str, search, replacement) // Replace all (TSTL kompatibilní)
-```
-
-## Databázové migrace
-
-Migrace v `src/migrations/` (001–014) běží automaticky při startu aplikace přes `init()`.
-
-```typescript
-// src/migrations/001_create_users.ts
-export const migration_001_create_users = {
-    version: 1,
-    name: "create_users",
-    up: `CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        first_name VARCHAR(255),
-        last_name VARCHAR(255),
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        is_admin BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT NOW()
-    )`
-};
-```
-
-**Důležité:** Migrace běží pouze při cold startu Cloud Run instance. Pro okamžité spuštění po deployi použijte `run_sql_query` MCP tool.
-
-## Build a deployment
-
-```bash
-npm run build    # Kompilace TypeScript → Lua
-npm run dev      # Watch mode s automatickou rekompilací
-```
-
-```bash
-# Standardní deployment
-HOSTING_API_SECRET=<secret> ./scripts/deploy.sh
-
-# Lokální deployment (bez git metadat)
-HOSTING_API_SECRET=<secret> ./scripts/deploy.sh --local
-
-# Přeskočení buildu
-SKIP_BUILD=1 HOSTING_API_SECRET=<secret> ./scripts/deploy.sh
-```
-
-### Environment variables
-
-| Proměnná | Výchozí hodnota | Popis |
-|----------|-----------------|-------|
-| `HOSTING_API_SECRET` | - | API klíč (povinný) |
-| `HOSTING_API_URL` | `http://localhost:3005/hosting` | URL hosting API |
-| `HOSTING_ENV` | `production` | Prostředí |
-| `SKIP_BUILD` | - | Přeskočí build krok |

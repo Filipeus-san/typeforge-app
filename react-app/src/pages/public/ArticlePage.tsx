@@ -1,282 +1,205 @@
 import React from 'react';
-import Container from 'react-bootstrap/Container';
-import { useTheme } from '../../context/ThemeContext';
-import { formatDate } from '../../utils';
-import { useT } from '../../i18n';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Navbar } from '../../components/Navbar';
+import { PageRenderer } from '../../craftjs/PageRenderer';
 
-interface ArticleProps {
+const gradientText = {
+  background: 'linear-gradient(135deg, #7c5cfc 0%, #06d6a0 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+};
+
+interface Props {
   title: string;
+  excerpt: string;
   content: string;
-  category?: string;
-  date?: string;
-  author?: string;
-  readTime?: string;
-  featuredImageUrl?: string;
+  category: string;
+  date: string;
+  readTime: string;
+  author: string;
+  authorInitials: string;
+  thumbnailUrl?: string;
+  menuItems?: Array<{ label: string; url: string; target?: string; children?: Array<{ label: string; url: string; target?: string }> }>;
+  siteSettings?: { siteName: string; siteDescription: string; contactEmail: string };
 }
 
-const articleStyles = `
-  .article-page {
-    background: var(--tf-bg);
-    color: var(--tf-text);
-    min-height: 100vh;
-  }
-  .article-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;
-    background: rgba(var(--tf-surface-rgb, 30, 30, 46), 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--tf-border);
-    padding: 0.75rem 0;
-  }
-  .article-navbar .nav-link {
-    color: var(--tf-text-muted);
-    transition: color 0.2s;
-    font-size: 0.9rem;
-  }
-  .article-navbar .nav-link:hover {
-    color: var(--tf-text);
-  }
-  .article-header {
-    padding: 7rem 0 2rem;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .article-header .category-badge {
-    display: inline-block;
-    background: rgba(var(--tf-primary-rgb, 124, 58, 237), 0.1);
-    color: var(--tf-primary);
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.3rem 0.75rem;
-    border-radius: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 1rem;
-  }
-  .article-header h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 1.25rem;
-  }
-  .article-meta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    color: var(--tf-text-muted);
-    font-size: 0.9rem;
-  }
-  .article-meta .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .article-meta .meta-item i {
-    font-size: 0.95rem;
-  }
-  .article-featured-image {
-    max-width: 900px;
-    margin: 2rem auto;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--tf-border);
-  }
-  .article-featured-image img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .article-content-card {
-    max-width: 800px;
-    margin: 0 auto;
-    background: var(--tf-surface);
-    border: 1px solid var(--tf-border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    margin-bottom: 3rem;
-  }
-  .article-content-card .article-body {
-    color: var(--tf-text);
-    line-height: 1.8;
-    font-size: 1rem;
-  }
-  .article-content-card .article-body h1,
-  .article-content-card .article-body h2,
-  .article-content-card .article-body h3,
-  .article-content-card .article-body h4 {
-    color: var(--tf-text);
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-  }
-  .article-content-card .article-body h2 {
-    font-size: 1.5rem;
-  }
-  .article-content-card .article-body h3 {
-    font-size: 1.25rem;
-  }
-  .article-content-card .article-body p {
-    margin-bottom: 1rem;
-    color: var(--tf-text-muted);
-  }
-  .article-content-card .article-body a {
-    color: var(--tf-primary);
-    text-decoration: none;
-  }
-  .article-content-card .article-body a:hover {
-    text-decoration: underline;
-  }
-  .article-content-card .article-body ul,
-  .article-content-card .article-body ol {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
-    color: var(--tf-text-muted);
-  }
-  .article-content-card .article-body li {
-    margin-bottom: 0.35rem;
-  }
-  .article-content-card .article-body blockquote {
-    border-left: 3px solid var(--tf-primary);
-    padding: 0.75rem 1.25rem;
-    margin: 1.5rem 0;
-    background: var(--tf-bg);
-    border-radius: 0 8px 8px 0;
-    color: var(--tf-text-muted);
-    font-style: italic;
-  }
-  .article-content-card .article-body pre {
-    background: var(--tf-bg);
-    border: 1px solid var(--tf-border);
-    border-radius: 8px;
-    padding: 1rem;
-    overflow-x: auto;
-    font-size: 0.85rem;
-    margin: 1.5rem 0;
-  }
-  .article-content-card .article-body code {
-    background: var(--tf-bg);
-    padding: 0.15rem 0.35rem;
-    border-radius: 4px;
-    font-size: 0.9em;
-    color: var(--tf-primary);
-  }
-  .article-content-card .article-body pre code {
-    background: none;
-    padding: 0;
-    color: var(--tf-text);
-  }
-  .article-content-card .article-body img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 1rem 0;
-  }
-  .article-footer {
-    padding: 2rem 0;
-    border-top: 1px solid var(--tf-border);
-    text-align: center;
-    color: var(--tf-text-muted);
-    font-size: 0.85rem;
-  }
-`;
-
-export function ArticlePage({ title, content, category, date, author, readTime, featuredImageUrl }: ArticleProps) {
-  const { toggleTheme } = useTheme();
-  const t = useT('blog');
+export function ArticlePage({ title, excerpt, content, category, date, readTime, author, authorInitials, thumbnailUrl, menuItems, siteSettings }: Props) {
+  const isCraftContent = content && content.startsWith('{"ROOT":');
 
   return (
-    <div className="article-page">
-      <style>{articleStyles}</style>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
+      <Navbar activePath="/blog" menuItems={menuItems} siteName={siteSettings?.siteName} />
 
-      {/* Navbar */}
-      <nav className="article-navbar">
-        <Container className="d-flex align-items-center justify-content-between">
-          <a href="/" className="text-decoration-none d-flex align-items-center gap-2">
-            <i className="bi bi-braces-asterisk text-gradient" />
-            <span className="text-gradient fw-bold fs-5">TypeForge</span>
-          </a>
-          <div className="d-flex align-items-center gap-3">
-            <a href="/" className="nav-link d-none d-md-inline">{t.public.nav.home}</a>
-            <a href="/blog" className="nav-link d-none d-md-inline">Blog</a>
-            <a href="/eshop" className="nav-link d-none d-md-inline">E-Shop</a>
-            <button
-              className="btn-theme-toggle"
-              onClick={toggleTheme}
-              title={t.public.nav.toggleTheme}
-              style={{ width: 32, height: 32, fontSize: '0.9rem' }}
-            >
-              <i className="bi bi-moon" />
-              <i className="bi bi-sun" />
-            </button>
-          </div>
-        </Container>
-      </nav>
+      {/* Article */}
+      <Container maxWidth="md" component="article" sx={{ pt: { xs: 4, md: 6 }, pb: { xs: 6, md: 8 } }}>
+        {/* Meta */}
+        <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" sx={{ mb: 3 }}>
+          {category && (
+            <Chip
+              icon={<BookmarkBorderIcon sx={{ fontSize: 14 }} />}
+              label={category}
+              size="small"
+              sx={{
+                bgcolor: 'rgba(124,92,252,0.15)',
+                color: 'primary.light',
+                fontWeight: 600,
+                '& .MuiChip-icon': { color: 'primary.light' },
+              }}
+            />
+          )}
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            {date}
+          </Typography>
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <AccessTimeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {readTime} min
+            </Typography>
+          </Stack>
+        </Stack>
 
-      {/* Article header */}
-      <header className="article-header">
-        <Container>
-          {category && <span className="category-badge">{category}</span>}
-          <h1>
-            <span className="text-gradient">{title}</span>
-          </h1>
-          <div className="article-meta">
-            {date && (
-              <span className="meta-item">
-                <i className="bi bi-calendar3" />
-                {formatDate(date)}
-              </span>
-            )}
-            {author && (
-              <span className="meta-item">
-                <i className="bi bi-person" />
-                {author}
-              </span>
-            )}
-            {readTime && (
-              <span className="meta-item">
-                <i className="bi bi-clock" />
-                {readTime}
-              </span>
-            )}
-          </div>
-        </Container>
-      </header>
+        {/* Title */}
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: { xs: '2rem', md: '3rem' },
+            lineHeight: 1.2,
+            mb: 2,
+          }}
+        >
+          {title}
+        </Typography>
 
-      {/* Featured image */}
-      {featuredImageUrl && (
-        <div className="article-featured-image">
-          <img src={featuredImageUrl} alt={title} />
-        </div>
-      )}
+        {/* Lead / Excerpt */}
+        {excerpt && (
+          <Typography
+            sx={{
+              fontSize: '1.2rem',
+              color: 'text.secondary',
+              lineHeight: 1.7,
+              mb: 4,
+              borderLeft: 3,
+              borderColor: 'primary.main',
+              pl: 2,
+            }}
+          >
+            {excerpt}
+          </Typography>
+        )}
 
-      {/* Content */}
-      <Container as="section">
-        <div className="article-content-card">
-          <div
-            className="article-body"
+        {/* Featured image */}
+        {thumbnailUrl && (
+          <Box
+            component="img"
+            src={thumbnailUrl}
+            alt={title}
+            sx={{
+              width: '100%',
+              maxHeight: 420,
+              objectFit: 'cover',
+              borderRadius: 4,
+              mb: 4,
+              display: 'block',
+            }}
+          />
+        )}
+
+        {/* Author */}
+        <Paper
+          variant="outlined"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            p: 2.5,
+            borderRadius: 4,
+            mb: 4,
+          }}
+        >
+          <Avatar
+            sx={{
+              width: 56,
+              height: 56,
+              background: 'linear-gradient(135deg, #7c5cfc 0%, #06d6a0 100%)',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+            }}
+          >
+            {authorInitials}
+          </Avatar>
+          <Box>
+            <Typography sx={{ fontWeight: 700, fontSize: '1rem', mb: 0.25 }}>
+              {author}
+            </Typography>
+          </Box>
+        </Paper>
+
+        {/* Body */}
+        {isCraftContent ? (
+          <PageRenderer json={content} />
+        ) : (
+          <Box
+            sx={{
+              '& h2': { fontSize: '1.6rem', mt: 4, mb: 1.5, fontWeight: 700 },
+              '& h3': { fontSize: '1.3rem', mt: 3, mb: 1, fontWeight: 700 },
+              '& p': { fontSize: '1.05rem', lineHeight: 1.8, color: 'text.secondary', mb: 2 },
+              '& ul, & ol': { pl: 3, mb: 2 },
+              '& li': { fontSize: '1.05rem', lineHeight: 1.8, color: 'text.secondary', mb: 0.5 },
+              '& code': { fontFamily: "'JetBrains Mono', monospace", fontSize: '0.9rem', bgcolor: 'rgba(124,92,252,0.1)', px: 0.5, borderRadius: 1 },
+              '& pre': { p: 2, borderRadius: 2, overflowX: 'auto', bgcolor: 'rgba(0,0,0,0.2)', mb: 2 },
+              '& blockquote': { borderLeft: 3, borderColor: 'primary.main', pl: 2, my: 3, fontStyle: 'italic' },
+            }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
-        </div>
-      </Container>
+        )}
 
-      {/* Back link */}
-      <Container className="text-center mb-4">
-        <a href="/blog" className="btn-outline-tf">
-          <i className="bi bi-arrow-left me-2" />{t.actions.backToList}
-        </a>
+        <Divider sx={{ my: 4 }} />
+
+        <Link
+          href="/blog"
+          underline="none"
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 1,
+            color: 'primary.light',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            transition: 'gap 0.2s',
+            '&:hover': { gap: 1.5 },
+          }}
+        >
+          <ArrowBackIcon fontSize="small" />
+          Zpět na blog
+        </Link>
       </Container>
 
       {/* Footer */}
-      <footer className="article-footer">
-        <Container>
-          <p>&copy; {new Date().getFullYear()} TypeForge. Všechna práva vyhrazena.</p>
-        </Container>
-      </footer>
-    </div>
+      <Box
+        component="footer"
+        sx={{
+          borderTop: 1,
+          borderColor: 'divider',
+          py: 3,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          &copy; {new Date().getFullYear()} {siteSettings?.siteName || 'Lorem'}. All rights reserved.
+        </Typography>
+      </Box>
+    </Box>
   );
 }

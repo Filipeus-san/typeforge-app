@@ -4,6 +4,9 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
   resolve: {
     alias: {
       '@shared': resolve(__dirname, '../src/shared-keys.ts'),
@@ -17,13 +20,7 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-dom/client'],
       output: {
-        globals: {
-          'react': 'React',
-          'react-dom': 'ReactDOM',
-          'react-dom/client': 'ReactDOM',
-        },
         entryFileNames: 'index-[hash].js',
       },
     },

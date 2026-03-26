@@ -3,11 +3,6 @@ set -e
 
 # Required: HOSTING_API_SECRET, HOSTING_API_URL
 # Optional: HOSTING_ENV (default: production), SKIP_BUILD
-#
-# Usage:
-#   ./scripts/deploy.sh                          # Standard deploy (Lua bundle)
-#   ./scripts/deploy.sh --react                   # Deploy React dist to Cloud Storage
-#   ./scripts/deploy.sh --react --react-dir=path  # Custom React dist directory
 
 HOSTING_API_URL="${HOSTING_API_URL:-http://localhost:3005/hosting}"
 HOSTING_ENV="${HOSTING_ENV:-production}"
@@ -23,8 +18,6 @@ ok() { echo -e "${GREEN}[OK]${NC} $1"; }
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 
-# Execute curl and check HTTP status code
-# Sets: API_RESPONSE (body), API_HTTP_CODE (status code)
 api_call() {
     local tmpfile
     tmpfile=$(mktemp)
@@ -62,113 +55,12 @@ mark_failed() {
 
 if [ -z "$HOSTING_API_SECRET" ]; then
     error "HOSTING_API_SECRET is required"
-    echo ""
-    echo "Usage:"
-    echo "  HOSTING_API_SECRET=your_secret ./scripts/deploy.sh [OPTIONS]"
-    echo ""
-    echo "Options:"
-    echo "  --react           Deploy React dist folder to Cloud Storage"
-    echo "  --react-dir=PATH  Custom React dist directory (default: react-app/dist)"
-    echo ""
     exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Parse arguments
-REACT_DEPLOY=0
-REACT_DIR_ARG=""
-for arg in "$@"; do
-    case "$arg" in
-        --react)
-            REACT_DEPLOY=1
-            ;;
-        --react-dir=*)
-            REACT_DIR_ARG="${arg#--react-dir=}"
-            ;;
-    esac
-done
-
-# Set REACT_DIR
-if [ -n "$REACT_DIR_ARG" ]; then
-    if [[ "$REACT_DIR_ARG" != /* ]]; then
-        REACT_DIR="$PROJECT_ROOT/$REACT_DIR_ARG"
-    else
-        REACT_DIR="$REACT_DIR_ARG"
-    fi
-else
-    REACT_DIR="$PROJECT_ROOT/react-app/dist"
-fi
-
-# ===== React deploy mode =====
-if [ "$REACT_DEPLOY" = "1" ]; then
-    echo ""
-    echo "=========================================="
-    echo "  TypeForge React Assets Deploy"
-    echo "=========================================="
-    echo ""
-    echo "  API URL:     $HOSTING_API_URL"
-    echo "  Environment: $HOSTING_ENV"
-    echo "  Dist dir:    $REACT_DIR"
-    echo ""
-    echo "=========================================="
-    echo ""
-
-    # Build React if not skipped
-    if [ "$SKIP_BUILD" != "1" ]; then
-        info "Building React..."
-        cd "$PROJECT_ROOT/react-app"
-        [ ! -d "node_modules" ] && npm install
-        npm run build
-        cd "$PROJECT_ROOT"
-        ok "React build completed"
-    else
-        warn "Skipping React build (SKIP_BUILD=1)"
-    fi
-
-    if [ ! -d "$REACT_DIR" ]; then
-        error "React dist directory not found: $REACT_DIR"
-        exit 1
-    fi
-
-    FILE_COUNT=$(find "$REACT_DIR" -type f | wc -l | tr -d ' ')
-    if [ "$FILE_COUNT" -eq 0 ]; then
-        error "No files found in $REACT_DIR"
-        exit 1
-    fi
-
-    info "Found $FILE_COUNT files to upload"
-
-    # Build curl command with all files
-    CURL_ARGS=(-s -X POST "${HOSTING_API_URL}/api/deploy/react" \
-        -F "api_secret=${HOSTING_API_SECRET}" \
-        -F "environment=${HOSTING_ENV}")
-
-    while IFS= read -r -d '' file; do
-        REL_PATH="${file#$REACT_DIR/}"
-        CURL_ARGS+=(-F "files=@${file};filename=${REL_PATH}")
-    done < <(find "$REACT_DIR" -type f -print0)
-
-    if ! api_call "${CURL_ARGS[@]}"; then
-        error "React deploy failed"
-        exit 1
-    fi
-
-    STATUS=$(echo "$API_RESPONSE" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
-    BASE_URL=$(echo "$API_RESPONSE" | grep -o '"base_url":"[^"]*"' | cut -d'"' -f4)
-    FILES_UPLOADED=$(echo "$API_RESPONSE" | grep -o '"files_uploaded":[0-9]*' | cut -d':' -f2)
-
-    echo ""
-    ok "React deploy completed (status: $STATUS, files: $FILES_UPLOADED)"
-    ok "Base URL: $BASE_URL"
-    echo ""
-    exit 0
-fi
-
-# ===== Standard Lua bundle deploy =====
-
-# Detect project structure: server/ subdirectory or root-level
 if [ -d "$PROJECT_ROOT/server" ]; then
     BUILD_DIR="$PROJECT_ROOT/server"
 else
@@ -176,16 +68,32 @@ else
 fi
 DIST_DIR="$BUILD_DIR/dist"
 
-# Build
 if [ "$SKIP_BUILD" != "1" ]; then
     info "Building..."
     cd "$BUILD_DIR"
-    [ ! -d "node_modules" ] && npm install
+    npm install
+
+    # Build React app
+    REACT_DIR="$BUILD_DIR/react-app"
+    if [ -d "$REACT_DIR" ]; then
+        info "Building React app..."
+        cd "$REACT_DIR"
+        npm install
+        npm run build
+        cd "$BUILD_DIR"
+
+        # Embed React bundle into TSTL source
+        info "Embedding React bundle..."
+        node "$SCRIPT_DIR/embed-react.js" "$BUILD_DIR"
+        ok "React bundle embedded"
+    fi
+
+    # Build TSTL (server-side)
+    info "Building TSTL..."
     npm run build
     cd "$PROJECT_ROOT"
 fi
 
-# Git info
 COMMIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 COMMIT_MESSAGE=$(git log -1 --pretty=%B 2>/dev/null | head -1 || echo "")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
@@ -193,7 +101,6 @@ TRIGGERED_BY="${GITHUB_ACTOR:-${USER:-local}}"
 
 COMMIT_MESSAGE_JSON=$(echo "$COMMIT_MESSAGE" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().strip()))' 2>/dev/null || echo "\"${COMMIT_MESSAGE}\"")
 
-# Start deployment
 if ! api_call -s -X POST "${HOSTING_API_URL}/api/deploy" \
     -H "Content-Type: application/json" \
     -d "{
@@ -217,7 +124,6 @@ fi
 
 ok "Deployment started: $DEPLOYMENT_ID"
 
-# Upload bundle
 BUNDLE="$DIST_DIR/bundle.lua"
 BUNDLE_MAP="$DIST_DIR/bundle.lua.map"
 
@@ -239,7 +145,6 @@ if ! api_call "${CURL_ARGS[@]}"; then
     exit 1
 fi
 
-# Check deployment status
 if ! api_call -s -X GET "${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/status" \
     -H "X-API-Secret: ${HOSTING_API_SECRET}"; then
     error "Failed to check deployment status"
@@ -247,13 +152,9 @@ if ! api_call -s -X GET "${HOSTING_API_URL}/api/deploy/${DEPLOYMENT_ID}/status" 
 fi
 
 STATUS=$(echo "$API_RESPONSE" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
-DEPLOY_URL=$(echo "$API_RESPONSE" | grep -o '"url":"[^"]*"' | cut -d'"' -f4)
 
 if [ "$STATUS" = "success" ]; then
     ok "Deploy completed successfully (ID: $DEPLOYMENT_ID)"
-    if [ -n "$DEPLOY_URL" ]; then
-        ok "URL: $DEPLOY_URL"
-    fi
 elif [ "$STATUS" = "failed" ]; then
     ERROR_MSG=$(echo "$API_RESPONSE" | grep -o '"error_message":"[^"]*"' | cut -d'"' -f4)
     error "Deployment failed: $ERROR_MSG"

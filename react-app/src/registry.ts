@@ -1,64 +1,49 @@
 import type { ComponentType } from 'react';
-
-// Admin pages
-import { DashboardPage } from './pages/admin/DashboardPage';
-import { AnalyticsPage } from './pages/admin/AnalyticsPage';
-import { ProductListPage } from './pages/admin/ProductListPage';
-import { ProductFormPage } from './pages/admin/ProductFormPage';
-import { CategoryListPage } from './pages/admin/CategoryListPage';
-import { CategoryFormPage } from './pages/admin/CategoryFormPage';
-import { OrderListPage } from './pages/admin/OrderListPage';
-import { OrderDetailPage } from './pages/admin/OrderDetailPage';
-import { OrderFormPage } from './pages/admin/OrderFormPage';
-import { BlogListPage as AdminBlogListPage } from './pages/admin/BlogListPage';
-import { BlogFormPage } from './pages/admin/BlogFormPage';
-import { MediaPage } from './pages/admin/MediaPage';
-import { CustomerListPage } from './pages/admin/CustomerListPage';
-
-// Public pages
-import { LandingPage } from './pages/public/LandingPage';
-import { LoginPage } from './pages/public/LoginPage';
-import { RegisterPage } from './pages/public/RegisterPage';
-import { EshopPage } from './pages/public/EshopPage';
-import { ProductPage } from './pages/public/ProductPage';
-import { CategoryPage } from './pages/public/CategoryPage';
-import { CartPage } from './pages/public/CartPage';
-import { CheckoutShippingPage } from './pages/public/CheckoutShippingPage';
-import { CheckoutPaymentPage } from './pages/public/CheckoutPaymentPage';
-import { CheckoutReviewPage } from './pages/public/CheckoutReviewPage';
-import { CheckoutConfirmationPage } from './pages/public/CheckoutConfirmationPage';
-import { BlogListPage as PublicBlogListPage } from './pages/public/BlogListPage';
 import { ArticlePage } from './pages/public/ArticlePage';
+import { BlogListPage } from './pages/public/BlogListPage';
+import { PagePage } from './pages/public/PagePage';
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { AdminPagesPage } from './pages/admin/AdminPagesPage';
+import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
+import { AdminMenuPage } from './pages/admin/AdminMenuPage';
+import { AdminMediaPage } from './pages/admin/AdminMediaPage';
+import { AdminBlogPage } from './pages/admin/AdminBlogPage';
+import { AdminBlogSettingsPage } from './pages/admin/AdminBlogSettingsPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
+import { AdminPageFormPage } from './pages/admin/AdminPageFormPage';
+import { AdminUserFormPage } from './pages/admin/AdminUserFormPage';
+import { AdminBlogFormPage } from './pages/admin/AdminBlogFormPage';
+import { AdminBlogBuilderPage } from './pages/admin/AdminBlogBuilderPage';
+import { AdminPageBuilderPage } from './pages/admin/AdminPageBuilderPage';
+import { AdminRedirectsPage } from './pages/admin/AdminRedirectsPage';
+import { AdminRedirectFormPage } from './pages/admin/AdminRedirectFormPage';
+import { AdminProfilePage } from './pages/admin/AdminProfilePage';
+import { ForgotPasswordPage } from './pages/admin/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/admin/ResetPasswordPage';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const registry: Record<string, ComponentType<any>> = {
-  // Admin
-  AdminDashboard: DashboardPage,
-  AdminAnalytics: AnalyticsPage,
-  AdminProductList: ProductListPage,
-  AdminProductForm: ProductFormPage,
-  AdminCategoryList: CategoryListPage,
-  AdminCategoryForm: CategoryFormPage,
-  AdminOrderList: OrderListPage,
-  AdminOrderDetail: OrderDetailPage,
-  AdminOrderForm: OrderFormPage,
-  AdminBlogList: AdminBlogListPage,
-  AdminBlogForm: BlogFormPage,
-  AdminMedia: MediaPage,
-  AdminCustomerList: CustomerListPage,
-
-  // Public
-  Landing: LandingPage,
-  Login: LoginPage,
-  Register: RegisterPage,
-  Eshop: EshopPage,
-  Product: ProductPage,
-  Category: CategoryPage,
-  Cart: CartPage,
-  CheckoutShipping: CheckoutShippingPage,
-  CheckoutPayment: CheckoutPaymentPage,
-  CheckoutReview: CheckoutReviewPage,
-  CheckoutConfirmation: CheckoutConfirmationPage,
-  BlogList: PublicBlogListPage,
   Article: ArticlePage,
+  BlogList: BlogListPage,
+  Page: PagePage,
+  AdminLogin: AdminLoginPage,
+  AdminDashboard: AdminDashboardPage,
+  AdminPages: AdminPagesPage,
+  AdminSettings: AdminSettingsPage,
+  AdminMenu: AdminMenuPage,
+  AdminMedia: AdminMediaPage,
+  AdminBlog: AdminBlogPage,
+  AdminBlogSettings: AdminBlogSettingsPage,
+  AdminUsers: AdminUsersPage,
+  AdminPageForm: AdminPageFormPage,
+  AdminUserForm: AdminUserFormPage,
+  AdminBlogForm: AdminBlogFormPage,
+  AdminBlogBuilder: AdminBlogBuilderPage,
+  AdminPageBuilder: AdminPageBuilderPage,
+  AdminRedirects: AdminRedirectsPage,
+  AdminRedirectForm: AdminRedirectFormPage,
+  AdminProfile: AdminProfilePage,
+  ForgotPassword: ForgotPasswordPage,
+  ResetPassword: ResetPasswordPage,
 };

@@ -1,4 +1,4 @@
-import { renderIndex, renderLogin, renderRegister, handleLogout, renderArticle, renderBlog, renderEshop, renderProduct, renderCategory, renderCart, handleCartAdd, handleCartUpdate, handleCartRemove, renderCheckout, renderCheckoutPayment, renderCheckoutReview, renderCheckoutConfirmation, renderAdmin, renderAdminAnalytics, renderAdminOrders, renderAdminOrderDetail, renderAdminOrderCreate, renderAdminOrderEdit, renderAdminProducts, renderAdminProductCreate, renderAdminProductEdit, handleAdminProductDelete, renderAdminCategories, renderAdminCategoryCreate, renderAdminCategoryEdit, handleAdminCategoryDelete, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDelete, serveReactBundleJs, serveReactBundleCss } from "./app";
+import { renderIndex, renderArticle, renderPage, renderAdminLogin, handleAdminLogout, renderForgotPassword, renderResetPassword, renderAdminDashboard, renderAdminPages, renderAdminPageCreate, renderAdminPageEdit, handleAdminPageDuplicate, handleAdminPageDelete, renderAdminUsers, renderAdminUserCreate, renderAdminUserEdit, handleAdminUserToggleBlock, handleAdminUserSendResetEmail, handleAdminUserDelete, renderAdminSettings, renderAdminMenu, renderAdminMedia, handleAdminMediaUpload, handleAdminMediaDelete, renderBlogList, renderRssFeed, renderAdminBlog, renderAdminBlogCreate, renderAdminBlogEdit, handleAdminBlogDuplicate, handleAdminBlogDelete, renderAdminBlogSettings, renderAdminRedirects, renderAdminRedirectCreate, renderAdminRedirectEdit, handleAdminRedirectDelete, handleAdminRedirectToggle, renderAdminProfile, apiBootstrap, apiAuthLogin, apiDashboard, apiPages, apiPagesById, apiArticles, apiArticlesById, apiBlogCategories, apiBlogCategoriesById, apiUsers, apiUsersById, apiMedia, apiMediaById, apiMenu, apiSettings, apiSettingsByKey, apiRedirects, apiRedirectsById, apiRedirectsToggle } from "./app";
 import { RouterPaths } from "./types";
 
 // Router
@@ -10,153 +10,98 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
             type: "render"
         },
         {
-            path: "/login",
-            route: renderLogin,
-            type: "action"
-        },
-        {
-            path: "/register",
-            route: renderRegister,
-            type: "action"
-        },
-        {
-            path: "/logout",
-            route: handleLogout,
-            type: "action"
-        },
-        {
-            path: "/article",
+            path: "/article/:slug",
             route: renderArticle,
             type: "render"
         },
         {
             path: "/blog",
-            route: renderBlog,
+            route: renderBlogList,
             type: "render"
         },
         {
-            path: "/eshop",
-            route: renderEshop,
+            path: "/blog/rss",
+            route: renderRssFeed,
             type: "render"
         },
         {
-            path: "/product",
-            route: renderProduct,
+            path: "/admin/login",
+            route: renderAdminLogin,
             type: "render"
         },
         {
-            path: "/category",
-            route: renderCategory,
-            type: "render"
-        },
-        {
-            path: "/cart",
-            route: renderCart,
-            type: "render"
-        },
-        {
-            path: "/cart/add",
-            route: handleCartAdd,
+            path: "/admin/logout",
+            route: handleAdminLogout,
             type: "action"
         },
         {
-            path: "/cart/update",
-            route: handleCartUpdate,
-            type: "action"
-        },
-        {
-            path: "/cart/remove",
-            route: handleCartRemove,
-            type: "action"
-        },
-        {
-            path: "/checkout",
-            route: renderCheckout,
+            path: "/admin/forgot-password",
+            route: renderForgotPassword,
             type: "render"
         },
         {
-            path: "/checkout/payment",
-            route: renderCheckoutPayment,
-            type: "render"
-        },
-        {
-            path: "/checkout/review",
-            route: renderCheckoutReview,
-            type: "render"
-        },
-        {
-            path: "/checkout/confirmation",
-            route: renderCheckoutConfirmation,
+            path: "/admin/reset-password",
+            route: renderResetPassword,
             type: "render"
         },
         {
             path: "/admin",
-            route: renderAdmin,
+            route: renderAdminDashboard,
             type: "render"
         },
         {
-            path: "/admin/analytics",
-            route: renderAdminAnalytics,
+            path: "/admin/pages",
+            route: renderAdminPages,
             type: "render"
         },
         {
-            path: "/admin/orders",
-            route: renderAdminOrders,
+            path: "/admin/pages/create",
+            route: renderAdminPageCreate,
             type: "render"
         },
         {
-            path: "/admin/orders/detail",
-            route: renderAdminOrderDetail,
+            path: "/admin/pages/edit/:id",
+            route: renderAdminPageEdit,
             type: "render"
         },
         {
-            path: "/admin/orders/create",
-            route: renderAdminOrderCreate,
+            path: "/admin/pages/duplicate/:id",
+            route: handleAdminPageDuplicate,
             type: "action"
         },
         {
-            path: "/admin/orders/edit",
-            route: renderAdminOrderEdit,
+            path: "/admin/pages/delete/:id",
+            route: handleAdminPageDelete,
             type: "action"
         },
         {
-            path: "/admin/products",
-            route: renderAdminProducts,
+            path: "/admin/users",
+            route: renderAdminUsers,
             type: "render"
         },
         {
-            path: "/admin/products/create",
-            route: renderAdminProductCreate,
-            type: "action"
-        },
-        {
-            path: "/admin/products/edit",
-            route: renderAdminProductEdit,
-            type: "action"
-        },
-        {
-            path: "/admin/products/delete",
-            route: handleAdminProductDelete,
-            type: "action"
-        },
-        {
-            path: "/admin/categories",
-            route: renderAdminCategories,
+            path: "/admin/users/create",
+            route: renderAdminUserCreate,
             type: "render"
         },
         {
-            path: "/admin/categories/create",
-            route: renderAdminCategoryCreate,
+            path: "/admin/users/edit/:id",
+            route: renderAdminUserEdit,
+            type: "render"
+        },
+        {
+            path: "/admin/users/reset-password/:id",
+            route: handleAdminUserSendResetEmail,
             type: "action"
         },
         {
-            path: "/admin/categories/edit",
-            route: renderAdminCategoryEdit,
+            path: "/admin/users/block/:id",
+            route: handleAdminUserToggleBlock,
             type: "action"
         },
         {
-            path: "/admin/categories/delete",
-            route: handleAdminCategoryDelete,
+            path: "/admin/users/delete/:id",
+            route: handleAdminUserDelete,
             type: "action"
         },
         {
@@ -170,7 +115,7 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
             type: "action"
         },
         {
-            path: "/admin/media/delete",
+            path: "/admin/media/delete/:id",
             route: handleAdminMediaDelete,
             type: "action"
         },
@@ -182,26 +127,91 @@ export function getRouter(): { path: RouterPaths; route: RouteFunction, type: "a
         {
             path: "/admin/blog/create",
             route: renderAdminBlogCreate,
-            type: "action"
+            type: "render"
         },
         {
-            path: "/admin/blog/edit",
+            path: "/admin/blog/edit/:id",
             route: renderAdminBlogEdit,
+            type: "render"
+        },
+        {
+            path: "/admin/blog/duplicate/:id",
+            route: handleAdminBlogDuplicate,
             type: "action"
         },
         {
-            path: "/admin/blog/delete",
+            path: "/admin/blog/delete/:id",
             route: handleAdminBlogDelete,
             type: "action"
         },
         {
-            path: "/assets/react-bundle.js",
-            route: serveReactBundleJs,
+            path: "/admin/blog/settings",
+            route: renderAdminBlogSettings,
             type: "render"
         },
         {
-            path: "/assets/react-bundle.css",
-            route: serveReactBundleCss,
+            path: "/admin/menu",
+            route: renderAdminMenu,
+            type: "render"
+        },
+        {
+            path: "/admin/settings",
+            route: renderAdminSettings,
+            type: "render"
+        },
+        {
+            path: "/admin/redirects",
+            route: renderAdminRedirects,
+            type: "render"
+        },
+        {
+            path: "/admin/redirects/create",
+            route: renderAdminRedirectCreate,
+            type: "render"
+        },
+        {
+            path: "/admin/redirects/edit/:id",
+            route: renderAdminRedirectEdit,
+            type: "render"
+        },
+        {
+            path: "/admin/redirects/delete/:id",
+            route: handleAdminRedirectDelete,
+            type: "action"
+        },
+        {
+            path: "/admin/redirects/toggle/:id",
+            route: handleAdminRedirectToggle,
+            type: "action"
+        },
+        {
+            path: "/admin/profile",
+            route: renderAdminProfile,
+            type: "render"
+        },
+        // ---- API Routes ----
+        { path: "/api/bootstrap", route: apiBootstrap, type: "action" },
+        { path: "/api/auth/login", route: apiAuthLogin, type: "action" },
+        { path: "/api/dashboard", route: apiDashboard, type: "render" },
+        { path: "/api/pages", route: apiPages, type: "render" },
+        { path: "/api/pages/:id", route: apiPagesById, type: "render" },
+        { path: "/api/articles", route: apiArticles, type: "render" },
+        { path: "/api/articles/:id", route: apiArticlesById, type: "render" },
+        { path: "/api/blog-categories", route: apiBlogCategories, type: "render" },
+        { path: "/api/blog-categories/:id", route: apiBlogCategoriesById, type: "render" },
+        { path: "/api/users", route: apiUsers, type: "render" },
+        { path: "/api/users/:id", route: apiUsersById, type: "render" },
+        { path: "/api/media", route: apiMedia, type: "render" },
+        { path: "/api/media/:id", route: apiMediaById, type: "render" },
+        { path: "/api/menu", route: apiMenu, type: "render" },
+        { path: "/api/settings", route: apiSettings, type: "render" },
+        { path: "/api/settings/:key", route: apiSettingsByKey, type: "render" },
+        { path: "/api/redirects", route: apiRedirects, type: "render" },
+        { path: "/api/redirects/:id", route: apiRedirectsById, type: "render" },
+        { path: "/api/redirects/toggle/:id", route: apiRedirectsToggle, type: "action" },
+        {
+            path: "/:slug",
+            route: renderPage,
             type: "render"
         },
     ];

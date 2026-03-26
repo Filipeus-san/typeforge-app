@@ -76,6 +76,8 @@ interface Config {
     uploadTempDir: string
     maxUploadFileSize: number // bytes
     migrations?: Migration[]
+    seeds?: Seed[],
+    resend: ResendConfig
 }
 
 interface Migration {
@@ -84,10 +86,23 @@ interface Migration {
     up: string  // SQL to run
 }
 
+interface Seed {
+    version: number
+    name: string
+    up: string  // SQL to run (multi-statement, split by ;)
+    run?: () => void  // Optional: run function instead of SQL (when dynamic values like hashPassword are needed)
+}
+
 interface PostgresqeConfig {
     enable: boolean
     url: string
 }
+
+interface ResendConfig {
+    apiSecret: string
+    enable: boolean
+}
+
 
 interface RedisConfig {
     enable: boolean

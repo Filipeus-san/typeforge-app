@@ -1,2 +1,21 @@
-export type WebRouterPaths = "/" | "/login" | "/register" | "/logout" | "/article" | "/blog" | "/eshop" | "/product" | "/category" | "/cart" | "/cart/add" | "/cart/update" | "/cart/remove" | "/checkout" | "/checkout/payment" | "/checkout/review" | "/checkout/confirmation" | "/admin" | "/admin/analytics" | "/admin/orders" | "/admin/orders/detail" | "/admin/orders/create" | "/admin/orders/edit" | "/admin/products" | "/admin/products/create" | "/admin/products/edit" | "/admin/products/delete" | "/admin/categories" | "/admin/categories/create" | "/admin/categories/edit" | "/admin/categories/delete" | "/admin/media" | "/admin/media/upload" | "/admin/media/delete" | "/admin/blog" | "/admin/blog/create" | "/admin/blog/edit" | "/admin/blog/delete" | "/assets/react-bundle.js" | "/assets/react-bundle.css";
-export type ApiRouterPaths = "";
+export type WebRouterPaths = "/" | "/article/:slug" | "/blog" | "/blog/rss" | "/:slug" | "/admin/login" | "/admin/logout" | "/admin/forgot-password" | "/admin/reset-password" | "/admin" | "/admin/pages" | "/admin/pages/create" | "/admin/pages/edit/:id" | "/admin/pages/duplicate/:id" | "/admin/pages/delete/:id" | "/admin/users" | "/admin/users/create" | "/admin/users/edit/:id" | "/admin/users/block/:id" | "/admin/users/reset-password/:id" | "/admin/users/delete/:id" | "/admin/media" | "/admin/media/upload" | "/admin/media/delete/:id" | "/admin/blog" | "/admin/blog/create" | "/admin/blog/edit/:id" | "/admin/blog/duplicate/:id" | "/admin/blog/delete/:id" | "/admin/blog/settings" | "/admin/menu" | "/admin/settings" | "/admin/redirects" | "/admin/redirects/create" | "/admin/redirects/edit/:id" | "/admin/redirects/delete/:id" | "/admin/redirects/toggle/:id" | "/admin/profile";
+export type ApiRouterPaths =
+    | "/bootstrap"
+    | "/auth/login"
+    | "/dashboard"
+    | "/pages"
+    | "/pages/:id"
+    | "/articles"
+    | "/articles/:id"
+    | "/blog-categories"
+    | "/blog-categories/:id"
+    | "/users"
+    | "/users/:id"
+    | "/media"
+    | "/media/:id"
+    | "/menu"
+    | "/settings"
+    | "/settings/:key"
+    | "/redirects"
+    | "/redirects/:id"
+    | "/redirects/toggle/:id";

@@ -1,71 +1,147 @@
-import { DbBlogPost, DbBlogPostWithAuthor } from "./blog.types";
+import { DbArticle, DbArticleWithAuthor, DbBlogCategory } from "../shared";
 
-export function findPostBySlugWithAuthor(slug: string): DbBlogPostWithAuthor | null {
-    const results = sqlQuery<DbBlogPostWithAuthor>(
-        `SELECT bp.*, bp.created_at::text as created_at, bp.updated_at::text as updated_at,
-             u.first_name as author_first_name, u.last_name as author_last_name, u.email as author_email
-         FROM blog_posts bp
-         LEFT JOIN users u ON bp.author_id = u.id
-         WHERE bp.slug = $1 LIMIT 1`,
+export function findAllArticlesWithDetails(): DbArticleWithAuthor[] {
+    return sqlQuery<DbArticleWithAuthor>(
+        `SELECT a.*,
+                a.read_time::float as read_time, a.views::float as views,
+                a.published_at::text as published_at,
+                a.created_at::text as created_at, a.updated_at::text as updated_at,
+                u.name as author_name,
+                bc.name as category_name,
+                m.url as thumbnail_url
+         FROM articles a
+         LEFT JOIN users u ON a.author_id = u.id
+         LEFT JOIN blog_categories bc ON a.category_id = bc.id
+         LEFT JOIN media m ON a.thumbnail_id = m.id
+         ORDER BY a.id DESC`,
+        []
+    );
+}
+
+export function findArticleById(id: number): DbArticle | null {
+    const rows = sqlQuery<DbArticle>(
+        `SELECT *, read_time::float as read_time, views::float as views,
+                published_at::text as published_at,
+                created_at::text as created_at, updated_at::text as updated_at
+         FROM articles WHERE id = $1`,
+        [id]
+    );
+    return rows.length > 0 ? rows[0] : null;
+}
+
+export function findArticleBySlug(slug: string): DbArticleWithAuthor | null {
+    const rows = sqlQuery<DbArticleWithAuthor>(
+        `SELECT a.*,
+                a.read_time::float as read_time, a.views::float as views,
+                a.published_at::text as published_at,
+                a.created_at::text as created_at, a.updated_at::text as updated_at,
+                u.name as author_name,
+                bc.name as category_name,
+                m.url as thumbnail_url
+         FROM articles a
+         LEFT JOIN users u ON a.author_id = u.id
+         LEFT JOIN blog_categories bc ON a.category_id = bc.id
+         LEFT JOIN media m ON a.thumbnail_id = m.id
+         WHERE a.slug = $1`,
         [slug]
     );
-    return results.length > 0 ? results[0] : null;
+    return rows.length > 0 ? rows[0] : null;
 }
 
-export function findAllPostsWithAuthor(): DbBlogPostWithAuthor[] {
-    return sqlQuery<DbBlogPostWithAuthor>(
-        `SELECT bp.*, bp.created_at::text as created_at, bp.updated_at::text as updated_at,
-             u.first_name as author_first_name, u.last_name as author_last_name, u.email as author_email
-         FROM blog_posts bp
-         LEFT JOIN users u ON bp.author_id = u.id
-         ORDER BY bp.created_at DESC`,
+export function findPublishedArticles(): DbArticleWithAuthor[] {
+    return sqlQuery<DbArticleWithAuthor>(
+        `SELECT a.*,
+                a.read_time::float as read_time, a.views::float as views,
+                a.published_at::text as published_at,
+                a.created_at::text as created_at, a.updated_at::text as updated_at,
+                u.name as author_name,
+                bc.name as category_name,
+                m.url as thumbnail_url
+         FROM articles a
+         LEFT JOIN users u ON a.author_id = u.id
+         LEFT JOIN blog_categories bc ON a.category_id = bc.id
+         LEFT JOIN media m ON a.thumbnail_id = m.id
+         WHERE a.status = 'published' AND (a.published_at IS NULL OR a.published_at <= NOW())
+         ORDER BY a.published_at DESC NULLS LAST`,
         []
     );
 }
 
-export function findPublishedPostsWithAuthor(): DbBlogPostWithAuthor[] {
-    return sqlQuery<DbBlogPostWithAuthor>(
-        `SELECT bp.*, bp.created_at::text as created_at, bp.updated_at::text as updated_at,
-             u.first_name as author_first_name, u.last_name as author_last_name, u.email as author_email
-         FROM blog_posts bp
-         LEFT JOIN users u ON bp.author_id = u.id
-         WHERE bp.status = 'published'
-         ORDER BY bp.created_at DESC`,
+export function insertArticle(
+    title: string, slug: string, excerpt: string, content: string,
+    authorId: number, categoryId: number | null, status: string,
+    readTime: number, metaTitle: string, metaDescription: string,
+    publishedAt: string, thumbnailId: number | null
+): void {
+    sqlQuery(
+        `INSERT INTO articles (title, slug, excerpt, content, author_id, category_id, status, read_time, meta_title, meta_description, published_at, thumbnail_id)
+         VALUES ($1, $2, NULLIF($3, ''), $4, $5, NULLIF($6, 0), $7, $8, NULLIF($9, ''), NULLIF($10, ''), NULLIF($11, '')::timestamp, NULLIF($12, 0))`,
+        [title, slug, excerpt, content, authorId, categoryId !== null ? categoryId : 0, status, readTime, metaTitle, metaDescription, publishedAt, thumbnailId !== null ? thumbnailId : 0]
+    );
+}
+
+export function updateArticle(
+    id: number, title: string, slug: string, excerpt: string, content: string,
+    categoryId: number | null, status: string, readTime: number,
+    metaTitle: string, metaDescription: string, publishedAt: string,
+    thumbnailId: number | null
+): void {
+    sqlQuery(
+        `UPDATE articles SET title = $1, slug = $2, excerpt = NULLIF($3, ''), content = $4,
+         category_id = NULLIF($5, 0), status = $6, read_time = $7,
+         meta_title = NULLIF($8, ''), meta_description = NULLIF($9, ''),
+         published_at = NULLIF($10, '')::timestamp, thumbnail_id = NULLIF($11, 0), updated_at = NOW()
+         WHERE id = $12`,
+        [title, slug, excerpt, content, categoryId !== null ? categoryId : 0, status, readTime, metaTitle, metaDescription, publishedAt, thumbnailId !== null ? thumbnailId : 0, id]
+    );
+}
+
+export function deleteArticle(id: number): void {
+    sqlQuery("DELETE FROM articles WHERE id = $1", [id]);
+}
+
+export function findAllBlogCategories(): DbBlogCategory[] {
+    return sqlQuery<DbBlogCategory>(
+        `SELECT *, created_at::text as created_at FROM blog_categories ORDER BY sort_order, name`,
         []
     );
 }
 
-export function findPostById(id: number): DbBlogPost | null {
-    const results = sqlQuery<DbBlogPost>("SELECT *, created_at::text as created_at, updated_at::text as updated_at FROM blog_posts WHERE id = $1 LIMIT 1", [id]);
-    return results.length > 0 ? results[0] : null;
+export function findBlogCategoryById(id: number): DbBlogCategory | null {
+    const rows = sqlQuery<DbBlogCategory>(
+        `SELECT *, created_at::text as created_at FROM blog_categories WHERE id = $1`,
+        [id]
+    );
+    return rows.length > 0 ? rows[0] : null;
 }
 
-export function findPostBySlug(slug: string): DbBlogPost | null {
-    const results = sqlQuery<DbBlogPost>("SELECT id FROM blog_posts WHERE slug = $1 LIMIT 1", [slug]);
-    return results.length > 0 ? results[0] : null;
-}
-
-export function findPostBySlugExcluding(slug: string, excludeId: number): DbBlogPost | null {
-    const results = sqlQuery<DbBlogPost>("SELECT id FROM blog_posts WHERE slug = $1 AND id != $2 LIMIT 1", [slug, excludeId]);
-    return results.length > 0 ? results[0] : null;
-}
-
-export function insertPost(title: string, slug: string, excerpt: string, content: string, authorId: number, category: string, status: string, readTime: number, featuredImage: string): void {
-    sqlQuery<DbBlogPost>(
-        `INSERT INTO blog_posts (title, slug, excerpt, content, author_id, category, status, read_time, featured_image)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NULLIF($9, ''))`,
-        [title, slug, excerpt, content, authorId, category, status, readTime, featuredImage]
+export function insertBlogCategory(name: string, slug: string, sortOrder: number): void {
+    sqlQuery(
+        `INSERT INTO blog_categories (name, slug, sort_order) VALUES ($1, $2, $3)`,
+        [name, slug, sortOrder]
     );
 }
 
-export function updatePost(id: number, title: string, slug: string, excerpt: string, content: string, category: string, status: string, readTime: number, featuredImage: string): void {
-    sqlQuery<DbBlogPost>(
-        `UPDATE blog_posts SET title = $1, slug = $2, excerpt = $3, content = $4, category = $5, status = $6, read_time = $7, featured_image = NULLIF($8, ''), updated_at = CURRENT_TIMESTAMP
-         WHERE id = $9`,
-        [title, slug, excerpt, content, category, status, readTime, featuredImage, id]
+export function updateBlogCategory(id: number, name: string, slug: string, sortOrder: number): void {
+    sqlQuery(
+        `UPDATE blog_categories SET name = $1, slug = $2, sort_order = $3 WHERE id = $4`,
+        [name, slug, sortOrder, id]
     );
 }
 
-export function deletePost(id: number): void {
-    sqlQuery("DELETE FROM blog_posts WHERE id = $1", [id]);
+export function deleteBlogCategory(id: number): void {
+    sqlQuery("DELETE FROM blog_categories WHERE id = $1", [id]);
+}
+
+export function countArticles(): { total: number; published: number; drafts: number; totalViews: number } {
+    const rows = sqlQuery<{ total: number; published: number; drafts: number; totalviews: number }>(
+        `SELECT
+            COUNT(*)::float as total,
+            COUNT(*) FILTER (WHERE status = 'published')::float as published,
+            COUNT(*) FILTER (WHERE status = 'draft')::float as drafts,
+            COALESCE(SUM(views), 0)::float as totalviews
+         FROM articles`,
+        []
+    );
+    return { total: rows[0].total, published: rows[0].published, drafts: rows[0].drafts, totalViews: rows[0].totalviews };
 }

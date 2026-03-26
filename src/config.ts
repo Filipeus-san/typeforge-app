@@ -1,19 +1,25 @@
 import { migrations } from "./migrations";
+import { seeds } from "./seeds";
 
-// App configuration
+// App configuration — reads DATABASE_URL and REDIS_URL from runtime env configs
 export function getAppConfig(): Config {
     return {
         microCache: { maxEntries: 100, ttl: 25 },
         postgresql: { enable: true, url: getConfig("DATABASE_URL") ?? "" },
         redis: { enable: false, url: getConfig("REDIS_URL") ?? "" },
         session: {
-            secret: getConfig("SESSION_SECRET") ?? "default-dev-secret-change-in-production",
+            secret: "unused",
             ttlMinutes: 15,
             cookieName: "session_token",
             refreshThresholdMinutes: 5
         },
         uploadTempDir: "/tmp",
-        maxUploadFileSize: 10 * 1024 * 1024, // 10 MB
-        migrations
+        maxUploadFileSize: 10 * 1024 * 1024,
+        migrations: migrations,
+        seeds: seeds,
+        resend: {
+            apiSecret: getConfig("RESEND_API_KEY") ?? "",
+            enable: true
+        }
     }
 }

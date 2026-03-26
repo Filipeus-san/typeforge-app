@@ -1,8 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { registry } from './registry';
 import './styles/admin.css';
+
+// Theme detection — runs immediately on bundle load to prevent FOUC
+(function () {
+  var theme = localStorage.getItem('tf-theme') || 'dark';
+  document.documentElement.setAttribute('data-tf-theme', theme);
+})();
 
 declare global {
   interface Window {
@@ -22,8 +29,10 @@ window.__REACT_RENDER__ = (name: string, props: Record<string, unknown>, contain
     return;
   }
   createRoot(container).render(
-    <ThemeProvider>
-      <Component {...props} />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <Component {...props} />
+      </ThemeProvider>
+    </LanguageProvider>
   );
 };

@@ -1,324 +1,277 @@
-import { getSession } from "../../utils";
-import { CZECH_DIACRITICS_REPLACEMENTS, PRODUCT_STATUS_LABELS, PRODUCT_STATUS_VARIANTS, ORDER_STATUS_LABELS, ORDER_STATUS_VARIANTS, ProductStatus, OrderStatus } from "./shared.const";
-export { ProductStatus, PRODUCT_STATUS_LABELS, PRODUCT_STATUS_VARIANTS, OrderStatus, ORDER_STATUS_LABELS, ORDER_STATUS_VARIANTS, CZECH_DIACRITICS_REPLACEMENTS } from "./shared.const";
+import { getSession, setSession, FlashMessage, SessionData } from "../../utils";
+import { findAllMenuItems, getSettingsMap } from "./auth/auth.repository";
+import { setLanguage, Language } from "../../i18n";
 
-// =============================================================================
-// Auth Types
-// =============================================================================
-
-export interface UserSession {
-    user: {
-        id: number;
-        email: string;
-        firstName: string;
-        lastName: string;
-        isAdmin: boolean;
-        token: string;
-    };
-}
+// ---- Database Row Types ----
 
 export interface DbUser {
     id: number;
-    first_name: string;
-    last_name: string;
+    name: string;
     email: string;
     password_hash: string;
-    is_admin: boolean;
+    role: string;
+    status: string;
+    avatar_url: string | null;
+    last_login_at: string | null;
     created_at: string;
+    updated_at: string;
 }
 
-// =============================================================================
-// Product & Category Types
-// =============================================================================
-
-export interface DbCategory {
+export interface DbPage {
     id: number;
-    name: string;
+    title: string;
     slug: string;
-    description: string;
-    icon: string;
+    content: string;
     status: string;
+    author_id: number | null;
     sort_order: number;
-    featured_image: string | null;
+    meta_title: string | null;
+    meta_description: string | null;
     created_at: string;
     updated_at: string;
 }
 
-export interface DbProduct {
+export interface DbPageWithAuthor extends DbPage {
+    author_name: string | null;
+}
+
+export interface DbMedia {
     id: number;
     name: string;
-    slug: string;
-    description: string;
-    short_description: string;
-    category_id: number | null;
-    price: number;
-    old_price: number | null;
-    icon: string;
-    stock: number;
-    status: string;
-    featured_image: string | null;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface DbProductWithCategory extends DbProduct {
-    category_name: string | null;
-    category_slug: string | null;
-}
-
-export interface DbProductImage {
-    id: number;
-    product_id: number;
     storage_path: string;
+    url: string;
+    mime_type: string;
+    file_size: number;
+    width: number | null;
+    height: number | null;
+    uploaded_by: number | null;
+    created_at: string;
+}
+
+export interface DbBlogCategory {
+    id: number;
+    name: string;
+    slug: string;
     sort_order: number;
     created_at: string;
 }
 
-export function getProductStatusLabel(status: string): string {
-    return PRODUCT_STATUS_LABELS[status as ProductStatus] ?? status;
-}
-
-export function getProductStatusVariant(status: string): 'success' | 'warning' | 'danger' | 'default' {
-    return PRODUCT_STATUS_VARIANTS[status as ProductStatus] ?? 'default';
-}
-
-// =============================================================================
-// Order Types
-// =============================================================================
-
-export interface DbOrder {
+export interface DbArticle {
     id: number;
-    order_number: string;
-    customer_id: number | null;
-    customer_id_ref: number | null;
-    customer_name: string;
-    customer_email: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    content: string;
+    author_id: number | null;
+    category_id: number | null;
     status: string;
-    total_amount: number;
-    shipping_address: string | null;
-    billing_address: string | null;
-    notes: string | null;
+    thumbnail_id: number | null;
+    read_time: number;
+    views: number;
+    meta_title: string | null;
+    meta_description: string | null;
+    published_at: string | null;
     created_at: string;
     updated_at: string;
 }
 
-export interface DbOrderItem {
+export interface DbArticleWithAuthor extends DbArticle {
+    author_name: string | null;
+    category_name: string | null;
+    thumbnail_url: string | null;
+}
+
+export interface DbMenuItem {
     id: number;
-    order_id: number;
-    product_id: number | null;
-    product_name: string;
-    quantity: number;
-    unit_price: number;
-    total_price: number;
+    label: string;
+    url: string;
+    target: string;
+    parent_id: number | null;
+    sort_order: number;
+    visible: boolean;
     created_at: string;
+    updated_at: string;
 }
 
-export interface DbOrderWithItems extends DbOrder {
-    items: DbOrderItem[];
+export interface DbSetting {
+    id: number;
+    key: string;
+    value: string | null;
+    updated_at: string;
 }
 
-// =============================================================================
-// Shared Helpers
-// =============================================================================
+export interface DbPageView {
+    id: number;
+    path: string;
+    ip_hash: string | null;
+    user_agent: string | null;
+    referrer: string | null;
+    viewed_at: string;
+}
 
-export function escapeJsString(str: string): string {
-    let result = '';
-    for (let i = 0; i < str.length; i++) {
-        const c = str.charAt(i);
-        if (c === "'") {
-            result += "\\'";
-        } else if (c === "\\") {
-            result += "\\\\";
-        } else if (c === "\n") {
-            result += "\\n";
-        } else if (c === "\r") {
-            result += "\\r";
-        } else {
-            result += c;
-        }
+export interface DbRedirect {
+    id: number;
+    source_path: string;
+    target_url: string;
+    type: string;
+    status_code: number;
+    is_active: boolean;
+    sort_order: number;
+    note: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+// ---- Current User Info (for React sidebar avatar) ----
+
+export interface CurrentUserInfo {
+    name: string;
+    avatarUrl: string | null;
+}
+
+let _currentUserInfo: CurrentUserInfo | null = null;
+
+export function getCurrentUserInfo(): CurrentUserInfo | null {
+    return _currentUserInfo;
+}
+
+function loadCurrentUserInfo(userId: number): void {
+    const rows = sqlQuery<{ name: string; avatar_url: string | null }>(
+        `SELECT name, avatar_url FROM users WHERE id = $1`,
+        [userId]
+    );
+    if (rows.length > 0) {
+        _currentUserInfo = { name: rows[0].name, avatarUrl: rows[0].avatar_url };
+    } else {
+        _currentUserInfo = null;
     }
-    return result;
 }
 
-export function replaceAll(str: string, search: string, replacement: string): string {
-    let result = str;
-    while (result.indexOf(search) !== -1) {
-        const idx = result.indexOf(search);
-        result = result.substring(0, idx) + replacement + result.substring(idx + search.length);
+// ---- Language Initialization ----
+
+export function initializeLanguage(): void {
+    const settings = getSettingsMap();
+    const lang = settings['language'];
+    if (lang === 'cs' || lang === 'en') {
+        setLanguage(lang as Language);
+    } else {
+        setLanguage('en');
     }
-    return result;
+}
+
+// ---- Auth Helpers ----
+
+export function requireAdmin(request: Request, response: Response): { userId: number; email: string; flash?: FlashMessage } | null {
+    const session = getSession(request);
+    if (session === null) {
+        response.status = 302;
+        response.headers["Location"] = "/admin/login";
+        return null;
+    }
+    if (session.role !== 'admin' && session.role !== 'editor') {
+        response.status = 302;
+        response.headers["Location"] = "/admin/login";
+        return null;
+    }
+
+    // Initialize language from settings
+    initializeLanguage();
+
+    // Load current user info for sidebar avatar
+    loadCurrentUserInfo(session.userId);
+
+    // Consume flash message if present
+    let flash: FlashMessage | undefined;
+    if (session.flash !== undefined && session.flash !== null) {
+        flash = session.flash;
+        const cleanSession: SessionData = {
+            userId: session.userId,
+            email: session.email,
+            role: session.role,
+            token: session.token,
+        };
+        setSession(cleanSession, response);
+    }
+
+    return { userId: session.userId, email: session.email, flash };
+}
+
+export function requireAuth(request: Request, response: Response): { userId: number; email: string; role: string } | null {
+    const session = getSession(request);
+    if (session === null) {
+        response.status = 302;
+        response.headers["Location"] = "/admin/login";
+        return null;
+    }
+
+    // Initialize language from settings
+    initializeLanguage();
+
+    // Load current user info for sidebar avatar
+    loadCurrentUserInfo(session.userId);
+
+    return { userId: session.userId, email: session.email, role: session.role };
+}
+
+// ---- Formatters ----
+
+export function formatDateCz(isoDateStr: string): string {
+    if (isoDateStr === undefined || isoDateStr === null || isoDateStr === '') return '-';
+    // Expected format: "2026-02-26 14:30:00" or "2026-02-26T14:30:00"
+    const datePart = stringSplit(isoDateStr, " ")[0];
+    const parts = stringSplit(datePart, "-");
+    if (parts.length < 3) return isoDateStr;
+    const day = parts[2];
+    const month = parts[1];
+    const year = parts[0];
+    // Remove leading zeros
+    const dayNum = String(Number(day));
+    const monthNum = String(Number(month));
+    return dayNum + ". " + monthNum + ". " + year;
 }
 
 export function generateSlug(text: string): string {
-    let s = text.toLowerCase();
-    // Czech diacritics - both lower and uppercase (toLowerCase may not work for non-ASCII in Lua)
-    const replacements = CZECH_DIACRITICS_REPLACEMENTS;
-    for (let i = 0; i < replacements.length; i++) {
-        s = replaceAll(s, replacements[i][0], replacements[i][1]);
-    }
-    // Replace spaces and underscores with dashes
-    s = replaceAll(s, ' ', '-');
-    s = replaceAll(s, '_', '-');
-    // Keep only a-z, 0-9, dash
-    let slug = '';
-    for (let i = 0; i < s.length; i++) {
-        const c = s.charAt(i);
-        if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c === '-') {
-            slug += c;
+    return slugify(text);
+}
+
+// ---- Menu Helpers ----
+
+export function getVisibleMenuItems(): Array<{ label: string; url: string; target: string; children?: Array<{ label: string; url: string; target: string }> }> {
+    const items = findAllMenuItems();
+    const topLevel = items.filter(m => m.visible && m.parent_id === null);
+    return topLevel.map(m => {
+        const children = items.filter(c => c.visible && c.parent_id === m.id);
+        const result: { label: string; url: string; target: string; children?: Array<{ label: string; url: string; target: string }> } = {
+            label: m.label,
+            url: m.url,
+            target: m.target,
+        };
+        if (children.length > 0) {
+            result.children = children.map(c => ({
+                label: c.label,
+                url: c.url,
+                target: c.target,
+            }));
         }
-    }
-    // Remove consecutive dashes
-    let cleaned = '';
-    let lastDash = false;
-    for (let i = 0; i < slug.length; i++) {
-        if (slug.charAt(i) === '-') {
-            if (!lastDash && cleaned.length > 0) {
-                cleaned += '-';
-                lastDash = true;
-            }
-        } else {
-            cleaned += slug.charAt(i);
-            lastDash = false;
-        }
-    }
-    // Remove trailing dash
-    if (cleaned.length > 0 && cleaned.charAt(cleaned.length - 1) === '-') {
-        cleaned = cleaned.substring(0, cleaned.length - 1);
-    }
-    return cleaned;
+        return result;
+    });
 }
 
-export function formatOrderDate(dateStr: string): string {
-    if (!dateStr) return '-';
+// ---- Site Settings Helpers ----
 
-    // PostgreSQL format: "2026-02-08 13:03:31.235111"
-    // Extract date parts manually via substring
-    if (dateStr.length >= 10) {
-        const year = dateStr.substring(0, 4);
-        const month = dateStr.substring(5, 7);
-        const day = dateStr.substring(8, 10);
-        const d = Number(day);
-        const m = Number(month);
-        if (d > 0 && m > 0) {
-            return `${d}. ${m}. ${year}`;
-        }
-    }
-
-    return '-';
+export interface SiteSettings {
+    siteName: string;
+    siteDescription: string;
+    siteUrl: string;
+    contactEmail: string;
 }
 
-export function formatPrice(amount: number | string): string {
-    // Handle string input from PostgreSQL DECIMAL
-    let num: number;
-    if (typeof amount === 'string') {
-        num = Number(amount);
-    } else {
-        num = amount;
-    }
-
-    // Handle NaN or undefined
-    if (isNaN(num) || num === null || num === undefined) {
-        num = 0;
-    }
-
-    const rounded = Math.round(num * 100) / 100;
-    const str = String(rounded);
-
-    // Manually split by decimal point without using split()
-    let intPart = '';
-    let decPart = '';
-    let foundDot = false;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charAt(i);
-        if (char === '.') {
-            foundDot = true;
-        } else if (foundDot) {
-            decPart += char;
-        } else {
-            intPart += char;
-        }
-    }
-
-    // Pad decimal part
-    while (decPart.length < 2) {
-        decPart += '0';
-    }
-
-    // Format integer part with spaces
-    let formatted = '';
-    for (let i = 0; i < intPart.length; i++) {
-        if (i > 0 && (intPart.length - i) % 3 === 0) {
-            formatted += ' ';
-        }
-        formatted += intPart.charAt(i);
-    }
-    return formatted + ',' + decPart + ' Kč';
-}
-
-export function getOrderStatusLabel(status: string): string {
-    return ORDER_STATUS_LABELS[status as OrderStatus] ?? status;
-}
-
-export function getOrderStatusVariant(status: string): 'warning' | 'info' | 'primary' | 'success' | 'danger' | 'default' {
-    return ORDER_STATUS_VARIANTS[status as OrderStatus] ?? 'default';
-}
-
-export function generateOrderNumber(): string {
-    return 'ORD-' + uniqueKey().substring(0, 8).toUpperCase();
-}
-
-export function getCustomerInitials(fullName: string): string {
-    if (!fullName) return '??';
-    const parts: string[] = [];
-    let current = '';
-    for (let i = 0; i < fullName.length; i++) {
-        const char = fullName[i];
-        if (char === ' ') {
-            if (current.length > 0) {
-                parts.push(current);
-                current = '';
-            }
-        } else {
-            current += char;
-        }
-    }
-    if (current.length > 0) {
-        parts.push(current);
-    }
-    const first = parts[0]?.charAt(0)?.toUpperCase() ?? '';
-    const last = parts[1]?.charAt(0)?.toUpperCase() ?? '';
-    return first + last || first || '??';
-}
-
-// =============================================================================
-// Customer Types
-// =============================================================================
-
-export interface DbCustomer {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    company: string;
-    shipping_address: string;
-    billing_address: string;
-    notes: string;
-    status: string;
-    created_at: string;
-    updated_at: string;
-}
-
-// =============================================================================
-// Auth Helper
-// =============================================================================
-
-export function requireAdmin(request: Request, response: Response): { session: UserSession; response: Response } | null {
-    const session = getSession<UserSession>(request);
-    if (!session?.user) {
-        response.status = 302;
-        response.headers["Location"] = "/login";
-        return null;
-    }
-    return { session, response };
+export function getSiteSettings(): SiteSettings {
+    const map = getSettingsMap();
+    return {
+        siteName: map['siteName'] !== undefined && map['siteName'] !== '' ? map['siteName'] : 'Lorem',
+        siteDescription: map['siteDescription'] !== undefined && map['siteDescription'] !== '' ? map['siteDescription'] : '',
+        siteUrl: map['siteUrl'] !== undefined && map['siteUrl'] !== '' ? map['siteUrl'] : '',
+        contactEmail: map['contactEmail'] !== undefined && map['contactEmail'] !== '' ? map['contactEmail'] : '',
+    };
 }
